@@ -164,6 +164,17 @@ const renderField = (
   )
 }
 
+JSONSchemaToFields.resolveRef = async (ref) => {
+  const { results } = (await ThunderSDK.getModule(ref).get({})) as {
+    results: any[]
+  }
+
+  return results.map((item: any) => ({
+    label: item.label ?? item.name ?? item.title,
+    value: item._id,
+  }))
+}
+
 export interface IFormPageProps {
   name: string
 }
