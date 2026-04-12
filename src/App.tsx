@@ -10,25 +10,30 @@ import { coreRoutes, type TRouteObject } from "@/core/router"
 import { Protected } from "@/core/protected"
 import { LoadingProvider } from "./core/context/LoaderProvider"
 
-const router = createBrowserRouter([
-  {
-    name: "Main",
-    path: "/",
-    Component: () => (
-      <Protected>
-        <LayoutProvider layout={Layout} router={router}>
-          <Outlet />
-        </LayoutProvider>
-      </Protected>
-    ),
-    children: [
-      ...coreRoutes,
-      // You can add your custom routes here
-    ],
-  },
+const router = createBrowserRouter(
+  [
+    {
+      name: "Main",
+      path: "/",
+      Component: () => (
+        <Protected>
+          <LayoutProvider layout={Layout} router={router}>
+            <Outlet />
+          </LayoutProvider>
+        </Protected>
+      ),
+      children: [
+        ...coreRoutes,
+        // You can add your custom routes here
+      ],
+    },
 
-  // You can add your custom routes here, they will not be affected by the core routes
-] as TRouteObject[])
+    // You can add your custom routes here, they will not be affected by the core routes
+  ] as TRouteObject[],
+  {
+    basename: import.meta.env.BASE_URL,
+  }
+)
 
 export function App() {
   const currentUri = new URL(
