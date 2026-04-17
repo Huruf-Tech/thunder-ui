@@ -6,10 +6,11 @@ import { DataTable } from "../custom/Datatable"
 import { cards } from "@/templates/crudCard"
 import type { ColumnDef } from "@tanstack/react-table"
 import { Button } from "@/components/ui/button"
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { useNavigate } from "react-router"
 import { use } from "../hooks/use"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { IconAlertCircle } from "@tabler/icons-react"
+import { IconAlertCircle, IconTable, IconLayoutGrid } from "@tabler/icons-react"
 
 export interface IListPageProps {
   name: string
@@ -51,8 +52,8 @@ export function ListPage({ name }: IListPageProps) {
   )
 
   const { data, error } = use(get())
-  const [isCardView, setIsCardView] = React.useState(false)
-  const hasCardSupport = data?.results?.some((item: any) => item?.card === true) ?? false
+  const [view, setView] = React.useState<string>("table")
+  const Card = cards[name as keyof typeof cards];
 
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-5 px-5">
@@ -69,20 +70,30 @@ export function ListPage({ name }: IListPageProps) {
             <Button onClick={() => navigate("form")}>Create</Button>
           )}
         </div>
-        <div>
-          {hasCardSupport && (
-            <Button variant="outline" onClick={() => setIsCardView(!isCardView)}>
-              {isCardView ? "View Table" : "View Card"}
-            </Button>
-          )}
-        </div>
+        {!!Card && (
+          <ToggleGroup value={view} onValueChange={(v) => v && setView(v)}>
+            <ToggleGroupItem value="table" aria-label="Table view">
+              <IconTable className="size-4" />
+            </ToggleGroupItem>
+            <ToggleGroupItem value="card" aria-label="Card view">
+              <IconLayoutGrid className="size-4" />
+            </ToggleGroupItem>
+          </ToggleGroup>
+        )}
       </div>
       <div>
-        {isCardView ? (
-          <cards.Grid
-            columns={columnsFromModuleMetadata(metadata)}
-            data={data?.results ?? []}
-          />
+        {view === "card" ? (
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {(data?.results ?? []).filter((item: any) => item?.card === true).length > 0 ? (
+              (data?.results ?? []).filter((item: any) => item?.card === true).map((item: any, i: number) => (
+                <Card key={item._id ?? i} data={item} />
+              ))
+            ) : (
+              <div className="col-span-full py-12 text-center text-sm text-muted-foreground border rounded-lg border-dashed">
+                No records with card views enabled.
+              </div>
+            )}
+          </div>
         ) : (
           <DataTable
             columns={columnsFromModuleMetadata(metadata)}
