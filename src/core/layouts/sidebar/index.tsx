@@ -8,6 +8,7 @@ import {
 import { NavMenu } from "./NavMenu"
 import { useLayout } from "@/core/layouts/layout-provider"
 import type { TRouteObject } from "@/core/router"
+import { PageBreadcrumb } from "@/core/layouts/breadcrumb"
 
 const allowDisplay = (display: boolean | (() => boolean)) => {
   if (typeof display === "function") {
@@ -53,6 +54,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <main className="relative w-full overflow-x-hidden px-2 py-15">
         <div className="fixed top-0 w-full py-2 shadow bg-background">
           <SidebarTrigger className="border-foreground" />
+        </div>
+        <div className="mb-4">
+          <PageBreadcrumb />
         </div>
         {children}
       </main>
