@@ -13,9 +13,8 @@ import { LoadingProvider } from "./core/context/LoaderProvider"
 const router = createBrowserRouter(
   [
     {
-      name: "Root",
+      name: "Main",
       path: "/",
-      handle: { name: "Root" },
       Component: () => (
         <Protected>
           <LayoutProvider layout={Layout} router={router}>
@@ -24,31 +23,8 @@ const router = createBrowserRouter(
         </Protected>
       ),
       children: [
-        {
-          name: "Main",
-          handle: { name: "Main" },
-          Component: () => <Outlet />,
-          children: coreRoutes
-            .filter(route => !["posts", "projects"].includes(route.name || ""))
-            .map(route => ({
-              ...route,
-              path: route.path,
-              handle: { name: route.name }
-            }))
-        },
+        ...coreRoutes,
         // You can add your custom routes here
-        {
-          name: "Huruf Website",
-          handle: { name: "Huruf Website" },
-          Component: () => <Outlet />,
-          children: coreRoutes
-            .filter(route => ["posts", "projects"].includes(route.name || ""))
-            .map(route => ({
-              ...route,
-              path: route.path,
-              handle: { name: route.name }
-            }))
-        }
       ],
     },
 

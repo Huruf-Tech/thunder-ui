@@ -7,6 +7,7 @@ import { useTheme } from "@/components/theme-provider"
 import { IconSun, IconMoon, IconLogout } from "@tabler/icons-react"
 import { Button } from "@/components/ui/button"
 import { useAuth } from "react-oidc-context"
+import Logo from "@/assets/Logo.svg"
 
 const allowDisplay = (display: boolean | (() => boolean)) => {
   if (typeof display === "function") {
@@ -56,22 +57,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <div className="mx-auto flex h-13 max-w-5xl items-center gap-7 px-6">
           {/* Logo / Brand */}
           <div className="flex shrink-0 items-center gap-2.5">
-            {/* <svg
-              className="shrink-0"
-              width="28" height="28" viewBox="0 0 28 28" fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M14 2.5V14.5M14 14.5L24.5 8.5M14 14.5L3.5 8.5M24.5 19.5L14 25.5M14 25.5L3.5 19.5M3.5 19.5V8.5L14 2.5L24.5 8.5V19.5Z"
-                stroke="#ffffff"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg> */}
-            <span className="text-[1.0625rem] font-semibold tracking-tight text-navbar-foreground text-opacity-95">
+            <img src={Logo} alt="Huruf Tech" className="h-7 w-auto shrink-0" />
+            {/* <span className="text-[1.0625rem] font-semibold tracking-tight text-navbar-foreground text-opacity-95">
               Huruf Tech
-            </span>
+            </span> */}
           </div>
 
           {/* Desktop Navigation */}

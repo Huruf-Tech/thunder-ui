@@ -1,7 +1,5 @@
-import { PostCard } from "@/components/PostCard"
-import { ProjectCard } from "@/components/ProjectCard"
+import { PostCard } from "@/components/cards/PostCard"
 
 export const cards = {
   posts: PostCard,
-  projects: ProjectCard,
 }
