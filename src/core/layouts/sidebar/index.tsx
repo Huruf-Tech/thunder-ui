@@ -1,25 +1,25 @@
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
-} from "@/components/ui/sidebar"
-import { NavMenu } from "./NavMenu"
-import { useLayout } from "@/core/layouts/layout-provider"
-import type { TRouteObject } from "@/core/router"
-import { PageBreadcrumb } from "@/core/layouts/breadcrumb"
+} from "@/components/ui/sidebar";
+import { NavMenu } from "./NavMenu";
+import { useLayout } from "@/core/layouts/layout-provider";
+import type { TRouteObject } from "@/core/router";
+import { PageBreadcrumb } from "@/core/layouts/sidebar/breadcrumb";
 
 const allowDisplay = (display: boolean | (() => boolean)) => {
   if (typeof display === "function") {
-    return display()
+    return display();
   }
 
-  return display
-}
+  return display;
+};
 
 export function Layout({ children }: { children: React.ReactNode }) {
-  const { router } = useLayout()
+  const { router } = useLayout();
 
   return (
     <SidebarProvider>
@@ -52,14 +52,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <SidebarFooter />
       </Sidebar>
       <main className="relative w-full overflow-x-hidden px-2 py-15">
-        <div className="fixed top-0 w-full py-2 shadow bg-background">
-          <SidebarTrigger className="border-foreground" />
-        </div>
-        <div className="mb-4">
+        <div className="container mx-auto max-w-6xl">
+          <div className="fixed top-0 w-full py-2 shadow bg-background">
+            <SidebarTrigger className="border-foreground" />
+          </div>
           <PageBreadcrumb />
+          {children}
         </div>
-        {children}
       </main>
     </SidebarProvider>
-  )
+  );
 }
