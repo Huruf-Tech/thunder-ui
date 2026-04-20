@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import React from "react"
+import { useParams, useLocation } from "react-router"
 import { ThunderSDK } from "thunder-sdk"
 import {
   Controller,
@@ -180,34 +181,49 @@ export interface IFormPageProps {
 }
 
 export function FormPage({ name }: IFormPageProps) {
+  const { id } = useParams<{ id?: string }>()
+  const location = useLocation()
+  const isEditMode = !!id
   const metadata = React.useMemo(() => ThunderSDK.getMetadata(name), [name])
   const {
     control,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<any>()
+  } = useForm<any>({
+    defaultValues: isEditMode ? location.state?.record : undefined,
+  })
   const [fields, setFields] = React.useState<TField[]>([])
 
   React.useEffect(() => {
-    ;(async () => {
+    ; (async () => {
       setFields(await fieldsFromModuleMetadata(metadata))
     })()
   }, [metadata])
 
+
+
   const onSubmit: SubmitHandler<any> = async (body) => {
-    await ThunderSDK.getModule(name).create({
-      body,
-    })
+    if (isEditMode) {
+      await ThunderSDK.getModule(name).update({
+        params: { id },
+        body,
+      })
+    } else {
+      await ThunderSDK.getModule(name).create({
+        body,
+      })
+    }
   }
 
   return (
     <form className="mx-auto w-full max-w-md" onSubmit={handleSubmit(onSubmit)}>
       <FieldGroup>
         <FieldSet>
-          <FieldLegend>Form</FieldLegend>
+          <FieldLegend>{isEditMode ? "Update" : "Create"}</FieldLegend>
           <FieldDescription>
-            Fill the form below to create a new {name} entry. All fields are
-            required
+            {isEditMode
+              ? `Update the ${name} entry below.`
+              : `Fill the form below to create a new ${name} entry. All fields are required`}
           </FieldDescription>
           {/* <FieldGroup></FieldGroup> */}
           {fields.map((field) => {
@@ -231,7 +247,7 @@ export function FormPage({ name }: IFormPageProps) {
         </FieldSet>
 
         <Button type="submit" disabled={isSubmitting}>
-          Submit
+          {isEditMode ? "Update" : "Submit"}
         </Button>
       </FieldGroup>
     </form>
