@@ -2,7 +2,7 @@ import { createBrowserRouter, RouterProvider, Outlet } from "react-router"
 import { AuthProvider } from "react-oidc-context"
 
 /** You can change the following layout from "sidebar" to some other layout */
-import { Layout } from "@/core/layouts/navbar"
+import { Layout } from "@/core/layouts/sidebar"
 import { LayoutProvider } from "@/core/layouts/layout-provider"
 
 /** Create a router with the core routes as the child routes of the root path */
