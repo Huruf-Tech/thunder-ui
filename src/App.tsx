@@ -9,6 +9,9 @@ import { LayoutProvider } from "@/core/layouts/layout-provider"
 import { coreRoutes, type TRouteObject } from "@/core/router"
 import { Protected } from "@/core/protected"
 import { LoadingProvider } from "./core/context/LoaderProvider"
+import { ActionSheet } from "./components/ActionSheet";
+import { ActionSheetRef } from "@/Registry/ActionSheet";
+
 
 const router = createBrowserRouter(
   [
@@ -89,6 +92,7 @@ export function App() {
         }}
       >
         <RouterProvider router={router} />
+        <ActionSheet ref={ActionSheetRef} />
       </AuthProvider>
     </LoadingProvider>
   )

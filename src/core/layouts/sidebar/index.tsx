@@ -55,11 +55,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <div className="container mx-auto max-w-6xl">
           <div className="fixed top-0 w-full py-2 shadow bg-background">
             <SidebarTrigger className="border-foreground" />
-          </div>
-          <PageBreadcrumb />
-          {children}
-        </div>
-      </main>
+  </div>
+      <PageBreadcrumb />
+    {children}
+  </div>
+</main>
     </SidebarProvider>
   );
 }
