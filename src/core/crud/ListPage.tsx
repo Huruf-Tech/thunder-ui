@@ -15,6 +15,7 @@ import {
   IconLayoutGrid,
   IconTable,
 } from "@tabler/icons-react";
+import { ActionSheetRef } from "@/Registry/ActionSheet";
 
 export interface IListPageProps {
   name: string;
@@ -72,11 +73,16 @@ export function ListPage({ name }: IListPageProps) {
       if (action === "delete") {
         try {
           const ids = selectedRows.map((row: any) => row._id);
-          for (const id of ids) {
-            await ThunderSDK.getModule(name).del({ params: { id } });
-          }
-          // Reload to refresh the data
-          get().invalidate();
+          ActionSheetRef?.current?.isOpen("confirmation", true, {
+            async onConfirm(dismiss) {
+              for (const id of ids) {
+                await ThunderSDK.getModule(name).del({ params: { id } });
+              }
+              // Reload to refresh the data
+              get().invalidate();
+              dismiss()
+            },
+          });
         } catch (err) {
           console.error("Failed to delete:", err);
         }
