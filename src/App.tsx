@@ -11,7 +11,6 @@ import { Protected } from "@/core/protected"
 import { LoadingProvider } from "./core/context/LoaderProvider"
 import { ActionSheet } from "./components/ActionSheet"
 import { ActionSheetRef } from "@/Registry/ActionSheet"
-import { ThunderSDK } from "thunder-sdk"
 
 const router = createBrowserRouter(
   [
