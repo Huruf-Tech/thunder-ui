@@ -11,6 +11,7 @@ import { Protected } from "@/core/protected"
 import { LoadingProvider } from "./core/context/LoaderProvider"
 import { ActionSheet } from "./components/ActionSheet"
 import { ActionSheetRef } from "@/Registry/ActionSheet"
+import { resolveUrl } from "./lib/utils"
 
 const router = createBrowserRouter(
   [
@@ -47,37 +48,46 @@ const router = createBrowserRouter(
 )
 
 export function App() {
-  const currentUri = new URL(
-    import.meta.env.BASE_URL,
-    window.location.origin
-  ).toString()
+  const currentUri = resolveUrl()
+
+  const children = (
+    <>
+      <RouterProvider router={router} />
+      <ActionSheet ref={ActionSheetRef} />
+    </>
+  )
 
   return (
     <LoadingProvider>
-      <AuthProvider
-        authority={import.meta.env.VITE_OAUTH_SERVER_URL || window.location.origin}
-        client_id={import.meta.env.VITE_OAUTH_CLIENT_ID}
-        redirect_uri={currentUri + window.location.search}
-        scope={import.meta.env.VITE_OAUTH_SCOPE}
-        post_logout_redirect_uri={currentUri}
-        onSigninCallback={() => {
-          const url = new URL(window.location.href)
+      {import.meta.env.VITE_OAUTH_CLIENT_ID ? (
+        <AuthProvider
+          authority={
+            import.meta.env.VITE_OAUTH_SERVER_URL || window.location.origin
+          }
+          client_id={import.meta.env.VITE_OAUTH_CLIENT_ID}
+          redirect_uri={currentUri + window.location.search}
+          scope={import.meta.env.VITE_OAUTH_SCOPE}
+          post_logout_redirect_uri={currentUri}
+          onSigninCallback={() => {
+            const url = new URL(window.location.href)
 
-          url.searchParams.delete("code")
-          url.searchParams.delete("state")
-          url.searchParams.delete("session_state")
-          url.searchParams.delete("iss")
+            url.searchParams.delete("code")
+            url.searchParams.delete("state")
+            url.searchParams.delete("session_state")
+            url.searchParams.delete("iss")
 
-          window.history.replaceState(
-            {},
-            document.title,
-            url.pathname + url.search + url.hash
-          )
-        }}
-      >
-        <RouterProvider router={router} />
-        <ActionSheet ref={ActionSheetRef} />
-      </AuthProvider>
+            window.history.replaceState(
+              {},
+              document.title,
+              url.pathname + url.search + url.hash
+            )
+          }}
+        >
+          {children}
+        </AuthProvider>
+      ) : (
+        children
+      )}
     </LoadingProvider>
   )
 }

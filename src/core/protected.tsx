@@ -5,7 +5,7 @@ import { ThunderSDK } from "thunder-sdk"
 import { LoadingScreen } from "./custom/LoadingScreen"
 import { IconBug, IconLoader, IconLogin } from "@tabler/icons-react"
 
-export function Protected({ children }: { children: React.ReactNode }) {
+function ProtectedWithOAuth({ children }: { children: React.ReactNode }) {
   const [ready, setReady] = React.useState(false)
   const [error, setError] = React.useState<Error | null>(null)
   const auth = useAuth()
@@ -104,4 +104,52 @@ export function Protected({ children }: { children: React.ReactNode }) {
     )
 
   return children
+}
+
+function NotProtected({ children }: { children: React.ReactNode }) {
+  const [ready, setReady] = React.useState(false)
+  const [error, setError] = React.useState<Error | null>(null)
+
+  React.useEffect(() => {
+    ThunderSDK.plugins.essentials
+      .registerPermissions()
+      .then(() => {
+        setReady(true)
+      })
+      .catch((error) => {
+        setError(error)
+      })
+  }, [])
+
+  if (error) {
+    return (
+      <LoadingScreen
+        title="Something went wrong!"
+        icon={IconBug}
+        description={
+          error?.message ??
+          "An unexpected error has been encountered! Please contact support."
+        }
+      ></LoadingScreen>
+    )
+  }
+
+  if (!ready)
+    return (
+      <LoadingScreen
+        title="Getting things ready!"
+        icon={IconLoader}
+        description="We are loading your permissions..."
+      ></LoadingScreen>
+    )
+
+  return children
+}
+
+export function Protected({ children }: { children: React.ReactNode }) {
+  return import.meta.env.VITE_OAUTH_CLIENT_ID ? (
+    <ProtectedWithOAuth>{children}</ProtectedWithOAuth>
+  ) : (
+    <NotProtected>{children}</NotProtected>
+  )
 }

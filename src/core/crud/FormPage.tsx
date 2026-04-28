@@ -246,8 +246,8 @@ export function FormPage({ name }: IFormPageProps) {
           })}
         </FieldSet>
 
-        <Button type="submit" disabled={isSubmitting}>
-          {isEditMode ? "Update" : "Submit"}
+        <Button type="submit" disabled={isSubmitting || !fields.length}>
+          Submit
         </Button>
       </FieldGroup>
     </form>

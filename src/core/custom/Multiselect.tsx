@@ -32,11 +32,16 @@ export const Multiselect: typeof Combobox = (props) => {
       <ComboboxContent anchor={anchor}>
         <ComboboxEmpty>No items found.</ComboboxEmpty>
         <ComboboxList>
-          {(item) => (
-            <ComboboxItem key={item} value={item}>
-              {item}
-            </ComboboxItem>
-          )}
+          {(item) => {
+            const label = typeof item === "string" ? item : item.label
+            const value = typeof item === "string" ? item : item.value
+
+            return (
+              <ComboboxItem key={value} value={value}>
+                {label}
+              </ComboboxItem>
+            )
+          }}
         </ComboboxList>
       </ComboboxContent>
     </Combobox>

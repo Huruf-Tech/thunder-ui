@@ -1,8 +1,8 @@
-import { clsx, type ClassValue } from "clsx"
-import { twMerge } from "tailwind-merge"
+import { type ClassValue, clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+  return twMerge(clsx(inputs));
 }
 
 export function splitCamelCase(text: string | undefined): string {
@@ -14,5 +14,16 @@ export function splitCamelCase(text: string | undefined): string {
       .trim()
       .toLowerCase()
       .replace(/\b\w/g, (c) => c.toUpperCase())
-  )
+  );
+}
+
+export function resolveUrl(path?: string) {
+  const baseUrl = new URL(import.meta.env.BASE_URL, window.location.origin)
+    .toString().replace(/\/$/, "");
+
+  if (path) {
+    return [baseUrl, path.trim().replace(/^\//, "")].join("/");
+  }
+
+  return baseUrl;
 }
