@@ -67,8 +67,8 @@ export const coreRoutes = Object.entries(
   routes = routes ?? []
 
   routes.push({
-    path: "/",
-    Component: () => <Navigate to={routes[0].path ?? "/notFound"} />,
+    path: "",
+    Component: () => <Navigate to={routes[0].path ?? "notFound"} />,
   })
 
   const children = routes.map((route) => ({
@@ -78,7 +78,7 @@ export const coreRoutes = Object.entries(
   }))
 
   return {
-    path: group,
+    path: group.toLowerCase(),
     name: group,
     handle: { name: group },
     Component: () => <Outlet />,
@@ -89,7 +89,7 @@ export const coreRoutes = Object.entries(
 coreRoutes.push({
   name: "Root",
   handle: { name: "Root" },
-  path: "/",
-  Component: () => <Navigate to={coreRoutes[0].path ?? "/notFound"} />,
+  path: "",
+  Component: () => <Navigate to={coreRoutes[0].path ?? "notFound"} />,
   children: [],
 })
