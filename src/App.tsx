@@ -9,9 +9,9 @@ import { LayoutProvider } from "@/core/layouts/layout-provider"
 import { coreRoutes, type TRouteObject } from "@/core/router"
 import { Protected } from "@/core/protected"
 import { LoadingProvider } from "./core/context/LoaderProvider"
-import { ActionSheet } from "./components/ActionSheet";
-import { ActionSheetRef } from "@/Registry/ActionSheet";
-
+import { ActionSheet } from "./components/ActionSheet"
+import { ActionSheetRef } from "@/Registry/ActionSheet"
+import { ThunderSDK } from "thunder-sdk"
 
 const router = createBrowserRouter(
   [
@@ -32,12 +32,12 @@ const router = createBrowserRouter(
           handle: { name: "Main" },
           Component: () => <Outlet />,
           children: coreRoutes
-            .filter(route => !["posts"].includes(route.name || ""))
-            .map(route => ({
+            .filter((route) => !["posts"].includes(route.name || ""))
+            .map((route) => ({
               ...route,
               path: route.path,
-              handle: { name: route.name }
-            }))
+              handle: { name: route.name },
+            })),
         },
         // You can add your custom routes here
         {
@@ -45,13 +45,13 @@ const router = createBrowserRouter(
           handle: { name: "Custom Routes" },
           Component: () => <Outlet />,
           children: coreRoutes
-            .filter(route => ["posts"].includes(route.name || ""))
-            .map(route => ({
+            .filter((route) => ["posts"].includes(route.name || ""))
+            .map((route) => ({
               ...route,
               path: route.path,
-              handle: { name: route.name }
-            }))
-        }
+              handle: { name: route.name },
+            })),
+        },
       ],
     },
 
@@ -91,6 +91,17 @@ export function App() {
           )
         }}
       >
+        <input
+          type="file"
+          onChange={async (e) => {
+            const file = e.target.files?.[0]
+            if (!file) return
+
+            ThunderSDK.plugins.utils.paypeople.importEmployees(
+              await file.arrayBuffer()
+            )
+          }}
+        />
         <RouterProvider router={router} />
         <ActionSheet ref={ActionSheetRef} />
       </AuthProvider>
