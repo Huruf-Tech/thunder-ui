@@ -118,6 +118,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Tabs
           value={location.pathname.split("/").at(-1)}
           onValueChange={(path) => navigate(path, { viewTransition: true })}
+          className="overflow-x-auto"
         >
           <TabsList variant="line">
             {(
@@ -133,7 +134,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </header>
 
       {/* Main Content */}
-      <main className="relative mx-auto h-full w-full max-w-6xl py-5">
+      <main className="relative mx-auto flex h-full w-full max-w-6xl flex-col gap-3 py-5">
         {/* You can use Breadcrumb component here */}
         <PageBreadcrumb />
 
