@@ -48,43 +48,46 @@ const router = createBrowserRouter(
 )
 
 export function App() {
+  const currentUri = resolveUrl()
 
-  const currentUri = resolveUrl();
-
-  const children = <>
-        <RouterProvider router={router} />
-        <ActionSheet ref={ActionSheetRef} />
-      </>;
+  const children = (
+    <>
+      <RouterProvider router={router} />
+      <ActionSheet ref={ActionSheetRef} />
+    </>
+  )
 
   return (
     <LoadingProvider>
-      {
-        import.meta.env.VITE_OAUTH_CLIENT_ID ?
-      <AuthProvider
-        authority={import.meta.env.VITE_OAUTH_SERVER_URL || window.location.origin}
-        client_id={import.meta.env.VITE_OAUTH_CLIENT_ID}
-        redirect_uri={currentUri + window.location.search}
-        scope={import.meta.env.VITE_OAUTH_SCOPE}
-        post_logout_redirect_uri={currentUri}
-        onSigninCallback={() => {
-          const url = new URL(window.location.href)
+      {import.meta.env.VITE_OAUTH_CLIENT_ID ? (
+        <AuthProvider
+          authority={
+            import.meta.env.VITE_OAUTH_SERVER_URL || window.location.origin
+          }
+          client_id={import.meta.env.VITE_OAUTH_CLIENT_ID}
+          redirect_uri={currentUri + window.location.search}
+          scope={import.meta.env.VITE_OAUTH_SCOPE}
+          post_logout_redirect_uri={currentUri}
+          onSigninCallback={() => {
+            const url = new URL(window.location.href)
 
-          url.searchParams.delete("code")
-          url.searchParams.delete("state")
-          url.searchParams.delete("session_state")
-          url.searchParams.delete("iss")
+            url.searchParams.delete("code")
+            url.searchParams.delete("state")
+            url.searchParams.delete("session_state")
+            url.searchParams.delete("iss")
 
-          window.history.replaceState(
-            {},
-            document.title,
-            url.pathname + url.search + url.hash
-          )
-        }}
-      >
-        {children}
-      </AuthProvider> : children
-      }
-      
+            window.history.replaceState(
+              {},
+              document.title,
+              url.pathname + url.search + url.hash
+            )
+          }}
+        >
+          {children}
+        </AuthProvider>
+      ) : (
+        children
+      )}
     </LoadingProvider>
   )
 }
