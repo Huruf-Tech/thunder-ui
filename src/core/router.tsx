@@ -1,4 +1,4 @@
-import { Outlet } from "react-router"
+import { Navigate, Outlet } from "react-router"
 import { ThunderSDK } from "thunder-sdk"
 import type { TablerIcon } from "@tabler/icons-react"
 import type { RouteObject } from "react-router"
@@ -63,13 +63,33 @@ const rawRoutes = ThunderSDK.getModuleNames()
 
 export const coreRoutes = Object.entries(
   Object.groupBy(rawRoutes, (item) => item.group ?? "Other")
-).map(([group, routes]) => ({
-  name: group,
-  handle: { name: group },
-  Component: () => <Outlet />,
-  children: (routes ?? []).map((route) => ({
+).map(([group, routes]) => {
+  routes = routes ?? []
+
+  routes.push({
+    path: "/",
+    Component: () => <Navigate to={routes[0].path ?? "/notFound"} />,
+  })
+
+  const children = routes.map((route) => ({
     ...route,
     path: route.path,
     handle: { name: route.name },
-  })),
-}))
+  }))
+
+  return {
+    path: group,
+    name: group,
+    handle: { name: group },
+    Component: () => <Outlet />,
+    children,
+  }
+})
+
+coreRoutes.push({
+  name: "Root",
+  handle: { name: "Root" },
+  path: "/",
+  Component: () => <Navigate to={coreRoutes[0].path ?? "/notFound"} />,
+  children: [],
+})
