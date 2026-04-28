@@ -73,12 +73,12 @@ export const coreRoutes = Object.entries(
 
   const children = routes.map((route) => ({
     ...route,
-    path: route.path,
+    path: group.toLowerCase() + route.path,
     handle: { name: route.name },
   }))
 
   return {
-    path: group,
+    path: group.toLowerCase(),
     name: group,
     handle: { name: group },
     Component: () => <Outlet />,
