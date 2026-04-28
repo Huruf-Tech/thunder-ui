@@ -11,7 +11,7 @@ import App from "./App.tsx"
 
 ThunderSDK.init({
   axiosConfig: {
-    baseURL: import.meta.env.VITE_API_BASE_URL,
+    baseURL: import.meta.env.VITE_API_BASE_URL || window.location.origin,
   },
   cache: {
     getter: (key: string) => localStorage.getItem(key) || undefined,

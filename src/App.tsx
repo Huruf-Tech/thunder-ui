@@ -11,6 +11,7 @@ import { Protected } from "@/core/protected"
 import { LoadingProvider } from "./core/context/LoaderProvider"
 import { ActionSheet } from "./components/ActionSheet"
 import { ActionSheetRef } from "@/Registry/ActionSheet"
+import { resolveUrl } from "./lib/utils"
 
 const router = createBrowserRouter(
   [
@@ -47,13 +48,18 @@ const router = createBrowserRouter(
 )
 
 export function App() {
-  const currentUri = new URL(
-    import.meta.env.BASE_URL,
-    window.location.origin
-  ).toString()
+
+  const currentUri = resolveUrl();
+
+  const children = <>
+        <RouterProvider router={router} />
+        <ActionSheet ref={ActionSheetRef} />
+      </>;
 
   return (
     <LoadingProvider>
+      {
+        import.meta.env.VITE_OAUTH_CLIENT_ID ?
       <AuthProvider
         authority={import.meta.env.VITE_OAUTH_SERVER_URL || window.location.origin}
         client_id={import.meta.env.VITE_OAUTH_CLIENT_ID}
@@ -75,9 +81,10 @@ export function App() {
           )
         }}
       >
-        <RouterProvider router={router} />
-        <ActionSheet ref={ActionSheetRef} />
-      </AuthProvider>
+        {children}
+      </AuthProvider> : children
+      }
+      
     </LoadingProvider>
   )
 }
