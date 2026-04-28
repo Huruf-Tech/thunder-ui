@@ -8,12 +8,13 @@ import { FormPage } from "@/core/crud/FormPage"
 
 export type TRouteObject = {
   name?: string
+  group?: string
   icon?: TablerIcon
   display?: boolean | (() => boolean)
   children?: TRouteObject[]
 } & RouteObject
 
-export const coreRoutes = ThunderSDK.getModuleNames()
+const rawRoutes = ThunderSDK.getModuleNames()
   .map((name) => {
     if (!ThunderSDK.getMetadata(name)) {
       return
@@ -50,6 +51,7 @@ export const coreRoutes = ThunderSDK.getModuleNames()
     return {
       name: name,
       path: name,
+      group: ThunderSDK.getGroup(name),
       display: () =>
         ThunderSDK.isPermitted(name, "get") ||
         ThunderSDK.isPermitted(name, "create"),
@@ -58,3 +60,16 @@ export const coreRoutes = ThunderSDK.getModuleNames()
     }
   })
   .filter(Boolean) as TRouteObject[]
+
+export const coreRoutes = Object.entries(
+  Object.groupBy(rawRoutes, (item) => item.group ?? "Other")
+).map(([group, routes]) => ({
+  name: group,
+  handle: { name: group },
+  Component: () => <Outlet />,
+  children: (routes ?? []).map((route) => ({
+    ...route,
+    path: route.path,
+    handle: { name: route.name },
+  })),
+}))

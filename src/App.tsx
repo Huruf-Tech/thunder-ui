@@ -26,18 +26,7 @@ const router = createBrowserRouter(
           </LayoutProvider>
         </Protected>
       ),
-      children: [
-        {
-          name: "Main",
-          handle: { name: "Main" },
-          Component: () => <Outlet />,
-          children: coreRoutes.map((route) => ({
-            ...route,
-            path: route.path,
-            handle: { name: route.name },
-          })),
-        },
-      ],
+      children: coreRoutes,
     },
 
     // You can add your custom routes here, they will not be affected by the core routes
