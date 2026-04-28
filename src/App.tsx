@@ -91,17 +91,6 @@ export function App() {
           )
         }}
       >
-        <input
-          type="file"
-          onChange={async (e) => {
-            const file = e.target.files?.[0]
-            if (!file) return
-
-            ThunderSDK.plugins.utils.paypeople.importEmployees(
-              await file.arrayBuffer()
-            )
-          }}
-        />
         <RouterProvider router={router} />
         <ActionSheet ref={ActionSheetRef} />
       </AuthProvider>
