@@ -93,11 +93,9 @@ export function DataTable<TData, TValue>({
     <div className="relative flex flex-col gap-3">
       {/* Bulk action bar */}
       {selectedCount > 0 && (
-        <div className="sticky top-[70px] z-40 flex items-center justify-between gap-3 rounded-lg border bg-background/95 px-4 py-3 shadow-sm backdrop-blur-sm animate-in fade-in">
+        <div className="sticky top-17.5 z-40 flex animate-in items-center justify-between gap-3 rounded-lg border bg-background/95 px-4 py-3 shadow-sm backdrop-blur-sm fade-in">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <span className="font-medium text-foreground">
-              {selectedCount}
-            </span>{" "}
+            <span className="font-medium text-foreground">{selectedCount}</span>{" "}
             row{selectedCount > 1 ? "s" : ""} selected
           </div>
           <div className="flex items-center gap-2">
@@ -141,9 +139,9 @@ export function DataTable<TData, TValue>({
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
                     </TableHead>
                   )
                 })}
@@ -183,4 +181,3 @@ export function DataTable<TData, TValue>({
     </div>
   )
 }
-

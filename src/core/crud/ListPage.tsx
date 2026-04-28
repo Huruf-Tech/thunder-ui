@@ -16,6 +16,7 @@ import {
   IconTable,
 } from "@tabler/icons-react";
 import { ActionSheetRef } from "@/Registry/ActionSheet";
+import { splitCamelCase } from "@/lib/utils";
 
 export interface IListPageProps {
   name: string;
@@ -32,7 +33,7 @@ const columnsFromModuleMetadata = (metadata: any): ColumnDef<unknown>[] => {
     format?: string;
   }>(metadata.crud.schema.properties).map(([key]) => ({
     accessorKey: key,
-    header: key,
+    header: splitCamelCase(key),
   }));
 };
 
@@ -88,7 +89,7 @@ export function ListPage({ name }: IListPageProps) {
         }
       }
     },
-    [name, navigate],
+    [get, name, navigate],
   );
 
   return (

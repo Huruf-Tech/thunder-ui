@@ -2,16 +2,15 @@ import { createBrowserRouter, RouterProvider, Outlet } from "react-router"
 import { AuthProvider } from "react-oidc-context"
 
 /** You can change the following layout from "sidebar" to some other layout */
-import { Layout } from "@/core/layouts/sidebar"
+import { Layout } from "@/core/layouts/navbar"
 import { LayoutProvider } from "@/core/layouts/layout-provider"
 
 /** Create a router with the core routes as the child routes of the root path */
 import { coreRoutes, type TRouteObject } from "@/core/router"
 import { Protected } from "@/core/protected"
 import { LoadingProvider } from "./core/context/LoaderProvider"
-import { ActionSheet } from "./components/ActionSheet";
-import { ActionSheetRef } from "@/Registry/ActionSheet";
-
+import { ActionSheet } from "./components/ActionSheet"
+import { ActionSheetRef } from "@/Registry/ActionSheet"
 
 const router = createBrowserRouter(
   [
@@ -31,27 +30,12 @@ const router = createBrowserRouter(
           name: "Main",
           handle: { name: "Main" },
           Component: () => <Outlet />,
-          children: coreRoutes
-            .filter(route => !["posts"].includes(route.name || ""))
-            .map(route => ({
-              ...route,
-              path: route.path,
-              handle: { name: route.name }
-            }))
+          children: coreRoutes.map((route) => ({
+            ...route,
+            path: route.path,
+            handle: { name: route.name },
+          })),
         },
-        // You can add your custom routes here
-        {
-          name: "Custom Routes",
-          handle: { name: "Custom Routes" },
-          Component: () => <Outlet />,
-          children: coreRoutes
-            .filter(route => ["posts"].includes(route.name || ""))
-            .map(route => ({
-              ...route,
-              path: route.path,
-              handle: { name: route.name }
-            }))
-        }
       ],
     },
 

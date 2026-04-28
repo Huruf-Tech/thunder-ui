@@ -7,11 +7,11 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
+import { splitCamelCase } from "@/lib/utils"
 
 interface RouteHandle {
   name?: string
 }
-
 
 function formatSegment(name: string): string {
   return name
@@ -32,12 +32,7 @@ export function PageBreadcrumb() {
     .map((match) => {
       const handle = match.handle as RouteHandle | undefined
       const rawName =
-        handle?.name ||
-        match.pathname
-          .split("/")
-          .filter(Boolean)
-          .pop() ||
-        ""
+        handle?.name || match.pathname.split("/").filter(Boolean).pop() || ""
 
       return {
         name: formatSegment(rawName),
@@ -57,22 +52,22 @@ export function PageBreadcrumb() {
   if (crumbs.length < 1) return null
 
   return (
-    <Breadcrumb className="mb-4 bg-breadcrumb text-breadcrumb-foreground" id="page-breadcrumb">
+    <Breadcrumb>
       <BreadcrumbList>
         {crumbs.map((crumb, index) => {
           const isLast = index === crumbs.length - 1
+
+          const name = splitCamelCase(crumb.name)
 
           return (
             <span key={crumb.path + index} className="contents">
               {index > 0 && <BreadcrumbSeparator />}
               <BreadcrumbItem>
                 {isLast ? (
-                  <BreadcrumbPage>{crumb.name}</BreadcrumbPage>
+                  <BreadcrumbPage>{name}</BreadcrumbPage>
                 ) : (
-                  <BreadcrumbLink
-                    render={<Link to={crumb.path} />}
-                  >
-                    {crumb.name}
+                  <BreadcrumbLink render={<Link to={crumb.path} />}>
+                    {name}
                   </BreadcrumbLink>
                 )}
               </BreadcrumbItem>

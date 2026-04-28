@@ -8,7 +8,6 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
-  navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu"
 
 export interface INavMenuItem {
@@ -31,7 +30,7 @@ export function NavMenu({ items }: INavMenuProps) {
 
   return (
     <NavigationMenu>
-      <NavigationMenuList>
+      <NavigationMenuList className="gap-2">
         {items.map((item) => {
           const hasSubItems = item.items && item.items.length > 0
           const isActive =
@@ -42,33 +41,25 @@ export function NavMenu({ items }: INavMenuProps) {
             return (
               <NavigationMenuItem key={item.title}>
                 <NavigationMenuTrigger
-                  className={cn(
-                    "bg-transparent text-navbar-foreground/70 hover:bg-navbar-accent hover:text-navbar-accent-foreground data-popup-open:bg-navbar-accent/50 data-open:bg-navbar-accent/50",
-                    isActive && "font-semibold text-navbar-foreground"
-                  )}
+                  className={cn(isActive && "text-sidebar-primary")}
                 >
                   {item.icon && (
-                    <item.icon className="size-4 shrink-0 opacity-70" />
+                    <item.icon className="size-5 shrink-0 opacity-70" />
                   )}
                   <span>{item.title}</span>
                 </NavigationMenuTrigger>
-                <NavigationMenuContent className="bg-navbar text-navbar-foreground ring-navbar-border">
+                <NavigationMenuContent>
                   <ul className="flex min-w-48 flex-col gap-0.5">
                     {item.items?.map((subItem) => {
-                      const subActive =
-                        location.pathname === `/${subItem.path}`
+                      const subActive = location.pathname === `/${subItem.path}`
                       return (
                         <li key={subItem.title}>
                           <NavigationMenuLink
                             render={<Link to={subItem.path || "#"} />}
-                            className={cn(
-                              "text-navbar-foreground/70 hover:bg-navbar-accent hover:text-navbar-accent-foreground",
-                              subActive &&
-                                "bg-navbar-accent font-semibold text-navbar-foreground"
-                            )}
+                            className={cn(subActive && "text-sidebar-primary")}
                           >
                             {subItem.icon && (
-                              <subItem.icon className="size-4 shrink-0 opacity-55" />
+                              <subItem.icon className="size-5 shrink-0 opacity-55" />
                             )}
                             <span>{subItem.title}</span>
                           </NavigationMenuLink>
@@ -84,15 +75,11 @@ export function NavMenu({ items }: INavMenuProps) {
           return (
             <NavigationMenuItem key={item.title}>
               <NavigationMenuLink
-                render={<Link to={item.path || "#"} />}
-                className={cn(
-                  navigationMenuTriggerStyle(),
-                  "bg-transparent text-navbar-foreground/70 hover:bg-navbar-accent hover:text-navbar-accent-foreground",
-                  isActive && "font-semibold text-navbar-foreground"
-                )}
+                render={<Link to={item.path || "/"} />}
+                className={cn(isActive && "text-sidebar-primary")}
               >
                 {item.icon && (
-                  <item.icon className="size-4 shrink-0 opacity-70" />
+                  <item.icon className="size-5 shrink-0 opacity-70" />
                 )}
                 <span>{item.title}</span>
               </NavigationMenuLink>

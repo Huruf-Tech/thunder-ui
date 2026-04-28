@@ -38,7 +38,7 @@ export function MobileMenu({ items }: IMobileMenuProps) {
           <Button
             variant="ghost"
             size="icon-sm"
-            className="relative z-60 text-navbar-foreground/70 hover:bg-navbar-accent hover:text-navbar-accent-foreground md:hidden"
+            className="md:hidden"
             id="mobile-menu-trigger"
             aria-label="Toggle menu"
           />
@@ -47,10 +47,7 @@ export function MobileMenu({ items }: IMobileMenuProps) {
         <IconMenu2 className="size-5" />
       </SheetTrigger>
 
-      <SheetContent
-        side="right"
-        className="border-navbar-border bg-navbar text-navbar-foreground"
-      >
+      <SheetContent side="right">
         <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
         <nav className="flex flex-col gap-1 pt-4">
           {items.map((item) => {
@@ -64,8 +61,9 @@ export function MobileMenu({ items }: IMobileMenuProps) {
                   <>
                     <button
                       className={cn(
-                        "flex w-full cursor-pointer items-center gap-2.5 rounded-lg px-3.5 py-3 text-left text-[0.9375rem] font-medium text-navbar-foreground/70 transition-colors hover:bg-navbar-accent hover:text-navbar-accent-foreground",
-                        isActive && "bg-navbar-accent/50 font-semibold text-navbar-foreground"
+                        "flex w-full cursor-pointer items-center gap-2.5 rounded-lg px-3.5 py-3 text-left text-[0.9375rem] font-medium transition-colors",
+                        isActive &&
+                          "bg-navbar-accent/50 text-navbar-foreground font-semibold"
                       )}
                       onClick={() => toggleExpanded(item.title)}
                     >
@@ -91,8 +89,8 @@ export function MobileMenu({ items }: IMobileMenuProps) {
                         <Link
                           to={item.path || "#"}
                           className={cn(
-                            "flex items-center gap-2 rounded-md px-3 py-2 text-[0.8125rem] text-navbar-foreground/60 transition-colors hover:bg-navbar-accent hover:text-navbar-accent-foreground",
-                            isActive && "font-semibold text-navbar-foreground"
+                            "text-navbar-foreground/60 hover:bg-navbar-accent hover:text-navbar-accent-foreground flex items-center gap-2 rounded-md px-3 py-2 text-[0.8125rem] transition-colors",
+                            isActive && "text-navbar-foreground font-semibold"
                           )}
                           onClick={() => setIsOpen(false)}
                         >
@@ -106,8 +104,9 @@ export function MobileMenu({ items }: IMobileMenuProps) {
                               key={subItem.title}
                               to={subItem.path || "#"}
                               className={cn(
-                                "flex items-center gap-2 rounded-md px-3 py-2 text-[0.8125rem] text-navbar-foreground/60 transition-colors hover:bg-navbar-accent hover:text-navbar-accent-foreground",
-                                subActive && "font-semibold text-navbar-foreground"
+                                "text-navbar-foreground/60 hover:bg-navbar-accent hover:text-navbar-accent-foreground flex items-center gap-2 rounded-md px-3 py-2 text-[0.8125rem] transition-colors",
+                                subActive &&
+                                  "text-navbar-foreground font-semibold"
                               )}
                               onClick={() => setIsOpen(false)}
                             >
@@ -125,8 +124,9 @@ export function MobileMenu({ items }: IMobileMenuProps) {
                   <Link
                     to={item.path || "#"}
                     className={cn(
-                      "flex items-center gap-2.5 rounded-lg px-3.5 py-3 text-[0.9375rem] font-medium text-navbar-foreground/70 transition-colors hover:bg-navbar-accent hover:text-navbar-accent-foreground",
-                      isActive && "bg-navbar-accent/50 font-semibold text-navbar-foreground"
+                      "text-navbar-foreground/70 hover:bg-navbar-accent hover:text-navbar-accent-foreground flex items-center gap-2.5 rounded-lg px-3.5 py-3 text-[0.9375rem] font-medium transition-colors",
+                      isActive &&
+                        "bg-navbar-accent/50 text-navbar-foreground font-semibold"
                     )}
                     onClick={() => setIsOpen(false)}
                   >
