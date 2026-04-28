@@ -69,6 +69,7 @@ export const coreRoutes = Object.entries(
   routes.push({
     path: "",
     Component: () => <Navigate to={routes[0].path ?? "notFound"} />,
+    display: false,
   })
 
   const children = routes.map((route) => ({
@@ -78,7 +79,7 @@ export const coreRoutes = Object.entries(
   }))
 
   return {
-    path: group.toLowerCase(),
+    path: group.toLowerCase().replace(" ", "-"),
     name: group,
     handle: { name: group },
     Component: () => <Outlet />,
