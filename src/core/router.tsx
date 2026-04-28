@@ -36,12 +36,12 @@ const rawRoutes = ThunderSDK.getModuleNames()
     if (hasCreate || hasUpdate) {
       children.push(
         {
-          path: `/${name}/form`,
+          path: `${name}/form`,
           display: false,
           Component: () => <FormPage name={name} />,
         },
         {
-          path: `/${name}/form/:id`,
+          path: `${name}/form/:id`,
           display: false,
           Component: () => <FormPage name={name} />,
         }
@@ -73,12 +73,12 @@ export const coreRoutes = Object.entries(
 
   const children = routes.map((route) => ({
     ...route,
-    path: [group.toLowerCase(), route.path?.replace(/^\//, "")].join("/"),
+    path: route.path,
     handle: { name: route.name },
   }))
 
   return {
-    path: group.toLowerCase(),
+    path: group,
     name: group,
     handle: { name: group },
     Component: () => <Outlet />,
