@@ -18,7 +18,6 @@ const router = createBrowserRouter(
     {
       name: "Root",
       path: "/",
-      handle: { name: "Root" },
       Component: () => (
         <Protected>
           <LayoutProvider layout={Layout} router={router}>

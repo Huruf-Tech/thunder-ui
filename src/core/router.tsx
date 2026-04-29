@@ -36,12 +36,12 @@ const rawRoutes = ThunderSDK.getModuleNames()
     if (hasCreate || hasUpdate) {
       children.push(
         {
-          path: `${name}/form`,
+          path: `form`,
           display: false,
           Component: () => <FormPage name={name} />,
         },
         {
-          path: `${name}/form/:id`,
+          path: `form/:id`,
           display: false,
           Component: () => <FormPage name={name} />,
         }
@@ -64,6 +64,7 @@ const rawRoutes = ThunderSDK.getModuleNames()
 export const coreRoutes = Object.entries(
   Object.groupBy(rawRoutes, (item) => item.group ?? "Other")
 ).map(([group, routes]) => {
+
   routes = routes ?? []
 
   routes.push({
@@ -74,14 +75,12 @@ export const coreRoutes = Object.entries(
 
   const children = routes.map((route) => ({
     ...route,
-    path: route.path,
-    handle: { name: route.name },
+    path: route.path
   }))
 
   return {
     path: group.toLowerCase().replace(" ", "-"),
     name: group,
-    handle: { name: group },
     Component: () => <Outlet />,
     children,
   }
@@ -89,7 +88,6 @@ export const coreRoutes = Object.entries(
 
 coreRoutes.push({
   name: "Root",
-  handle: { name: "Root" },
   path: "",
   Component: () => <Navigate to={coreRoutes[0].path ?? "notFound"} />,
   children: [],
