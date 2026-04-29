@@ -65,6 +65,7 @@ const rawRoutes = ThunderSDK.getModuleNames()
 export const coreRoutes = Object.entries(
   Object.groupBy(rawRoutes, (item) => item.group ?? "Other")
 ).map(([group, routes]) => {
+
   routes = routes ?? []
 
   routes.push({
