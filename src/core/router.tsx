@@ -5,6 +5,7 @@ import type { RouteObject } from "react-router"
 
 import { ListPage } from "@/core/crud/ListPage"
 import { FormPage } from "@/core/crud/FormPage"
+import Overview from "@/pages/overview"
 
 export type TRouteObject = {
   name?: string
@@ -36,12 +37,12 @@ const rawRoutes = ThunderSDK.getModuleNames()
     if (hasCreate || hasUpdate) {
       children.push(
         {
-          path: `${name}/form`,
+          path: `form`,
           display: false,
           Component: () => <FormPage name={name} />,
         },
         {
-          path: `${name}/form/:id`,
+          path: `form/:id`,
           display: false,
           Component: () => <FormPage name={name} />,
         }
@@ -75,22 +76,19 @@ export const coreRoutes = Object.entries(
   const children = routes.map((route) => ({
     ...route,
     path: route.path,
-    handle: { name: route.name },
   }))
 
   return {
     path: group.toLowerCase().replace(" ", "-"),
     name: group,
-    handle: { name: group },
     Component: () => <Outlet />,
     children,
-  }
+  } as TRouteObject
 })
 
-coreRoutes.push({
-  name: "Root",
-  handle: { name: "Root" },
-  path: "",
-  Component: () => <Navigate to={coreRoutes[0].path ?? "notFound"} />,
+coreRoutes.unshift({
+  name: "Overview",
+  path: "/",
+  Component: () => <Overview />,
   children: [],
 })

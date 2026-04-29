@@ -1,92 +1,100 @@
-import { Link, useLocation } from "react-router"
-import type { TablerIcon } from "@tabler/icons-react"
-import { cn } from "@/lib/utils"
 import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-} from "@/components/ui/navigation-menu"
+  IconChevronRight as ChevronRight,
+  type TablerIcon,
+} from "@tabler/icons-react"
+
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible"
+import {
+  SidebarGroup,
+  SidebarGroupLabel,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
+} from "@/components/ui/sidebar"
+import { Link } from "react-router"
 
 export interface INavMenuItem {
   title: string
   path?: string
   icon?: TablerIcon
+  isActive?: boolean
   items?: {
     title: string
     path?: string
-    icon?: TablerIcon
   }[]
 }
 
 export interface INavMenuProps {
-  items: Array<INavMenuItem>
+  name?: string
+  items?: Array<INavMenuItem>
 }
 
-export function NavMenu({ items }: INavMenuProps) {
-  const location = useLocation()
-
+export function NavItem({ navItems }: { navItems: INavMenuProps["items"] }) {
   return (
-    <NavigationMenu>
-      <NavigationMenuList className="gap-2">
-        {items.map((item) => {
-          const hasSubItems = item.items && item.items.length > 0
-          const isActive =
-            location.pathname === `/${item.path}` ||
-            item.items?.some((sub) => location.pathname === `/${sub.path}`)
-
-          if (hasSubItems) {
-            return (
-              <NavigationMenuItem key={item.title}>
-                <NavigationMenuTrigger
-                  className={cn(isActive && "text-sidebar-primary")}
-                >
-                  {item.icon && (
-                    <item.icon className="size-5 shrink-0 opacity-70" />
-                  )}
-                  <span>{item.title}</span>
-                </NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <ul className="flex min-w-48 flex-col gap-0.5">
-                    {item.items?.map((subItem) => {
-                      const subActive = location.pathname === `/${subItem.path}`
-                      return (
-                        <li key={subItem.title}>
-                          <NavigationMenuLink
-                            render={<Link to={subItem.path || "#"} />}
-                            className={cn(subActive && "text-sidebar-primary")}
-                          >
-                            {subItem.icon && (
-                              <subItem.icon className="size-5 shrink-0 opacity-55" />
-                            )}
+    <SidebarMenu>
+      {navItems?.map((item) =>
+        item.items?.length ? (
+          <Collapsible
+            key={item.title}
+            defaultOpen={item.isActive}
+            className="group/collapsible"
+          >
+            <SidebarMenuItem>
+              <CollapsibleTrigger
+                render={
+                  <SidebarMenuButton is="div" tooltip={item.title}>
+                    {item.icon && <item.icon />}
+                    <span>{item.title}</span>
+                    <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                  </SidebarMenuButton>
+                }
+              />
+              <CollapsibleContent>
+                <SidebarMenuSub>
+                  {item.items?.map((subItem) => (
+                    <SidebarMenuSubItem key={subItem.title}>
+                      <SidebarMenuSubButton
+                        render={
+                          <Link to={subItem.path || "#"} viewTransition>
                             <span>{subItem.title}</span>
-                          </NavigationMenuLink>
-                        </li>
-                      )
-                    })}
-                  </ul>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
-            )
-          }
-
-          return (
-            <NavigationMenuItem key={item.title}>
-              <NavigationMenuLink
-                render={<Link to={item.path || "/"} />}
-                className={cn(isActive && "text-sidebar-primary")}
-              >
-                {item.icon && (
-                  <item.icon className="size-5 shrink-0 opacity-70" />
-                )}
+                          </Link>
+                        }
+                      />
+                    </SidebarMenuSubItem>
+                  ))}
+                </SidebarMenuSub>
+              </CollapsibleContent>
+            </SidebarMenuItem>
+          </Collapsible>
+        ) : (
+          <SidebarMenuItem key={item.title}>
+            <Link to={item.path || "#"} viewTransition>
+              <SidebarMenuButton tooltip={item.title} isActive={item.isActive}>
+                {item.icon && <item.icon />}
                 <span>{item.title}</span>
-              </NavigationMenuLink>
-            </NavigationMenuItem>
-          )
-        })}
-      </NavigationMenuList>
-    </NavigationMenu>
+              </SidebarMenuButton>
+            </Link>
+          </SidebarMenuItem>
+        )
+      )}
+    </SidebarMenu>
+  )
+}
+
+export function NavMenu({ name, items }: INavMenuProps) {
+  return name ? (
+    <SidebarGroup>
+      <SidebarGroupLabel>{name}</SidebarGroupLabel>
+      <NavItem navItems={items} />
+    </SidebarGroup>
+  ) : (
+    <NavItem navItems={items} />
   )
 }

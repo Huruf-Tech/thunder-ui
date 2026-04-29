@@ -14,7 +14,7 @@ import {
 import { NavMenu } from "./NavMenu"
 import { useLayout } from "@/core/layouts/layout-provider"
 import type { TRouteObject } from "@/core/router"
-import { PageBreadcrumb } from "@/core/layouts/sidebar/breadcrumb"
+import { Breadcrumb } from "@/core/layouts/shared/breadcrumb"
 import Logo from "/logo.png"
 import { Link } from "react-router"
 
@@ -78,7 +78,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
             size="icon-lg"
             className="border border-border [&_svg]:size-5!"
           />
-          <PageBreadcrumb />
+          <Breadcrumb />
           {children}
         </div>
       </main>
