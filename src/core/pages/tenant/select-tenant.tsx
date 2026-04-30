@@ -1,0 +1,142 @@
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import { use } from "@/core/hooks/use"
+import React from "react"
+
+import Logo from "/logo.png"
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemMedia,
+  ItemTitle,
+} from "@/components/ui/item"
+import { Button } from "@/components/ui/button"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { getInitials, transformImage } from "../../lib/utils"
+import { Skeleton } from "@/components/ui/skeleton"
+import { SkeletonRepeater } from "@/core/custom/SkeletonRepeator"
+import TenantForm from "./form"
+import { IconAlertCircle, IconUser } from "@tabler/icons-react"
+import { getTenants } from "@/core/lib/api"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { useNavigate } from "react-router"
+
+export function SelectTenant() {
+  const navigate = useNavigate()
+  const tenants = React.useMemo(() => getTenants(), [])
+  const { data, error, isLoading } = use(tenants)
+
+  return (
+    <div className="flex h-full min-h-svh w-full items-center justify-center p-2">
+      {error ? (
+        <Alert variant="destructive" className="max-w-md">
+          <IconAlertCircle />
+          <AlertTitle>{error.name}</AlertTitle>
+          <AlertDescription>{error.message}</AlertDescription>
+        </Alert>
+      ) : null}
+      {isLoading ? (
+        <CardSkeleton />
+      ) : data?.results.length ? (
+        <Card className="w-full max-w-md shadow-none">
+          <CardHeader className="flex flex-col items-center justify-center text-center">
+            <div className="flex shrink-0 items-center gap-3">
+              <img src={Logo} alt="Logo" className="h-5 w-auto shrink-0" />
+            </div>
+            <CardTitle>Select Tenant</CardTitle>
+            <CardDescription>Choose a tenant to proceed</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ScrollArea className="h-50 w-full">
+              {data?.results.map(({ tenant }) => (
+                <Item variant="muted" size="xs" key={tenant._id as string}>
+                  <ItemMedia variant="default">
+                    <Avatar size="lg">
+                      <AvatarImage
+                        src={transformImage(tenant.logo)}
+                        alt={tenant.name}
+                      />
+                      <AvatarFallback className="bg-muted-foreground/10">
+                        {getInitials(tenant.name)}
+                      </AvatarFallback>
+                    </Avatar>
+                  </ItemMedia>
+                  <ItemContent>
+                    <ItemTitle>{tenant.name}</ItemTitle>
+                  </ItemContent>
+                  <ItemActions>
+                    <Button onClick={() => navigate(`/${tenant._id}`)}>
+                      Select
+                    </Button>
+                  </ItemActions>
+                </Item>
+              ))}
+            </ScrollArea>
+          </CardContent>
+          <CardFooter className="text-center">
+            <small className="text-muted-foreground">
+              Tenant selection is required so that you can access the
+              appropriate resources and settings.
+            </small>
+          </CardFooter>
+        </Card>
+      ) : (
+        <Card className="w-full max-w-md shadow-none">
+          <CardHeader className="flex flex-col items-center justify-center text-center">
+            <div className="flex size-8 items-center justify-center rounded-md bg-muted">
+              <IconUser className="size-5" />
+            </div>
+
+            <CardTitle>Create Tenant</CardTitle>
+            <CardDescription>
+              Please fill the form to create a new tenant
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <TenantForm />
+          </CardContent>
+        </Card>
+      )}
+    </div>
+  )
+}
+
+function CardSkeleton() {
+  return (
+    <Card className="w-full max-w-md shadow-none">
+      <CardHeader className="flex flex-col items-center justify-center gap-2 text-center">
+        <Skeleton className="size-10 min-w-10 rounded-full bg-muted-foreground/10" />
+        <Skeleton className="h-4 w-full max-w-20 bg-muted-foreground/10" />
+        <Skeleton className="h-4 w-full max-w-30 bg-muted-foreground/10" />
+      </CardHeader>
+      <CardContent>
+        <ScrollArea className="h-50 w-full">
+          <SkeletonRepeater count={3}>
+            <Item
+              variant="muted"
+              size="xs"
+              className="first:rounded-b-lg last:rounded-t-lg"
+            >
+              <Skeleton className="size-10 min-w-10 rounded-full bg-muted-foreground/10" />
+              <div className="flex flex-1 flex-col">
+                <Skeleton className="my-0.5 h-4 max-w-30 bg-muted-foreground/10" />
+              </div>
+              <Skeleton className="h-7 w-14 bg-muted-foreground/10" />
+            </Item>
+          </SkeletonRepeater>
+        </ScrollArea>
+      </CardContent>
+      <CardFooter className="flex items-center justify-center">
+        <Skeleton className="h-4 w-full max-w-50 bg-muted-foreground/10" />
+      </CardFooter>
+    </Card>
+  )
+}

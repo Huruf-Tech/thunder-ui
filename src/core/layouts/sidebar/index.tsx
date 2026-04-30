@@ -1,4 +1,5 @@
 import {
+  SidebarInset,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -18,12 +19,9 @@ import { Breadcrumb } from "@/core/layouts/shared/breadcrumb"
 import Logo from "/logo.png"
 import { Link } from "react-router"
 
-const allowDisplay = (display: boolean | (() => boolean)) => {
-  if (typeof display === "function") {
-    return display()
-  }
-
-  return display
+function allowDisplay(display?: boolean | (() => boolean)) {
+  if (typeof display === "function") return display()
+  return display ?? true
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {
@@ -46,42 +44,48 @@ export function Layout({ children }: { children: React.ReactNode }) {
           </SidebarMenu>
         </SidebarHeader>
         <SidebarContent>
-          {(router.routes as TRouteObject[]).map((route) => (
-            <NavMenu
-              key={route.name}
-              name={route.name ?? "Unnamed Route"}
-              items={route.children
-                ?.filter((route) => allowDisplay(route.display ?? true))
-                .map((child) => ({
-                  title: child.name ?? "Unnamed Route",
-                  icon: child.icon,
-                  path: child.path,
-                  items: child.children
-                    ?.filter((subChild) =>
-                      allowDisplay(subChild.display ?? true)
-                    )
-                    .map((subChild) => ({
-                      title: subChild.name ?? "Unnamed Route",
-                      icon: subChild.icon,
-                      path: subChild.path,
-                    })),
-                }))}
-            />
-          ))}
+          {(router.routes as TRouteObject[])
+            .filter((route) => allowDisplay(route.display))
+            .map((route) => (
+              <NavMenu
+                key={route.name}
+                name={route.name ?? "Unnamed Route"}
+                items={route.children
+                  ?.filter((route) => allowDisplay(route.display ?? true))
+                  .map((child) => ({
+                    title: child.name ?? "Unnamed Route",
+                    icon: child.icon,
+                    path: child.path,
+                    items: child.children
+                      ?.filter((subChild) =>
+                        allowDisplay(subChild.display ?? true)
+                      )
+                      .map((subChild) => ({
+                        title: subChild.name ?? "Unnamed Route",
+                        icon: subChild.icon,
+                        path: subChild.path,
+                      })),
+                  }))}
+              />
+            ))}
         </SidebarContent>
         <SidebarFooter />
       </Sidebar>
-      <main className="relative h-full w-full">
-        <div className="container mx-auto flex max-w-6xl flex-col gap-4 p-3">
-          <SidebarTrigger
-            variant="secondary"
-            size="icon-lg"
-            className="border border-border [&_svg]:size-5!"
-          />
-          <Breadcrumb />
-          {children}
+      <SidebarInset>
+        <div className="flex h-full w-full flex-1 flex-col">
+          <main className="@container/main flex flex-1 flex-col gap-2 relative h-full w-full">
+            <div className="container mx-auto flex max-w-6xl flex-col gap-4 p-3">
+              <SidebarTrigger
+                variant="secondary"
+                size="icon-lg"
+                className="border border-border [&_svg]:size-5!"
+              />
+              <Breadcrumb />
+              {children}
+            </div>
+          </main>
         </div>
-      </main>
+      </SidebarInset>
     </SidebarProvider>
   )
 }

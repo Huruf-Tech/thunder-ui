@@ -12,7 +12,6 @@ import {
 import { Button } from "@/components/ui/button"
 import { useAuth } from "react-oidc-context"
 import Logo from "/logo.png"
-import { splitCamelCase } from "@/lib/utils"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Link, useLocation, useNavigate } from "react-router"
 import React from "react"
@@ -29,13 +28,11 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import { NavMenu } from "./NavMenu"
+import { appName } from "@/lib/utils"
 
-const allowDisplay = (display: boolean | (() => boolean)) => {
-  if (typeof display === "function") {
-    return display()
-  }
-
-  return display
+function allowDisplay(display?: boolean | (() => boolean)) {
+  if (typeof display === "function") return display()
+  return display ?? true
 }
 
 function SidebarTrigger() {
@@ -74,22 +71,24 @@ export function Layout({ children }: { children: React.ReactNode }) {
     }[] = []
 
     for (const route of router.routes as TRouteObject[]) {
+      if (!allowDisplay(route.display)) continue
+
       for (const child of route.children ?? []) {
-        if (!allowDisplay(child.display ?? true)) continue
+        if (!allowDisplay(child.display)) continue
 
         const parentPath = child.path ?? "/"
 
         routes.push({
-          title: splitCamelCase(child.name) || "Unnamed Route",
+          title: child.name || "Unnamed Route",
           icon: child.icon,
           path: parentPath,
         })
 
         for (const subChild of child.children ?? []) {
-          if (!allowDisplay(subChild.display ?? true)) continue
+          if (!allowDisplay(subChild.display)) continue
 
           subRoutes.push({
-            title: splitCamelCase(subChild.name) || "Unnamed Route",
+            title: subChild.name || "Unnamed Route",
             icon: subChild.icon,
             path: subChild.path,
             parent: parentPath,
@@ -100,6 +99,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
     return { routes, subRoutes: Object.groupBy(subRoutes, (i) => i.parent!) }
   }, [router.routes])
+
+  console.log(router.routes);
 
   const [, activeParent, activeChild] = React.useMemo(
     () => location.pathname.split("/"),
@@ -149,7 +150,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 {/* Logo / Brand */}
                 <div className="flex shrink-0 items-center gap-3">
                   <img src={Logo} alt="Logo" className="h-5 w-auto shrink-0" />
-                  <span className="text-base font-semibold">Thunder UI</span>
+                  <span className="capitalize text-base font-semibold">{appName()}</span>
                 </div>
 
                 {/* Right Actions */}

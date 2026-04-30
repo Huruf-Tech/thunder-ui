@@ -4,6 +4,7 @@ import { useAuth } from "react-oidc-context"
 import { ThunderSDK } from "thunder-sdk"
 import { LoadingScreen } from "./custom/LoadingScreen"
 import { IconBug, IconLoader, IconLogin } from "@tabler/icons-react"
+import { useParams } from "react-router"
 
 function ProtectedWithOAuth({ children }: { children: React.ReactNode }) {
   const [ready, setReady] = React.useState(false)
@@ -147,6 +148,13 @@ function NotProtected({ children }: { children: React.ReactNode }) {
 }
 
 export function Protected({ children }: { children: React.ReactNode }) {
+  const { tenant } = useParams<{ tenant: string }>()
+
+  React.useEffect(() => {
+    if (tenant) ThunderSDK.plugins.essentials.setTenant(tenant)
+    else ThunderSDK.plugins.essentials.removeTenant()
+  }, [tenant])
+
   return import.meta.env.VITE_OAUTH_CLIENT_ID ? (
     <ProtectedWithOAuth>{children}</ProtectedWithOAuth>
   ) : (

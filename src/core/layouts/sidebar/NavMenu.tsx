@@ -41,11 +41,11 @@ export function NavMenu({ name, items }: INavMenuProps) {
     <SidebarGroup>
       <SidebarGroupLabel>{name}</SidebarGroupLabel>
       <SidebarMenu>
-        {items?.map((item) =>
+        {items?.map((item, idx) =>
           item.items?.length
             ? (
               <Collapsible
-                key={item.title}
+                key={item.title + idx}
                 defaultOpen={item.isActive}
                 className="group/collapsible"
               >
@@ -61,8 +61,8 @@ export function NavMenu({ name, items }: INavMenuProps) {
                   />
                   <CollapsibleContent>
                     <SidebarMenuSub>
-                      {item.items?.map((subItem) => (
-                        <SidebarMenuSubItem key={subItem.title}>
+                      {item.items?.map((subItem, subIdx) => (
+                        <SidebarMenuSubItem key={subItem.title + subIdx}>
                           <SidebarMenuSubButton
                             render={
                               <Link to={subItem.path || "#"}>
@@ -78,7 +78,7 @@ export function NavMenu({ name, items }: INavMenuProps) {
               </Collapsible>
             )
             : (
-              <SidebarMenuItem key={item.title}>
+              <SidebarMenuItem key={item.title + idx}>
                 <Link to={item.path || "#"}>
                   <SidebarMenuButton tooltip={item.title}>
                     {item.icon && <item.icon />}

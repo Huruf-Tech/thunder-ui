@@ -1,4 +1,9 @@
-import { createBrowserRouter, RouterProvider, Outlet } from "react-router"
+import {
+  createBrowserRouter,
+  RouterProvider,
+  Outlet,
+  Navigate,
+} from "react-router"
 import { AuthProvider } from "react-oidc-context"
 
 /** You can change the following layout from "sidebar" to some other layout */
@@ -8,16 +13,37 @@ import { LayoutProvider } from "@/core/layouts/layout-provider"
 /** Create a router with the core routes as the child routes of the root path */
 import { coreRoutes, type TRouteObject } from "@/core/router"
 import { Protected } from "@/core/protected"
-import { LoadingProvider } from "./core/context/LoaderProvider"
-import { ActionSheet } from "./components/ActionSheet"
+import { LoadingProvider } from "@/core/context/LoaderProvider"
+import { ActionSheet } from "@/components/ActionSheet"
 import { ActionSheetRef } from "@/Registry/ActionSheet"
-import { resolveUrl } from "./lib/utils"
+import { resolveUrl } from "@/lib/utils"
+import { SelectTenant } from "@/core/pages/tenant/select-tenant"
 
 const router = createBrowserRouter(
   [
     {
       name: "Root",
       path: "/",
+      display: false,
+      Component: () => (
+        <Protected>
+          <Outlet />
+        </Protected>
+      ),
+      children: [
+        {
+          index: true,
+          Component: () => <Navigate to="/select-tenant" />,
+        },
+        {
+          path: "select-tenant",
+          Component: () => <SelectTenant />,
+        },
+      ],
+    },
+    {
+      name: "App",
+      path: "/:tenant",
       Component: () => (
         <Protected>
           <LayoutProvider layout={Layout} router={router}>

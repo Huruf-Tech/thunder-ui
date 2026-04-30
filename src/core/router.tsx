@@ -65,7 +65,6 @@ const rawRoutes = ThunderSDK.getModuleNames()
 export const coreRoutes = Object.entries(
   Object.groupBy(rawRoutes, (item) => item.group ?? "Other")
 ).map(([group, routes]) => {
-
   routes = routes ?? []
 
   routes.push({
@@ -87,9 +86,16 @@ export const coreRoutes = Object.entries(
   } as TRouteObject
 })
 
-coreRoutes.unshift({
-  name: "Overview",
-  path: "/",
-  Component: () => <Overview />,
-  children: [],
-})
+coreRoutes.unshift(
+  {
+    name: "App root",
+    path: "/:tenant",
+    Component: () => <Navigate to="overview" />,
+    display: false,
+  },
+  {
+    name: "Overview",
+    path: "overview",
+    Component: () => <Overview />,
+  }
+)
