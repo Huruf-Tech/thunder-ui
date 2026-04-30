@@ -102,7 +102,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
   }, [router.routes])
 
   const [, activeParent, activeChild] = React.useMemo(
-    () => location.pathname.split("/"),
+    () => location.pathname.split("/").filter(Boolean),
     [location.pathname]
   )
 
@@ -149,7 +149,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 {/* Logo / Brand */}
                 <div className="flex shrink-0 items-center gap-3">
                   <img src={Logo} alt="Logo" className="h-5 w-auto shrink-0" />
-                  <span className="capitalize text-base font-semibold">{appName()}</span>
+                  <span className="text-base font-semibold capitalize">
+                    {appName()}
+                  </span>
                 </div>
 
                 {/* Right Actions */}
