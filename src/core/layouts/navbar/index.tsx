@@ -3,6 +3,7 @@ import { useLayout } from "@/core/layouts/layout-provider"
 import type { TRouteObject } from "@/core/router"
 import { useTheme } from "@/components/theme-provider"
 import {
+  IconAlertCircle,
   IconLogout,
   IconMenu2,
   IconMoon,
@@ -80,7 +81,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
         routes.push({
           title: child.name || "Unnamed Route",
-          icon: child.icon,
+          icon: child.icon || IconAlertCircle,
           path: parentPath,
         })
 
@@ -89,7 +90,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
           subRoutes.push({
             title: subChild.name || "Unnamed Route",
-            icon: subChild.icon,
+            icon: subChild.icon || IconAlertCircle,
             path: subChild.path,
             parent: parentPath,
           })
@@ -99,8 +100,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
     return { routes, subRoutes: Object.groupBy(subRoutes, (i) => i.parent!) }
   }, [router.routes])
-
-  console.log(router.routes);
 
   const [, activeParent, activeChild] = React.useMemo(
     () => location.pathname.split("/"),

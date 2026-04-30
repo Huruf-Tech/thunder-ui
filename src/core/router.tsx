@@ -1,6 +1,6 @@
 import { Navigate, Outlet } from "react-router"
 import { ThunderSDK } from "thunder-sdk"
-import type { TablerIcon } from "@tabler/icons-react"
+import { IconLayoutGrid, type TablerIcon } from "@tabler/icons-react"
 import type { RouteObject } from "react-router"
 
 import { ListPage } from "@/core/crud/ListPage"
@@ -67,6 +67,12 @@ export const coreRoutes = Object.entries(
 ).map(([group, routes]) => {
   routes = routes ?? []
 
+  routes.push({
+    path: "",
+    Component: () => <Navigate to={routes[0].path ?? "notFound"} />,
+    display: false,
+  })
+
   const children = routes.map((route) => ({
     ...route,
     path: route.path,
@@ -90,6 +96,7 @@ coreRoutes.unshift(
   {
     name: "Overview",
     path: "overview",
+    icon: IconLayoutGrid,
     Component: () => <Overview />,
   }
 )
