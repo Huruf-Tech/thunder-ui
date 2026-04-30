@@ -25,7 +25,7 @@ export function Breadcrumb() {
       <BreadcrumbList>
         {crumbs.map((crumb, index) => {
           return (
-            <React.Fragment>
+            <React.Fragment key={crumb + index}>
               {index === 0 ? (
                 <BreadcrumbItem>
                   <BreadcrumbLink
@@ -35,7 +35,7 @@ export function Breadcrumb() {
                   </BreadcrumbLink>
                 </BreadcrumbItem>
               ) : (
-                <BreadcrumbItem key={crumb + index}>
+                <BreadcrumbItem>
                   <BreadcrumbLink
                     render={
                       <Link

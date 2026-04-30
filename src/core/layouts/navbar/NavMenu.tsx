@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/collapsible"
 import {
   SidebarGroup,
+  SidebarGroupContent,
   SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
@@ -50,9 +51,9 @@ export function NavItem({ navItems }: { navItems: INavMenuProps["items"] }) {
               <CollapsibleTrigger
                 render={
                   <SidebarMenuButton is="div" tooltip={item.title}>
-                    {item.icon && <item.icon />}
+                    {item.icon && <item.icon className="size-5!" />}
                     <span>{item.title}</span>
-                    <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                    <ChevronRight className="ml-auto size-5! transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                   </SidebarMenuButton>
                 }
               />
@@ -77,7 +78,7 @@ export function NavItem({ navItems }: { navItems: INavMenuProps["items"] }) {
           <SidebarMenuItem key={item.title + idx}>
             <Link to={item.path || "#"} viewTransition>
               <SidebarMenuButton tooltip={item.title} isActive={item.isActive}>
-                {item.icon && <item.icon />}
+                {item.icon && <item.icon className="size-5!" />}
                 <span>{item.title}</span>
               </SidebarMenuButton>
             </Link>
@@ -89,12 +90,12 @@ export function NavItem({ navItems }: { navItems: INavMenuProps["items"] }) {
 }
 
 export function NavMenu({ name, items }: INavMenuProps) {
-  return name ? (
+  return (
     <SidebarGroup>
-      <SidebarGroupLabel>{name}</SidebarGroupLabel>
-      <NavItem navItems={items} />
+      <SidebarGroupContent className="flex flex-col gap-2">
+        {name && <SidebarGroupLabel>{name}</SidebarGroupLabel>}
+        <NavItem navItems={items} />
+      </SidebarGroupContent>
     </SidebarGroup>
-  ) : (
-    <NavItem navItems={items} />
   )
 }

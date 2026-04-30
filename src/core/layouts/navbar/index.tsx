@@ -4,10 +4,14 @@ import type { TRouteObject } from "@/core/router"
 import { useTheme } from "@/components/theme-provider"
 import {
   IconAlertCircle,
+  IconArrowsExchange,
+  IconDotsVertical,
   IconLogout,
   IconMenu2,
   IconMoon,
+  IconNotification,
   IconSun,
+  IconUserCircle,
   type TablerIcon,
 } from "@tabler/icons-react"
 import { Button } from "@/components/ui/button"
@@ -30,6 +34,20 @@ import {
 } from "@/components/ui/sidebar"
 import { NavMenu } from "./NavMenu"
 import { appName } from "@/lib/utils"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { useIsMobile } from "@/hooks/use-mobile"
+import { getMe } from "@/core/lib/api"
+import { use } from "@/core/hooks/use"
+import { getInitials, transformImage } from "@/core/lib/utils"
 
 function allowDisplay(display?: boolean | (() => boolean)) {
   if (typeof display === "function") return display()
@@ -56,6 +74,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate()
   const { theme, setTheme } = useTheme()
   const auth = useAuth()
+  const isMobile = useIsMobile()
+
+  const _me = React.useMemo(() => getMe(), [])
+  const { data: me } = use(_me)
 
   const { routes, subRoutes } = React.useMemo(() => {
     const routes: {
@@ -122,15 +144,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <SidebarProvider>
-      <Sidebar variant="inset" className="p-2">
+      <Sidebar collapsible="icon" variant="inset">
         <SidebarHeader>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton
-                className="data-[slot=sidebar-menu-button]:p-1.5!"
-                render={<Link to="/" />}
-              >
-                <span className="text-base font-semibold">Menu</span>
+              <SidebarMenuButton className="ring-transparent hover:bg-transparent! data-[slot=sidebar-menu-button]:p-1.5!">
+                <span className="text-base font-semibold">Main Menu</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
@@ -138,7 +157,89 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <SidebarContent>
           <NavMenu items={routes} />
         </SidebarContent>
-        <SidebarFooter />
+        <SidebarFooter>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <DropdownMenu>
+                <DropdownMenuTrigger
+                  render={
+                    <SidebarMenuButton
+                      size="lg"
+                      className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+                    >
+                      <Avatar className="h-8 w-8 rounded-lg grayscale">
+                        <AvatarImage
+                          src={transformImage(me?.image)}
+                          alt={me?.name}
+                        />
+                        <AvatarFallback className="rounded-lg">
+                          {getInitials(me?.name)}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="grid flex-1 text-left text-sm leading-tight">
+                        <span className="truncate font-medium">{me?.name}</span>
+                        <span className="truncate text-xs text-muted-foreground">
+                          {me?.email}
+                        </span>
+                      </div>
+                      <IconDotsVertical className="ml-auto size-4" />
+                    </SidebarMenuButton>
+                  }
+                ></DropdownMenuTrigger>
+                <DropdownMenuContent
+                  className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
+                  side={isMobile ? "bottom" : "right"}
+                  align="end"
+                  sideOffset={4}
+                >
+                  <DropdownMenuGroup>
+                    <DropdownMenuLabel className="p-0 font-normal">
+                      <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+                        <Avatar className="h-8 w-8 rounded-lg">
+                          <AvatarImage
+                            src={transformImage(me?.image)}
+                            alt={me?.name}
+                          />
+                          <AvatarFallback className="rounded-lg">
+                            {getInitials(me?.name)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="grid flex-1 text-left text-sm leading-tight">
+                          <span className="truncate font-medium">
+                            {me?.name}
+                          </span>
+                          <span className="truncate text-xs text-muted-foreground">
+                            {me?.email}
+                          </span>
+                        </div>
+                      </div>
+                    </DropdownMenuLabel>
+                  </DropdownMenuGroup>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuGroup>
+                    <DropdownMenuItem>
+                      <IconUserCircle className="size-5" />
+                      Account
+                    </DropdownMenuItem>
+                    <DropdownMenuItem render={<Link to="/" />}>
+                      <IconArrowsExchange className="size-5" />
+                      Change tenant
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <IconNotification className="size-5" />
+                      Notifications
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem variant="destructive">
+                      <IconLogout className="size-5" />
+                      Log out
+                    </DropdownMenuItem>
+                  </DropdownMenuGroup>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarFooter>
       </Sidebar>
       <SidebarInset>
         <div className="flex h-full w-full flex-1 flex-col">
