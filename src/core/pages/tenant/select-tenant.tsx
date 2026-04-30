@@ -35,7 +35,7 @@ export function SelectTenant() {
   const { data, error, isLoading } = use(tenants)
 
   return (
-    <div className="flex h-full min-h-svh w-full items-center justify-center p-2">
+    <div className="flex flex-col gap-3 h-full min-h-svh w-full items-center justify-center p-2">
       {error ? (
         <Alert variant="destructive" className="max-w-md">
           <IconAlertCircle />
