@@ -67,12 +67,6 @@ export const coreRoutes = Object.entries(
 ).map(([group, routes]) => {
   routes = routes ?? []
 
-  routes.push({
-    path: "",
-    Component: () => <Navigate to={routes[0].path ?? "notFound"} />,
-    display: false,
-  })
-
   const children = routes.map((route) => ({
     ...route,
     path: route.path,

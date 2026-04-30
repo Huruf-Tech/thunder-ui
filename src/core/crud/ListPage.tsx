@@ -77,7 +77,7 @@ export function ListPage({ name }: IListPageProps) {
                 await ThunderSDK.getModule(name).del({ params: { id } })
               }
               // Reload to refresh the data
-              get().invalidate()
+              get.invalidate()
               dismiss()
             },
           })

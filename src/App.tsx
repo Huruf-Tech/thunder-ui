@@ -18,6 +18,7 @@ import { ActionSheet } from "@/components/ActionSheet"
 import { ActionSheetRef } from "@/Registry/ActionSheet"
 import { resolveUrl } from "@/lib/utils"
 import { SelectTenant } from "@/core/pages/tenant/select-tenant"
+import { NotFound } from "./core/layouts/shared/not-found"
 
 const router = createBrowserRouter(
   [
@@ -30,6 +31,7 @@ const router = createBrowserRouter(
           <Outlet />
         </Protected>
       ),
+      errorElement: <NotFound />,
       children: [
         {
           index: true,
