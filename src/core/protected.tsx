@@ -222,6 +222,10 @@ export function useLogout() {
           ),
           {
             method: "POST",
+            body: "{}",
+            headers: {
+              "Content-Type": "application/json",
+            },
           }
         )
       } catch {
