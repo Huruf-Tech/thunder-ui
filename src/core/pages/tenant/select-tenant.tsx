@@ -27,15 +27,18 @@ import TenantForm from "./form"
 import { IconAlertCircle, IconUser } from "@tabler/icons-react"
 import { getTenants } from "@/core/lib/api"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { useNavigate } from "react-router"
+import { Navigate, useNavigate } from "react-router"
 
 export function SelectTenant() {
   const navigate = useNavigate()
   const tenants = React.useMemo(() => getTenants(), [])
   const { data, error, isLoading } = use(tenants)
 
+  if (data?.results.length === 1)
+    return <Navigate to={`/${data?.results[0].tenant._id}`} />
+
   return (
-    <div className="flex flex-col gap-3 h-full min-h-svh w-full items-center justify-center p-2">
+    <div className="flex h-full min-h-svh w-full flex-col items-center justify-center gap-3 p-2">
       {error ? (
         <Alert variant="destructive" className="max-w-md">
           <IconAlertCircle />
@@ -92,7 +95,7 @@ export function SelectTenant() {
         <Card className="w-full max-w-md shadow-none">
           <CardHeader className="flex flex-col items-center justify-center text-center">
             <div className="flex size-8 items-center justify-center rounded-md bg-muted">
-              <IconUser className="size-5" />
+              <IconUser className="size-4" />
             </div>
 
             <CardTitle>Create Tenant</CardTitle>

@@ -63,7 +63,7 @@ function SidebarTrigger() {
       aria-label="Toggle menu"
       onClick={toggleSidebar}
     >
-      <IconMenu2 className="size-5" />
+      <IconMenu2 className="size-4" />
     </Button>
   )
 }
@@ -138,12 +138,17 @@ export function Layout({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <SidebarProvider>
-      <Sidebar collapsible="icon" variant="inset">
+    <SidebarProvider defaultOpen={false}>
+      <Sidebar collapsible="icon" variant="floating">
         <SidebarHeader>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton className="ring-transparent hover:bg-transparent! data-[slot=sidebar-menu-button]:p-1.5!">
+              <SidebarMenuButton className="rounded-md py-0! ring-transparent group-data-[collapsible=icon]:size-8! hover:bg-transparent! group-data-[collapsible=icon]:[&>img]:block">
+                <img
+                  src={Logo}
+                  alt="Logo"
+                  className="hidden h-5 w-auto shrink-0"
+                />
                 <span className="text-base font-semibold">Main Menu</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -213,20 +218,20 @@ export function Layout({ children }: { children: React.ReactNode }) {
                   <DropdownMenuSeparator />
                   <DropdownMenuGroup>
                     <DropdownMenuItem>
-                      <IconUserCircle className="size-5" />
+                      <IconUserCircle className="size-4" />
                       Account
                     </DropdownMenuItem>
                     <DropdownMenuItem render={<Link to="/" />}>
-                      <IconArrowsExchange className="size-5" />
+                      <IconArrowsExchange className="size-4" />
                       Change tenant
                     </DropdownMenuItem>
                     <DropdownMenuItem>
-                      <IconNotification className="size-5" />
+                      <IconNotification className="size-4" />
                       Notifications
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem variant="destructive" onClick={logout}>
-                      <IconLogout className="size-5" />
+                    <DropdownMenuItem variant="destructive">
+                      <IconLogout className="size-4" />
                       Log out
                     </DropdownMenuItem>
                   </DropdownMenuGroup>
@@ -236,78 +241,79 @@ export function Layout({ children }: { children: React.ReactNode }) {
           </SidebarMenu>
         </SidebarFooter>
       </Sidebar>
-      <SidebarInset>
-        <div className="flex h-full w-full flex-1 flex-col">
-          <div className="@container/main relative flex h-full min-h-[calc(100vh-1rem)] w-full flex-1 flex-col gap-2 rounded-xl px-3">
-            <header className="mx-auto w-full max-w-6xl" id="main-navbar">
-              <div className="absolute inset-x-0 bottom-0 h-0.5 bg-linear-to-r from-transparent via-border to-transparent"></div>
-              <div className="mx-auto flex items-center gap-3 py-2">
-                {/* Logo / Brand */}
-                <div className="flex shrink-0 items-center gap-3">
-                  <img src={Logo} alt="Logo" className="h-5 w-auto shrink-0" />
-                  <span className="text-base font-semibold capitalize">
-                    {appName()}
-                  </span>
-                </div>
-
-                {/* Right Actions */}
-                <div className="ml-auto flex items-center gap-3">
-                  <Button
-                    className="hidden sm:block"
-                    onClick={toggleTheme}
-                    variant="outline"
-                    size="sm"
-                    aria-label="Toggle theme"
-                  >
-                    {theme === "dark" ? (
-                      <IconSun className="size-5" />
-                    ) : (
-                      <IconMoon className="size-5" />
-                    )}
-                  </Button>
-
-                  <Button
-                    variant="destructive"
-                    onClick={logout}
-                    id="logout-button"
-                    aria-label="Logout"
-                  >
-                    <IconLogout className="size-5" /> Logout
-                  </Button>
-
-                  <SidebarTrigger />
-                </div>
+      <SidebarInset className="min-h-svh p-2">
+        <div className="@container/main relative flex h-full w-full flex-1 flex-col gap-2 rounded-xl border-border px-1 xl:border">
+          <header className="mx-auto w-full max-w-6xl">
+            <div className="mx-auto flex items-center gap-3 py-2">
+              {/* Logo / Brand */}
+              <div className="flex shrink-0 items-center gap-3">
+                {/* <img src={Logo} alt="Logo" className="h-5 w-auto shrink-0" /> */}
+                <span className="text-base font-semibold capitalize">
+                  {appName()}
+                </span>
               </div>
 
-              {subNavItems?.length ? (
-                <Tabs
-                  value={activeChild}
-                  onValueChange={(path) => {
-                    navigate([activeParent, path].join("/"), {
-                      viewTransition: true,
-                    })
-                  }}
-                  className="no-scrollbar overflow-x-auto mask-r-from-98%"
+              {/* Right Actions */}
+              <div className="ml-auto flex items-center gap-3">
+                <Button
+                  className="hidden sm:block"
+                  onClick={toggleTheme}
+                  variant="outline"
+                  size="sm"
+                  aria-label="Toggle theme"
                 >
-                  <TabsList variant="line">
-                    {subNavItems.map((nav) => (
-                      <TabsTrigger key={nav.title} value={nav.path}>
-                        {nav.title}
-                      </TabsTrigger>
-                    ))}
-                  </TabsList>
-                </Tabs>
-              ) : null}
-            </header>
+                  {theme === "dark" ? (
+                    <IconSun className="size-4" />
+                  ) : (
+                    <IconMoon className="size-4" />
+                  )}
+                </Button>
 
-            {/* Main Content */}
-            <main className="relative mx-auto flex h-full w-full max-w-6xl flex-col gap-3 py-5">
-              {/* You can use Breadcrumb component here */}
-              <Breadcrumb />
+                <Button
+                  variant="destructive"
+                  onClick={logout}
+                  id="logout-button"
+                  aria-label="Logout"
+                >
+                  <IconLogout className="size-4" /> Logout
+                </Button>
 
-              {children}
-            </main>
-          </div>
+                <SidebarTrigger />
+              </div>
+            </div>
+
+            {subNavItems?.length ? (
+              <Tabs
+                value={activeChild ?? ""}
+                onValueChange={(path) => {
+                  navigate([activeParent, path].join("/"), {
+                    viewTransition: true,
+                  })
+                }}
+                className="no-scrollbar overflow-x-auto mask-r-from-98%"
+              >
+                <TabsList variant="line">
+                  {subNavItems.map((nav) => (
+                    <TabsTrigger
+                      key={nav.title}
+                      value={nav.path}
+                      className="group-data-[variant=line]/tabs-list:data-active:after:rounded-xl"
+                    >
+                      {nav.title}
+                    </TabsTrigger>
+                  ))}
+                </TabsList>
+              </Tabs>
+            ) : null}
+          </header>
+
+          {/* Main Content */}
+          <main className="relative mx-auto flex h-full w-full max-w-6xl flex-col gap-3 py-5">
+            {/* You can use Breadcrumb component here */}
+            <Breadcrumb />
+
+            {children}
+          </main>
         </div>
       </SidebarInset>
     </SidebarProvider>

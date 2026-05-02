@@ -53,9 +53,9 @@ export function NavMenu({ name, items }: INavMenuProps) {
                   <CollapsibleTrigger
                     render={
                       <SidebarMenuButton is="div" tooltip={item.title}>
-                        {item.icon && <item.icon className="size-5" />}
+                        {item.icon && <item.icon />}
                         <span>{item.title}</span>
-                        <ChevronRight className="ml-auto size-5 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                        <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                       </SidebarMenuButton>
                     }
                   />
@@ -81,7 +81,7 @@ export function NavMenu({ name, items }: INavMenuProps) {
               <SidebarMenuItem key={item.title + idx}>
                 <Link to={item.path || "#"}>
                   <SidebarMenuButton tooltip={item.title}>
-                    {item.icon && <item.icon className="size-5" />}
+                    {item.icon && <item.icon />}
                     <span>{item.title}</span>
                   </SidebarMenuButton>
                 </Link>

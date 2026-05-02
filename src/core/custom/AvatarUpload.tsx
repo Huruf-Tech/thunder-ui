@@ -81,7 +81,7 @@ export function AvatarUpload({
             />
           ) : (
             <div aria-hidden="true">
-              <IconUser className="size-5 opacity-60" />
+              <IconUser className="size-4 opacity-60" />
             </div>
           )}
         </button>
