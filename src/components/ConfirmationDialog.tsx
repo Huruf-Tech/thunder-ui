@@ -1,6 +1,6 @@
 import { SheetDescription, SheetHeader, SheetTitle } from "./ui/sheet";
 import { Button } from "./ui/button";
-import { ActionSheetRef } from "@/registry/ActionSheet";
+import { ActionSheetRef } from "@/egistry/ActionSheet";
 type ConfirmationDialogProps = {
     onConfirm: (dismiss: () => void) => void | Promise<void>;
 };
