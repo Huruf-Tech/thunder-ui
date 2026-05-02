@@ -2,7 +2,7 @@ import React from "react";
 import {
 	ActionSheetRegistry,
 	type TActionSheetRegistry,
-} from "@/egistry/ActionSheet";
+} from "@/registry/ActionSheet";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 
 type TSheetName = keyof TActionSheetRegistry;
