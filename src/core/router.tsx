@@ -3,6 +3,7 @@ import { ThunderSDK } from "thunder-sdk"
 import { IconLayoutGrid, type TablerIcon } from "@tabler/icons-react"
 import type { RouteObject } from "react-router"
 
+import { icons } from "@/overrides/icons"
 import { ListPage } from "@/core/crud/ListPage"
 import { FormPage } from "@/core/crud/FormPage"
 import Overview from "@/pages/overview"
@@ -52,6 +53,7 @@ const rawRoutes = ThunderSDK.getModuleNames()
     return {
       name: name,
       path: name,
+      icon: icons[name],
       group: ThunderSDK.getGroup(name),
       display: () =>
         ThunderSDK.isPermitted(name, "get") ||
