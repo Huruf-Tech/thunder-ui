@@ -31,7 +31,7 @@ export function Breadcrumb() {
                   <BreadcrumbLink
                     render={<Link to={"/" + crumb} replace viewTransition />}
                   >
-                    <IconBrandGoogleHome className="size-5" />
+                    <IconBrandGoogleHome className="size-4" />
                   </BreadcrumbLink>
                 </BreadcrumbItem>
               ) : (

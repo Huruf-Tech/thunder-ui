@@ -73,12 +73,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </Sidebar>
       <SidebarInset>
         <div className="flex h-full w-full flex-1 flex-col">
-          <main className="@container/main flex flex-1 flex-col gap-2 relative h-full w-full">
+          <main className="@container/main relative flex h-full w-full flex-1 flex-col gap-2">
             <div className="container mx-auto flex max-w-6xl flex-col gap-4 p-3">
               <SidebarTrigger
                 variant="secondary"
                 size="icon-lg"
-                className="border border-border [&_svg]:size-5!"
+                className="border border-border"
               />
               <Breadcrumb />
               {children}
