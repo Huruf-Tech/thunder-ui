@@ -15,7 +15,6 @@ import {
   type TablerIcon,
 } from "@tabler/icons-react"
 import { Button } from "@/components/ui/button"
-import { useAuth } from "react-oidc-context"
 import Logo from "/logo.png"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Link, useLocation, useNavigate } from "react-router"
@@ -48,6 +47,7 @@ import { useIsMobile } from "@/hooks/use-mobile"
 import { getMe } from "@/core/lib/api"
 import { use } from "@/core/hooks/use"
 import { getInitials, transformImage } from "@/core/lib/utils"
+import { useLogout } from "@/core/protected"
 
 function allowDisplay(display?: boolean | (() => boolean)) {
   if (typeof display === "function") return display()
@@ -73,8 +73,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const location = useLocation()
   const navigate = useNavigate()
   const { theme, setTheme } = useTheme()
-  const auth = useAuth()
   const isMobile = useIsMobile()
+  const logout = useLogout()
 
   const _me = React.useMemo(() => getMe(), [])
   const { data: me } = use(_me)
@@ -132,11 +132,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
     () => subRoutes[activeParent],
     [activeParent, subRoutes]
   )
-
-  const handleLogout = () => {
-    auth.removeUser()
-    auth.revokeTokens(["refresh_token", "access_token"])
-  }
 
   const toggleTheme = () => {
     setTheme(theme === "dark" ? "light" : "dark")
@@ -230,7 +225,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                       Notifications
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem variant="destructive">
+                    <DropdownMenuItem variant="destructive" onClick={logout}>
                       <IconLogout className="size-5" />
                       Log out
                     </DropdownMenuItem>
@@ -273,7 +268,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
                   <Button
                     variant="destructive"
-                    onClick={handleLogout}
+                    onClick={logout}
                     id="logout-button"
                     aria-label="Logout"
                   >

@@ -1,4 +1,4 @@
-import { ThunderSDK } from "thunder-sdk"
+import { ThunderSDK } from "thunder-sdk";
 
 export const getMe = () =>
   // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -8,8 +8,8 @@ export const getMe = () =>
       await ThunderSDK.me.get({
         signal,
       }),
-    { cacheTTL: parseInt(import.meta.env.VITE_DEFAULT_CACHE_TTL ?? "1") }
-  )
+    { cacheTTL: parseInt(import.meta.env.VITE_DEFAULT_CACHE_TTL ?? "1") },
+  );
 
 export const getTenants = () =>
   // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -21,5 +21,5 @@ export const getTenants = () =>
         query: {},
         params: {},
       }),
-    { cacheTTL: parseInt(import.meta.env.VITE_DEFAULT_CACHE_TTL ?? "1") }
-  )
+    { cacheTTL: parseInt(import.meta.env.VITE_DEFAULT_CACHE_TTL ?? "1") },
+  );

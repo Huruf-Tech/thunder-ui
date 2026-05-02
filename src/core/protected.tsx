@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { Button } from "@/components/ui/button"
 import React from "react"
 import { useAuth } from "react-oidc-context"
@@ -107,20 +108,63 @@ function ProtectedWithOAuth({ children }: { children: React.ReactNode }) {
   return children
 }
 
-function NotProtected({ children }: { children: React.ReactNode }) {
+function ProtectedWithSession({ children }: { children: React.ReactNode }) {
   const [ready, setReady] = React.useState(false)
+  const [loggedIn, setLoggedIn] = React.useState(true)
   const [error, setError] = React.useState<Error | null>(null)
 
-  React.useEffect(() => {
-    ThunderSDK.plugins.essentials
-      .registerPermissions()
-      .then(() => {
-        setReady(true)
-      })
-      .catch((error) => {
-        setError(error)
-      })
+  const sessionIsLoggedIn = React.useCallback(async () => {
+    try {
+      const res = await fetch(
+        new URL(
+          "/auth/api/get-session",
+          import.meta.env.VITE_API_BASE_URL || window.location.origin
+        )
+      )
+
+      return (await res.json()) !== null
+    } catch {
+      // Ignore errors
+    }
+
+    return false
   }, [])
+
+  React.useEffect(() => {
+    void (async () => {
+      if (await sessionIsLoggedIn()) {
+        void ThunderSDK.plugins.essentials
+          .registerPermissions()
+          .then(() => {
+            setReady(true)
+          })
+          .catch((error) => {
+            setError(error)
+          })
+      } else {
+        setLoggedIn(false)
+      }
+    })()
+  }, [sessionIsLoggedIn])
+
+  if (!loggedIn) {
+    return (
+      <LoadingScreen
+        title="Sign in to continue"
+        icon={IconLogin}
+        description="Click the following button to sign into your account"
+      >
+        <Button
+          onClick={() => {
+            window.location.href =
+              "/auth?redirect=" + (import.meta.env.BASE_URL || "/")
+          }}
+        >
+          Sign In
+        </Button>
+      </LoadingScreen>
+    )
+  }
 
   if (error) {
     return (
@@ -158,6 +202,30 @@ export function Protected({ children }: { children: React.ReactNode }) {
   return import.meta.env.VITE_OAUTH_CLIENT_ID ? (
     <ProtectedWithOAuth>{children}</ProtectedWithOAuth>
   ) : (
-    <NotProtected>{children}</NotProtected>
+    <ProtectedWithSession>{children}</ProtectedWithSession>
   )
+}
+
+export function useLogout() {
+  const auth = useAuth()
+
+  return async () => {
+    if (import.meta.env.VITE_OAUTH_CLIENT_ID) {
+      auth.removeUser()
+      auth.revokeTokens(["refresh_token", "access_token"])
+    } else {
+      try {
+        await fetch(
+          new URL(
+            "/auth/api/sign-out",
+            import.meta.env.VITE_API_BASE_URL || window.location.origin
+          )
+        )
+      } catch {
+        // Ignore errors
+      }
+    }
+
+    window.location.href = import.meta.env.BASE_URL || "/"
+  }
 }
