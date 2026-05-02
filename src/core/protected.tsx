@@ -219,7 +219,10 @@ export function useLogout() {
           new URL(
             "/auth/api/sign-out",
             import.meta.env.VITE_API_BASE_URL || window.location.origin
-          )
+          ),
+          {
+            method: "POST",
+          }
         )
       } catch {
         // Ignore errors

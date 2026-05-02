@@ -11,7 +11,7 @@ import { useNavigate } from "react-router"
 import { use } from "../hooks/use"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { IconAlertCircle, IconLayoutGrid, IconTable } from "@tabler/icons-react"
-import { ActionSheetRef } from "@/Registry/ActionSheet"
+import { ActionSheetRef } from "@/registry/ActionSheet"
 
 export interface IListPageProps {
   name: string
