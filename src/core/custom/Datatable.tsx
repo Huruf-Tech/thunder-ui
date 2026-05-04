@@ -4,7 +4,7 @@ import React from "react"
 import {
   type Column,
   type ColumnDef,
-  type RowSelectionState,
+  type Table as TTable,
   flexRender,
   getCoreRowModel,
   useReactTable,
@@ -24,15 +24,11 @@ import {
   IconArrowBarToLeft,
   IconArrowBarToRight,
   IconDots,
-  IconEdit,
   IconPinnedOff,
-  IconTrash,
-  IconX,
   IconXMark,
 } from "@tabler/icons-react"
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
@@ -51,7 +47,7 @@ export type DataTableAction = "update" | "delete"
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
-  onAction?: (action: DataTableAction, selectedRows: TData[]) => void
+  header?: (data: { table: TTable<TData> }) => React.ReactNode
 }
 
 const getPinningStyles = (column: Column<any>): React.CSSProperties => {
@@ -66,30 +62,38 @@ const getPinningStyles = (column: Column<any>): React.CSSProperties => {
 }
 
 export function DataTable<TData, TValue>({
+  header,
   columns,
   data,
-  onAction,
 }: DataTableProps<TData, TValue>) {
-  const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({})
-
   // Prepend a selection checkbox column to the provided columns
-  const columnsWithSelect: ColumnDef<TData, any>[] = React.useMemo(
+  const allColumns: ColumnDef<TData, any>[] = React.useMemo(
     () => [
       {
         id: "select",
         header: ({ table }) => (
           <Checkbox
-            checked={table.getIsAllPageRowsSelected()}
-            onCheckedChange={(value) =>
-              table.toggleAllPageRowsSelected(!!value)
+            checked={
+              table.getIsAllRowsSelected()
+                ? true
+                : table.getIsSomeRowsSelected()
+                  ? true
+                  : false
             }
+            onCheckedChange={(value) => {
+              table.toggleAllRowsSelected(!!value)
+            }}
             aria-label="Select all"
           />
         ),
         cell: ({ row }) => (
           <Checkbox
             checked={row.getIsSelected()}
-            onCheckedChange={(value) => row.toggleSelected(!!value)}
+            disabled={!row.getCanSelect()}
+            onCheckedChange={(value) => {
+              row.toggleSelected(!!value)
+            }}
+            onClick={(event) => event.stopPropagation()}
             aria-label="Select row"
           />
         ),
@@ -110,99 +114,20 @@ export function DataTable<TData, TValue>({
 
   const table = useReactTable({
     data,
-    columns: columnsWithSelect,
-    state: {
-      rowSelection,
-    },
+    columns: allColumns,
     columnResizeMode: "onChange",
-    onRowSelectionChange: setRowSelection,
     getCoreRowModel: getCoreRowModel(),
     enableRowSelection: true,
   })
 
-  const selectedRows = table.getFilteredSelectedRowModel().rows
-  const selectedCount = selectedRows.length
-  const isSingleSelection = selectedCount === 1
-
-  const handleAction = (action: DataTableAction) => {
-    if (!onAction) return
-    const selectedData = selectedRows.map((row) => row.original)
-    onAction(action, selectedData)
-  }
-
-  const clearSelection = () => {
-    setRowSelection({})
-  }
-
   const hasRows = !!table.getRowModel().rows?.length
 
   return (
-    <div className="flex h-full min-h-0 flex-col gap-3">
-      <DropdownMenu>
-        <DropdownMenuTrigger
-          render={
-            <Button variant="outline" className="max-w-fit">
-              Visibility
-            </Button>
-          }
-        ></DropdownMenuTrigger>
-
-        <DropdownMenuContent className="max-h-100 overflow-auto">
-          {table
-            .getAllColumns()
-            .filter((col) => col.getCanHide())
-            .map((column) => {
-              return (
-                <DropdownMenuCheckboxItem
-                  key={column.id}
-                  checked={column.getIsVisible()}
-                  onCheckedChange={(value) => column.toggleVisibility(!!value)}
-                >
-                  {column.columnDef.header as string}
-                </DropdownMenuCheckboxItem>
-              )
-            })}
-        </DropdownMenuContent>
-      </DropdownMenu>
+    <div className="flex h-full min-h-0 w-full flex-col gap-3">
+      {header?.({ table })}
       {/* Bulk action bar */}
-      {selectedCount > 0 && (
-        <div className="flex animate-in items-center justify-between gap-3 rounded-lg border bg-background/95 px-4 py-3 shadow-sm backdrop-blur-sm fade-in">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <span className="font-medium text-foreground">{selectedCount}</span>{" "}
-            row{selectedCount > 1 ? "s" : ""} selected
-          </div>
-          <div className="flex items-center gap-2">
-            {isSingleSelection && (
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => handleAction("update")}
-              >
-                <IconEdit className="mr-1.5 size-4" />
-                Update
-              </Button>
-            )}
-            <Button
-              size="sm"
-              variant="destructive"
-              onClick={() => handleAction("delete")}
-            >
-              <IconTrash className="mr-1.5 size-4" />
-              Delete{selectedCount > 1 ? ` (${selectedCount})` : ""}
-            </Button>
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={clearSelection}
-              aria-label="Clear selection"
-            >
-              <IconX className="size-4" />
-            </Button>
-          </div>
-        </div>
-      )}
 
-      <div className="flex-1 flex flex-col gap-3 min-h-0 rounded-xl border overflow-hidden">
+      <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-hidden rounded-xl border">
         <div
           className={cn(
             "relative w-full",
@@ -363,17 +288,7 @@ export function DataTable<TData, TValue>({
             </TableHeader>
             {hasRows ? (
               <TableBody className="border-0! [&_tr]:hover:bg-transparent!">
-                {[
-                  ...table.getRowModel().rows,
-                  ...table.getRowModel().rows,
-                  ...table.getRowModel().rows,
-                  ...table.getRowModel().rows,
-                  ...table.getRowModel().rows,
-                  ...table.getRowModel().rows,
-                  ...table.getRowModel().rows,
-                  ...table.getRowModel().rows,
-                  ...table.getRowModel().rows,
-                ].map((row) => (
+                {table.getRowModel().rows.map((row) => (
                   <TableRow
                     key={row.id}
                     data-state={row.getIsSelected() && "selected"}

@@ -23,7 +23,7 @@ export const Dropdown: typeof Select = (props) => {
         <SelectGroup>
           <SelectLabel>{props.name}</SelectLabel>
           {items?.map((item) => (
-            <SelectItem key={item.value ?? item} value={item.value ?? item}>
+            <SelectItem key={item.value ?? item} value={item.value ?? item} className="line-clamp-1">
               {item.label ?? item.value ?? item}
             </SelectItem>
           ))}

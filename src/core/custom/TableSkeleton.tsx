@@ -21,37 +21,39 @@ export function TableSkeleton({
   const cols = Array.from(Array(numCols).keys())
 
   return (
-    <div className="relative min-h-0 w-full flex-1 [&>div]:h-full [&>div]:overflow-y-auto">
-      <Table className="w-full border-separate border-spacing-0">
-        <TableHeader>
-          <TableRow className="hover:bg-transparent">
-            {cols.map((_, index) => (
-              <TableHead key={index}>
-                {index === 0 ? (
-                  <Skeleton className="h-5 w-5 rounded-sm" />
-                ) : (
-                  <Skeleton className="h-5 w-24" />
-                )}
-              </TableHead>
-            ))}
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {rows.map((_, index) => (
-            <TableRow key={index} className="h-12 hover:bg-transparent">
-              {cols.map((_, index2) => (
-                <TableCell key={index2}>
-                  {index2 === 0 ? (
+    <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-hidden rounded-xl border">
+      <div className="relative min-h-0 w-full flex-1 [&>div]:h-full [&>div]:overflow-y-auto">
+        <Table className="w-full border-separate border-spacing-0">
+          <TableHeader>
+            <TableRow className="hover:bg-transparent">
+              {cols.map((_, index) => (
+                <TableHead key={index}>
+                  {index === 0 ? (
                     <Skeleton className="h-5 w-5 rounded-sm" />
                   ) : (
-                    <Skeleton className="h-5" />
+                    <Skeleton className="h-5 w-24" />
                   )}
-                </TableCell>
+                </TableHead>
               ))}
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHeader>
+          <TableBody>
+            {rows.map((_, index) => (
+              <TableRow key={index} className="h-12 hover:bg-transparent">
+                {cols.map((_, index2) => (
+                  <TableCell key={index2}>
+                    {index2 === 0 ? (
+                      <Skeleton className="h-5 w-5 rounded-sm" />
+                    ) : (
+                      <Skeleton className="h-5" />
+                    )}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
     </div>
   )
 }
