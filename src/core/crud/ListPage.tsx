@@ -27,9 +27,10 @@ const columnsFromModuleMetadata = (metadata: any): ColumnDef<unknown>[] => {
   return Object.entries<{
     type: string
     format?: string
-  }>(metadata.crud.schema.properties).map(([key]) => ({
+    label?: string
+  }>(metadata.crud.schema.properties).map(([key, { label }]) => ({
     accessorKey: key,
-    header: key,
+    header: label ?? key,
   }))
 }
 
@@ -91,7 +92,7 @@ export function ListPage({ name }: IListPageProps) {
   )
 
   return (
-    <div className="flex h-full min-h-0 w-full flex-1 flex-col gap-5">
+    <div className="mx-auto flex h-full min-h-0 w-full max-w-6xl flex-1 flex-col gap-5">
       {error && (
         <Alert variant="destructive">
           <IconAlertCircle />

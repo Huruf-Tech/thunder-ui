@@ -202,7 +202,7 @@ export function DataTable<TData, TValue>({
         </div>
       )}
 
-      <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-hidden rounded-xl border">
+      <div className="flex-1 flex flex-col gap-3 min-h-0 rounded-xl border overflow-hidden">
         <div
           className={cn(
             "relative w-full",
@@ -363,7 +363,17 @@ export function DataTable<TData, TValue>({
             </TableHeader>
             {hasRows ? (
               <TableBody className="border-0! [&_tr]:hover:bg-transparent!">
-                {table.getRowModel().rows.map((row) => (
+                {[
+                  ...table.getRowModel().rows,
+                  ...table.getRowModel().rows,
+                  ...table.getRowModel().rows,
+                  ...table.getRowModel().rows,
+                  ...table.getRowModel().rows,
+                  ...table.getRowModel().rows,
+                  ...table.getRowModel().rows,
+                  ...table.getRowModel().rows,
+                  ...table.getRowModel().rows,
+                ].map((row) => (
                   <TableRow
                     key={row.id}
                     data-state={row.getIsSelected() && "selected"}

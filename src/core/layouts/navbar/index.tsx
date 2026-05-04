@@ -241,8 +241,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
           </SidebarMenu>
         </SidebarFooter>
       </Sidebar>
-      <SidebarInset className="h-svh overflow-hidden md:p-2">
-        <div className="@container/main relative flex h-full w-full flex-1 flex-col gap-2 rounded-xl border-border px-3 xl:border">
+      <SidebarInset className="h-svh overflow-hidden md:p-2 p-0">
+        <div className="@container/main relative flex h-full w-full flex-1 flex-col gap-2 rounded-xl border-border xl:border">
           <header className="mx-auto w-full max-w-6xl">
             <div className="mx-auto flex items-center gap-3 py-2">
               {/* Logo / Brand */}
@@ -309,9 +309,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
           </header>
 
           {/* Main Content */}
-          <main className="relative mx-auto flex w-full max-w-6xl min-h-0 flex-1 flex-col gap-3 py-5">
+          <main className="relative flex min-h-0 w-full flex-1 flex-col gap-3 pt-5 pb-3">
             {/* You can use Breadcrumb component here */}
-            <Breadcrumb />
+            <div className="mx-auto w-full max-w-6xl">
+              <Breadcrumb />
+            </div>
 
             {children}
           </main>
