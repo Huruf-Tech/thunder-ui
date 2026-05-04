@@ -264,7 +264,8 @@ export function FormPage({ name }: IFormPageProps) {
               return (
                 <Field key={field.name}>
                   <FieldLabel htmlFor={id} className="capitalize">
-                    {field.name}
+                    {field.label ?? field.name}
+                    {field.required ? "" : " (optional)"}
                   </FieldLabel>
                   {renderField(id, field, control)}
                   <FieldDescription>{field.description}</FieldDescription>
