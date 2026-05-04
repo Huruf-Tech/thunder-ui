@@ -143,7 +143,7 @@ export class JSONSchemaToFields {
                         ? schema.format
                         : undefined,
                 ),
-                multi: hints?.multi ?? !!data.ref,
+                multi: hints?.multi,
             };
 
             return [field];
