@@ -97,7 +97,7 @@ export class JSONSchemaToFields {
         ref: z.string().optional(),
         refLabel: z.union([z.string(), z.string().array()]).optional(),
         refValue: z.string().optional(),
-    });
+    }).loose();
 
     protected static _toFields(
         name: string | undefined,
