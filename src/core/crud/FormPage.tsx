@@ -40,6 +40,8 @@ const fieldsFromModuleMetadata = async (metadata: any) => {
     metadata.crud.insertSchema
   )
 
+  console.log("Fields:", results)
+
   return results
 }
 
@@ -156,7 +158,11 @@ const renderField = (
           placeholder={field.example ?? field.name}
           maxLength={field.maxLength}
           value={def.field.value ?? ""}
-          onChange={(e) => def.field.onChange(e.target.value)}
+          onChange={(e) =>
+            def.field.onChange(
+              field.type === "number" ? e.target.valueAsNumber : e.target.value
+            )
+          }
         />
       )}
     />
