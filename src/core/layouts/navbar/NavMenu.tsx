@@ -1,5 +1,6 @@
 import {
   IconChevronRight as ChevronRight,
+  IconAlertCircle,
   type TablerIcon,
 } from "@tabler/icons-react"
 
@@ -51,7 +52,7 @@ export function NavItem({ navItems }: { navItems: INavMenuProps["items"] }) {
               <CollapsibleTrigger
                 render={
                   <SidebarMenuButton is="div" tooltip={item.title} size="lg">
-                    {item.icon && <item.icon />}
+                    {item.icon ? <item.icon /> : <IconAlertCircle />}
                     <span>{item.title}</span>
                     <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                   </SidebarMenuButton>
@@ -81,7 +82,7 @@ export function NavItem({ navItems }: { navItems: INavMenuProps["items"] }) {
               isActive={item.isActive}
               render={<Link to={item.path || "#"} viewTransition />}
             >
-              {item.icon && <item.icon />}
+              {item.icon ? <item.icon /> : <IconAlertCircle />}
               <span>{item.title}</span>
             </SidebarMenuButton>
           </SidebarMenuItem>

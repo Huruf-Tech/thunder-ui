@@ -12,6 +12,7 @@ import { use } from "../hooks/use"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { IconAlertCircle, IconLayoutGrid, IconTable } from "@tabler/icons-react"
 import { ActionSheetRef } from "@/registry/ActionSheet"
+import { TableSkeleton } from "../custom/TableSkeleton"
 
 export interface IListPageProps {
   name: string
@@ -54,7 +55,7 @@ export function ListPage({ name }: IListPageProps) {
 
   const get = React.useMemo(() => _get(), [_get])
 
-  const { data, error } = use(get)
+  const { data, error, isLoading } = use(get)
   const [view, setView] = React.useState<string>("table")
 
   const Card = cards[name as keyof typeof cards]
@@ -90,7 +91,7 @@ export function ListPage({ name }: IListPageProps) {
   )
 
   return (
-    <div className="flex w-full flex-col gap-5">
+    <div className="flex h-full min-h-0 w-full flex-1 flex-col gap-5">
       {error && (
         <Alert variant="destructive">
           <IconAlertCircle />
@@ -115,9 +116,9 @@ export function ListPage({ name }: IListPageProps) {
           </ToggleGroup>
         )}
       </div>
-      <div>
+      <div className="flex min-h-0 flex-1 flex-col">
         {view === "card" ? (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="grid min-h-0 flex-1 grid-cols-1 gap-4 overflow-y-auto sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {(data?.results ?? []).filter((item: any) => item?.card === true)
               .length > 0 ? (
               (data?.results ?? [])
@@ -131,6 +132,8 @@ export function ListPage({ name }: IListPageProps) {
               </div>
             )}
           </div>
+        ) : isLoading ? (
+          <TableSkeleton />
         ) : (
           <DataTable
             columns={columnsFromModuleMetadata(metadata)}

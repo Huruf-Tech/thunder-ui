@@ -50,11 +50,13 @@ const rawRoutes = ThunderSDK.getModuleNames()
       )
     }
 
+    const group = ThunderSDK.getGroup(name)
+
     return {
       name: name,
       path: name,
       icon: icons[name],
-      group: ThunderSDK.getGroup(name),
+      group,
       display: () =>
         ThunderSDK.isPermitted(name, "get") ||
         ThunderSDK.isPermitted(name, "create"),
@@ -80,9 +82,12 @@ export const coreRoutes = Object.entries(
     path: route.path,
   }))
 
+  console.log(group)
+
   return {
     path: group.toLowerCase().replace(" ", "-"),
     name: group,
+    icon: icons[group],
     Component: () => <Outlet />,
     children,
   } as TRouteObject

@@ -103,7 +103,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
         routes.push({
           title: child.name || "Unnamed Route",
-          icon: child.icon || IconAlertCircle,
+          icon: child.icon,
           path: parentPath,
         })
 
@@ -112,7 +112,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
           subRoutes.push({
             title: subChild.name || "Unnamed Route",
-            icon: subChild.icon || IconAlertCircle,
+            icon: subChild.icon,
             path: subChild.path,
             parent: parentPath,
           })
@@ -241,8 +241,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
           </SidebarMenu>
         </SidebarFooter>
       </Sidebar>
-      <SidebarInset className="min-h-svh p-2">
-        <div className="@container/main relative flex h-full w-full flex-1 flex-col gap-2 rounded-xl border-border px-1 xl:border">
+      <SidebarInset className="h-svh overflow-hidden md:p-2">
+        <div className="@container/main relative flex h-full w-full flex-1 flex-col gap-2 rounded-xl border-border px-3 xl:border">
           <header className="mx-auto w-full max-w-6xl">
             <div className="mx-auto flex items-center gap-3 py-2">
               {/* Logo / Brand */}
@@ -299,6 +299,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                       value={nav.path}
                       className="group-data-[variant=line]/tabs-list:data-active:after:rounded-xl"
                     >
+                      {nav.icon ? <nav.icon /> : <IconAlertCircle />}
                       {nav.title}
                     </TabsTrigger>
                   ))}
@@ -308,7 +309,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
           </header>
 
           {/* Main Content */}
-          <main className="relative mx-auto flex h-full w-full max-w-6xl flex-col gap-3 py-5">
+          <main className="relative mx-auto flex w-full max-w-6xl min-h-0 flex-1 flex-col gap-3 py-5">
             {/* You can use Breadcrumb component here */}
             <Breadcrumb />
 
