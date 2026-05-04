@@ -54,7 +54,7 @@ const renderField = (
   field: TField,
   control: Control<any, any, any>
 ) => {
-  if (field.type === "url" && field.fieldHint === "avatar") {
+  if (field.type === "url" && !field.multi && field.fieldHint === "avatar") {
     return (
       <Controller
         name={field.name!}
@@ -86,7 +86,7 @@ const renderField = (
     )
   }
 
-  if (field.type === "url" && field.fieldHint === "upload") {
+  if (field.type === "url" && field.multi && field.fieldHint === "upload") {
     return (
       <Controller
         name={field.name!}
@@ -95,47 +95,32 @@ const renderField = (
         render={(def) => {
           const currentValue = def.field.value
 
-          const initialFile =
-            !field.multi && typeof currentValue === "string" && currentValue
-              ? {
-                  id: currentValue,
+          const initialFiles = Array.isArray(currentValue)
+            ? currentValue
+                .filter((v: any) => typeof v === "string" && v)
+                .map((v: string) => ({
+                  id: v,
                   type: "image",
-                  name: currentValue,
-                  url: currentValue,
+                  name: v,
+                  url: v,
                   size: 0,
-                }
-              : undefined
-
-          const initialFiles =
-            field.multi && Array.isArray(currentValue)
-              ? currentValue
-                  .filter((v: any) => typeof v === "string" && v)
-                  .map((v: string) => ({
-                    id: v,
-                    type: "image",
-                    name: v,
-                    url: v,
-                    size: 0,
-                  }))
-              : undefined
+                }))
+            : undefined
 
           return (
             <ImageUpload
               id={id}
-              multi={field.multi}
-              initialFile={initialFile}
+              multi={true}
               initialFiles={initialFiles}
               onUpload={async ({ file }, signal) => {
                 if (file instanceof File) {
                   const res = await handleUpload(file, { signal })
-                  if (field.multi) {
-                    const prev = Array.isArray(def.field.value)
-                      ? def.field.value
-                      : []
-                    def.field.onChange([...prev, res.url])
-                  } else {
-                    def.field.onChange(res.url)
-                  }
+
+                  const prev = Array.isArray(def.field.value)
+                    ? def.field.value
+                    : []
+                    
+                  def.field.onChange([...prev, res.url])
                 }
               }}
             />
