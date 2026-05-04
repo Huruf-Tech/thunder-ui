@@ -95,6 +95,8 @@ export class JSONSchemaToFields {
         description: z.string().optional(),
         example: z.string().optional(),
         ref: z.string().optional(),
+        refLabel: z.union([z.string(), z.string().array()]).optional(),
+        refValue: z.string().optional(),
     });
 
     protected static _toFields(
