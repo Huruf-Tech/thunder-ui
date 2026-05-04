@@ -36,11 +36,9 @@ const fieldsFromModuleMetadata = async (metadata: any) => {
 
   // Convert json schema to fields data
   const results = await JSONSchemaToFields.toFields(
-    "data",
+    undefined,
     metadata.crud.insertSchema
   )
-
-  console.log(results)
 
   return results
 }
@@ -53,7 +51,7 @@ const renderField = (
   if (field.type === "boolean")
     return (
       <Controller
-        name={field.name}
+        name={field.name!}
         control={control}
         rules={{ required: field.required && "This field is required!" }}
         render={(def) => (
@@ -69,7 +67,7 @@ const renderField = (
   if (field.enum) {
     return field.multi ? (
       <Controller
-        name={field.name}
+        name={field.name!}
         control={control}
         rules={{ required: field.required && "This field is required!" }}
         render={(def) => (
@@ -85,7 +83,7 @@ const renderField = (
       />
     ) : (
       <Controller
-        name={field.name}
+        name={field.name!}
         control={control}
         rules={{ required: field.required && "This field is required!" }}
         render={(def) => (
@@ -108,7 +106,7 @@ const renderField = (
     if (field.multi) {
       return (
         <Controller
-          name={field.name}
+          name={field.name!}
           control={control}
           rules={{ required: field.required && "This field is required!" }}
           render={(def) => (
@@ -129,7 +127,7 @@ const renderField = (
     if (field.type === "text" && (!field.maxLength || field.maxLength > 100)) {
       return (
         <Controller
-          name={field.name}
+          name={field.name!}
           control={control}
           rules={{ required: field.required && "This field is required!" }}
           render={(def) => (
@@ -148,7 +146,7 @@ const renderField = (
 
   return (
     <Controller
-      name={field.name}
+      name={field.name!}
       control={control}
       rules={{ required: field.required && "This field is required!" }}
       render={(def) => (
@@ -195,12 +193,10 @@ export function FormPage({ name }: IFormPageProps) {
   const [fields, setFields] = React.useState<TField[]>([])
 
   React.useEffect(() => {
-    ; (async () => {
+    ;(async () => {
       setFields(await fieldsFromModuleMetadata(metadata))
     })()
   }, [metadata])
-
-
 
   const onSubmit: SubmitHandler<any> = async (body) => {
     if (isEditMode) {
@@ -239,7 +235,7 @@ export function FormPage({ name }: IFormPageProps) {
                 {renderField(id, field, control)}
                 <FieldDescription>{field.description}</FieldDescription>
                 <FieldError>
-                  {errors[field.name]?.message?.toString()}
+                  {errors[field.name!]?.message?.toString()}
                 </FieldError>
               </Field>
             )

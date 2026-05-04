@@ -40,7 +40,7 @@ export const FieldTypes = [
 export type TFieldType = typeof FieldTypes[number];
 export type TField = {
     type: TFieldType;
-    name: string;
+    name?: string;
     defaultValue?: unknown;
     label?: string;
     placeholder?: string;
@@ -96,7 +96,7 @@ export class JSONSchemaToFields {
     });
 
     protected static _toFields(
-        name: string,
+        name: string | undefined,
         schema: unknown,
         hints?: Partial<TField>,
     ): TField[] {
@@ -112,7 +112,7 @@ export class JSONSchemaToFields {
         ) {
             return Object.entries(schema.properties).flatMap(([prop, def]) =>
                 this._toFields(prop, def, {
-                    name: [name, prop].join("."),
+                    name: [name, prop].filter(Boolean).join("."),
                     ...("required" in schema &&
                             schema.required instanceof Array
                         ? { required: schema.required.includes(prop) }
@@ -168,7 +168,10 @@ export class JSONSchemaToFields {
         return field;
     }
 
-    static async toFields(name: string, schema: unknown): Promise<TField[]> {
+    static async toFields(
+        name: string | undefined,
+        schema: unknown,
+    ): Promise<TField[]> {
         const fields = this._toFields(name, schema);
 
         return await Promise.all(
