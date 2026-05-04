@@ -53,6 +53,8 @@ export type TField = {
     pattern?: string;
     example?: string;
     ref?: string;
+    refLabel?: string | string[];
+    refValue?: string;
 };
 
 export class JSONSchemaToFields {
@@ -152,6 +154,7 @@ export class JSONSchemaToFields {
 
     static resolveRef?: (
         ref: string,
+        field: TField,
     ) => Promise<Array<{ label: string; value: unknown }>>;
 
     protected static async resolveField(field: TField): Promise<TField> {
@@ -162,7 +165,7 @@ export class JSONSchemaToFields {
                 );
             }
 
-            field.enum = await this.resolveRef(field.ref);
+            field.enum = await this.resolveRef(field.ref, field);
         }
 
         return field;

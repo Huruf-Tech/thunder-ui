@@ -169,14 +169,37 @@ const renderField = (
   )
 }
 
-JSONSchemaToFields.resolveRef = async (ref) => {
+JSONSchemaToFields.resolveRef = async (ref, field) => {
   const { results } = (await ThunderSDK.getModule(ref).get({})) as {
     results: any[]
   }
 
+  const resolveLabel = (item: any) => {
+    if (field.refLabel) {
+      if (field.refLabel instanceof Array) {
+        return field.refLabel.map((prop) => item[prop]).join(" ")
+      }
+    }
+
+    return (
+      (field.refLabel && item[field.refLabel]) ||
+      item.label ||
+      item.name ||
+      item.title
+    )
+  }
+
+  const resolveValue = (item: any) => {
+    if (field.refValue) {
+      return item[field.refValue]
+    }
+
+    return item._id
+  }
+
   return results.map((item: any) => ({
-    label: item.label ?? item.name ?? item.title,
-    value: item._id,
+    label: resolveLabel(item),
+    value: resolveValue(item),
   }))
 }
 
