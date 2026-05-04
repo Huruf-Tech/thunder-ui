@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import React from "react"
-import { useParams, useLocation } from "react-router"
+import { useParams, useLocation, useNavigate } from "react-router"
 import { ThunderSDK } from "thunder-sdk"
 import {
   Controller,
@@ -16,6 +16,7 @@ import {
   FieldGroup,
   FieldLabel,
   FieldLegend,
+  FieldSeparator,
   FieldSet,
 } from "@/components/ui/field"
 import { Button } from "@/components/ui/button"
@@ -26,6 +27,9 @@ import { Textarea } from "@/components/ui/textarea"
 import { Dropdown } from "../custom/Dropdown"
 import { Multiselect } from "../custom/Multiselect"
 import { Tag, TagInput, TagInputBadges } from "../custom/TagInput"
+import { AvatarUpload } from "../custom/AvatarUpload"
+import { ImageUpload } from "../custom/ImageUpload"
+import { handleUpload } from "../lib/utils"
 
 import { JSONSchemaToFields, type TField } from "../lib/jsonSchemaToFields"
 
@@ -50,6 +54,82 @@ const renderField = (
   field: TField,
   control: Control<any, any, any>
 ) => {
+  if (field.type === "url" && !field.multi && field.fieldHint === "avatar") {
+    return (
+      <Controller
+        name={field.name!}
+        control={control}
+        rules={{ required: field.required && "This field is required!" }}
+        render={(def) => (
+          <AvatarUpload
+            id={id}
+            initialFile={
+              def.field.value && typeof def.field.value === "string"
+                ? {
+                    id: def.field.value,
+                    type: "avatar",
+                    name: def.field.value,
+                    url: def.field.value,
+                    size: 0,
+                  }
+                : undefined
+            }
+            onUpload={async ({ file }, signal) => {
+              if (file instanceof File) {
+                const res = await handleUpload(file, { signal })
+                def.field.onChange(res.url)
+              }
+            }}
+          />
+        )}
+      />
+    )
+  }
+
+  if (field.type === "url" && field.multi && field.fieldHint === "upload") {
+    return (
+      <Controller
+        name={field.name!}
+        control={control}
+        rules={{ required: field.required && "This field is required!" }}
+        render={(def) => {
+          const currentValue = def.field.value
+
+          const initialFiles = Array.isArray(currentValue)
+            ? currentValue
+                .filter((v: any) => typeof v === "string" && v)
+                .map((v: string) => ({
+                  id: v,
+                  type: "image",
+                  name: v,
+                  url: v,
+                  size: 0,
+                }))
+            : undefined
+
+          return (
+            <ImageUpload
+              id={id}
+              multi={true}
+              initialFiles={initialFiles}
+              onUpload={async ({ file }, signal) => {
+                if (file instanceof File) {
+                  const res = await handleUpload(file, { signal })
+
+                  const prev = Array.isArray(def.field.value)
+                    ? def.field.value
+                    : []
+                    
+                  def.field.onChange([...prev, res.url])
+                }
+              }}
+            />
+          )
+        }}
+      />
+    )
+  }
+
   if (field.type === "boolean")
     return (
       <Controller
@@ -211,6 +291,7 @@ export interface IFormPageProps {
 export function FormPage({ name }: IFormPageProps) {
   const { id } = useParams<{ id?: string }>()
   const location = useLocation()
+  const navigate = useNavigate()
   const isEditMode = !!id
   const metadata = React.useMemo(() => ThunderSDK.getMetadata(name), [name])
   const {
@@ -241,46 +322,81 @@ export function FormPage({ name }: IFormPageProps) {
     }
   }
 
+  const fieldsByGroup = React.useMemo(
+    () => Object.groupBy(fields, (field) => field.group ?? "other"),
+    [fields]
+  )
+
   return (
     <div className="min-h-0 flex-1 overflow-y-auto">
       <form
-        className="mx-auto w-full max-w-md pb-6"
+        className="mx-auto w-full max-w-md pb-24"
         onSubmit={handleSubmit(onSubmit)}
       >
-        <FieldGroup>
-          <FieldSet>
-            <FieldLegend>{isEditMode ? "Update" : "Create"}</FieldLegend>
-            <FieldDescription>
-              {isEditMode
-                ? `Update the ${name} entry below.`
-                : `Fill the form below to create a new ${name} entry. All fields are required`}
-            </FieldDescription>
-            {/* <FieldGroup></FieldGroup> */}
-            {fields.map((field) => {
-              const id = crypto.randomUUID()
+        <FieldSet>
+          <FieldLegend>{isEditMode ? "Update" : "Create"}</FieldLegend>
+          <FieldDescription>
+            {isEditMode
+              ? `Update the ${name} entry below.`
+              : `Fill the form below to create a new ${name} entry. All fields are required`}
+          </FieldDescription>
+          {Object.entries(fieldsByGroup)
+            .map(([group, fields], index) => {
+              if (!fields) return
 
-              if (!field.required && field.type === "hidden") return
+              const groupTitle = fields[0].groupTitle
+              const groupDescription = fields[0].groupDescription
 
               return (
-                <Field key={field.name}>
-                  <FieldLabel htmlFor={id} className="capitalize">
-                    {field.label ?? field.name}
-                    {field.required ? "" : " (optional)"}
-                  </FieldLabel>
-                  {renderField(id, field, control)}
-                  <FieldDescription>{field.description}</FieldDescription>
-                  <FieldError>
-                    {errors[field.name!]?.message?.toString()}
-                  </FieldError>
-                </Field>
-              )
-            })}
-          </FieldSet>
+                <React.Fragment key={group}>
+                  {index !== 0 ? <FieldSeparator /> : null}
+                  {groupTitle && <FieldLegend>{groupTitle}</FieldLegend>}
+                  {groupDescription && (
+                    <FieldDescription>{groupDescription}</FieldDescription>
+                  )}
+                  <FieldGroup>
+                    {fields.map((field) => {
+                      const id = crypto.randomUUID()
 
-          <Button type="submit" disabled={isSubmitting || !fields.length}>
-            Submit
-          </Button>
-        </FieldGroup>
+                      if (!field.required && field.type === "hidden") return
+
+                      return (
+                        <Field key={field.name}>
+                          <FieldLabel htmlFor={id} className="capitalize">
+                            {field.label ?? field.name}
+                            {field.required ? "" : " (optional)"}
+                          </FieldLabel>
+                          {renderField(id, field, control)}
+                          <FieldDescription>
+                            {field.description}
+                          </FieldDescription>
+                          <FieldError>
+                            {errors[field.name!]?.message?.toString()}
+                          </FieldError>
+                        </Field>
+                      )
+                    })}
+                  </FieldGroup>
+                </React.Fragment>
+              )
+            })
+            .filter(Boolean)}
+
+          <FieldGroup>
+            <Field orientation="horizontal">
+              <Button type="submit" disabled={isSubmitting || !fields.length}>
+                Submit
+              </Button>
+              <Button
+                variant="outline"
+                type="button"
+                onClick={() => navigate(-1)}
+              >
+                Cancel
+              </Button>
+            </Field>
+          </FieldGroup>
+        </FieldSet>
       </form>
     </div>
   )

@@ -43,6 +43,9 @@ export type TField = {
     name?: string;
     defaultValue?: unknown;
     label?: string;
+    group?: string;
+    groupTitle?: string;
+    groupDescription?: string;
     placeholder?: string;
     description?: string;
     multi?: boolean;
@@ -55,6 +58,7 @@ export type TField = {
     ref?: string;
     refLabel?: string | string[];
     refValue?: string;
+    fieldHint?: string;
 };
 
 export class JSONSchemaToFields {
@@ -87,6 +91,9 @@ export class JSONSchemaToFields {
         type: z.string().default("string"),
         default: z.unknown().optional(),
         label: z.string().optional(),
+        group: z.string().optional(),
+        groupTitle: z.string().optional(),
+        groupDescription: z.string().optional(),
         minLength: z.number().optional(),
         maxLength: z.number().optional(),
         enum: z.array(z.string()).optional(),
@@ -97,6 +104,7 @@ export class JSONSchemaToFields {
         ref: z.string().optional(),
         refLabel: z.union([z.string(), z.string().array()]).optional(),
         refValue: z.string().optional(),
+        fieldHint: z.string().optional()
     }).loose();
 
     protected static _toFields(
@@ -114,15 +122,27 @@ export class JSONSchemaToFields {
             type === "object" && "properties" in schema &&
             typeof schema.properties === "object" && schema.properties !== null
         ) {
-            return Object.entries(schema.properties).flatMap(([prop, def]) =>
-                this._toFields(prop, def, {
-                    name: [name, prop].filter(Boolean).join("."),
-                    ...("required" in schema &&
-                            schema.required instanceof Array
-                        ? { required: schema.required.includes(prop) }
-                        : {}),
-                })
-            );
+            return Object.entries(schema.properties).flatMap((
+                [prop, def],
+                index,
+            ) => this._toFields(prop, def, {
+                group: name,
+                ...(index === 0
+                    ? {
+                        groupTitle: "groupTitle" in schema
+                            ? schema.groupTitle as string
+                            : name,
+                        groupDescription: "groupDescription" in schema
+                            ? schema.groupDescription as string
+                            : undefined,
+                    }
+                    : {}),
+                name: [name, prop].filter(Boolean).join("."),
+                ...("required" in schema &&
+                        schema.required instanceof Array
+                    ? { required: schema.required.includes(prop) }
+                    : {}),
+            }));
         }
 
         if (
