@@ -175,13 +175,11 @@ JSONSchemaToFields.resolveRef = async (ref, field) => {
   }
 
   const resolveLabel = (item: any) => {
-    if (field.refLabel) {
-      if (field.refLabel instanceof Array) {
-        return field.refLabel
-          .map((prop) => item[prop])
-          .filter(Boolean)
-          .join(" ")
-      }
+    if (field.refLabel instanceof Array) {
+      return field.refLabel
+        .map((prop) => item[prop])
+        .filter(Boolean)
+        .join(" ")
     }
 
     return (
