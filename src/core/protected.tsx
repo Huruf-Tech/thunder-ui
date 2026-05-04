@@ -196,7 +196,8 @@ export function Protected({ children }: { children: React.ReactNode }) {
 
   React.useEffect(() => {
     if (tenant) ThunderSDK.plugins.essentials.setTenant(tenant)
-    else ThunderSDK.plugins.essentials.removeTenant()
+
+    return () => ThunderSDK.plugins.essentials.removeTenant()
   }, [tenant])
 
   return import.meta.env.VITE_OAUTH_CLIENT_ID ? (

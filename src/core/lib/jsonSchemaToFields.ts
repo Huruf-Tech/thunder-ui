@@ -112,6 +112,7 @@ export class JSONSchemaToFields {
         ) {
             return Object.entries(schema.properties).flatMap(([prop, def]) =>
                 this._toFields(prop, def, {
+                    name: [name, prop].join("."),
                     ...("required" in schema &&
                             schema.required instanceof Array
                         ? { required: schema.required.includes(prop) }
@@ -131,6 +132,7 @@ export class JSONSchemaToFields {
 
         if (success) {
             const field = {
+                name,
                 ...hints,
                 ...data,
                 type: this.resolveFieldType(
@@ -139,7 +141,6 @@ export class JSONSchemaToFields {
                         ? schema.format
                         : undefined,
                 ),
-                name,
                 multi: hints?.multi ?? !!data.ref,
             };
 
