@@ -27,9 +27,10 @@ const columnsFromModuleMetadata = (metadata: any): ColumnDef<unknown>[] => {
   return Object.entries<{
     type: string
     format?: string
-  }>(metadata.crud.schema.properties).map(([key]) => ({
+    label?: string
+  }>(metadata.crud.schema.properties).map(([key, { label }]) => ({
     accessorKey: key,
-    header: key,
+    header: label ?? key,
   }))
 }
 
