@@ -242,40 +242,45 @@ export function FormPage({ name }: IFormPageProps) {
   }
 
   return (
-    <form className="mx-auto w-full max-w-md" onSubmit={handleSubmit(onSubmit)}>
-      <FieldGroup>
-        <FieldSet>
-          <FieldLegend>{isEditMode ? "Update" : "Create"}</FieldLegend>
-          <FieldDescription>
-            {isEditMode
-              ? `Update the ${name} entry below.`
-              : `Fill the form below to create a new ${name} entry. All fields are required`}
-          </FieldDescription>
-          {/* <FieldGroup></FieldGroup> */}
-          {fields.map((field) => {
-            const id = crypto.randomUUID()
+    <div className="min-h-0 flex-1 overflow-y-auto">
+      <form
+        className="mx-auto w-full max-w-md pb-6"
+        onSubmit={handleSubmit(onSubmit)}
+      >
+        <FieldGroup>
+          <FieldSet>
+            <FieldLegend>{isEditMode ? "Update" : "Create"}</FieldLegend>
+            <FieldDescription>
+              {isEditMode
+                ? `Update the ${name} entry below.`
+                : `Fill the form below to create a new ${name} entry. All fields are required`}
+            </FieldDescription>
+            {/* <FieldGroup></FieldGroup> */}
+            {fields.map((field) => {
+              const id = crypto.randomUUID()
 
-            if (!field.required && field.type === "hidden") return
+              if (!field.required && field.type === "hidden") return
 
-            return (
-              <Field key={field.name}>
-                <FieldLabel htmlFor={id} className="capitalize">
-                  {field.name}
-                </FieldLabel>
-                {renderField(id, field, control)}
-                <FieldDescription>{field.description}</FieldDescription>
-                <FieldError>
-                  {errors[field.name!]?.message?.toString()}
-                </FieldError>
-              </Field>
-            )
-          })}
-        </FieldSet>
+              return (
+                <Field key={field.name}>
+                  <FieldLabel htmlFor={id} className="capitalize">
+                    {field.name}
+                  </FieldLabel>
+                  {renderField(id, field, control)}
+                  <FieldDescription>{field.description}</FieldDescription>
+                  <FieldError>
+                    {errors[field.name!]?.message?.toString()}
+                  </FieldError>
+                </Field>
+              )
+            })}
+          </FieldSet>
 
-        <Button type="submit" disabled={isSubmitting || !fields.length}>
-          Submit
-        </Button>
-      </FieldGroup>
-    </form>
+          <Button type="submit" disabled={isSubmitting || !fields.length}>
+            Submit
+          </Button>
+        </FieldGroup>
+      </form>
+    </div>
   )
 }
