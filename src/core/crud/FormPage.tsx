@@ -26,6 +26,9 @@ import { Textarea } from "@/components/ui/textarea"
 import { Dropdown } from "../custom/Dropdown"
 import { Multiselect } from "../custom/Multiselect"
 import { Tag, TagInput, TagInputBadges } from "../custom/TagInput"
+import { AvatarUpload } from "../custom/AvatarUpload"
+import { ImageUpload } from "../custom/ImageUpload"
+import { handleUpload } from "../lib/utils"
 
 import { JSONSchemaToFields, type TField } from "../lib/jsonSchemaToFields"
 
@@ -50,6 +53,98 @@ const renderField = (
   field: TField,
   control: Control<any, any, any>
 ) => {
+  
+  if (field.type === "url" && field.fieldHint === "avatar") {
+    return (
+      <Controller
+        name={field.name!}
+        control={control}
+        rules={{ required: field.required && "This field is required!" }}
+        render={(def) => (
+          <AvatarUpload
+            id={id}
+            initialFile={
+              def.field.value && typeof def.field.value === "string"
+                ? {
+                    id: def.field.value,
+                    type: "avatar",
+                    name: def.field.value,
+                    url: def.field.value,
+                    size: 0,
+                  }
+                : undefined
+            }
+            onUpload={async ({ file }, signal) => {
+              if (file instanceof File) {
+                const res = await handleUpload(file, { signal })
+                def.field.onChange(res.url)
+              }
+            }}
+          />
+        )}
+      />
+    )
+  }
+
+  if (field.type === "url" && field.fieldHint === "upload") {
+    return (
+      <Controller
+        name={field.name!}
+        control={control}
+        rules={{ required: field.required && "This field is required!" }}
+        render={(def) => {
+          const currentValue = def.field.value
+
+          const initialFile =
+            !field.multi && typeof currentValue === "string" && currentValue
+              ? {
+                  id: currentValue,
+                  type: "image",
+                  name: currentValue,
+                  url: currentValue,
+                  size: 0,
+                }
+              : undefined
+
+          const initialFiles =
+            field.multi && Array.isArray(currentValue)
+              ? currentValue
+                  .filter((v: any) => typeof v === "string" && v)
+                  .map((v: string) => ({
+                    id: v,
+                    type: "image",
+                    name: v,
+                    url: v,
+                    size: 0,
+                  }))
+              : undefined
+
+          return (
+            <ImageUpload
+              id={id}
+              multi={field.multi}
+              initialFile={initialFile}
+              initialFiles={initialFiles}
+              onUpload={async ({ file }, signal) => {
+                if (file instanceof File) {
+                  const res = await handleUpload(file, { signal })
+                  if (field.multi) {
+                    const prev = Array.isArray(def.field.value)
+                      ? def.field.value
+                      : []
+                    def.field.onChange([...prev, res.url])
+                  } else {
+                    def.field.onChange(res.url)
+                  }
+                }
+              }}
+            />
+          )
+        }}
+      />
+    )
+  }
+
   if (field.type === "boolean")
     return (
       <Controller
