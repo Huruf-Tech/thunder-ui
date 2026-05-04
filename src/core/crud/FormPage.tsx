@@ -119,7 +119,7 @@ const renderField = (
                   const prev = Array.isArray(def.field.value)
                     ? def.field.value
                     : []
-                    
+
                   def.field.onChange([...prev, res.url])
                 }
               }}
@@ -333,13 +333,16 @@ export function FormPage({ name }: IFormPageProps) {
         className="mx-auto w-full max-w-md pb-24"
         onSubmit={handleSubmit(onSubmit)}
       >
-        <FieldSet>
-          <FieldLegend>{isEditMode ? "Update" : "Create"}</FieldLegend>
-          <FieldDescription>
-            {isEditMode
-              ? `Update the ${name} entry below.`
-              : `Fill the form below to create a new ${name} entry. All fields are required`}
-          </FieldDescription>
+        <FieldGroup>
+          <FieldSet>
+            <FieldLegend>{isEditMode ? "Update" : "Create"}</FieldLegend>
+            <FieldDescription>
+              {isEditMode
+                ? `Update the ${name} entry below.`
+                : `Fill the form below to create a new ${name} entry. All fields are required`}
+            </FieldDescription>
+          </FieldSet>
+
           {Object.entries(fieldsByGroup)
             .map(([group, fields], index) => {
               if (!fields) return
@@ -350,53 +353,57 @@ export function FormPage({ name }: IFormPageProps) {
               return (
                 <React.Fragment key={group}>
                   {index !== 0 ? <FieldSeparator /> : null}
-                  {groupTitle && <FieldLegend>{groupTitle}</FieldLegend>}
-                  {groupDescription && (
-                    <FieldDescription>{groupDescription}</FieldDescription>
-                  )}
-                  <FieldGroup>
-                    {fields.map((field) => {
-                      const id = crypto.randomUUID()
+                  <FieldSet>
+                    {groupTitle && <FieldLegend>{groupTitle}</FieldLegend>}
+                    {groupDescription && (
+                      <FieldDescription>{groupDescription}</FieldDescription>
+                    )}
+                    <FieldGroup>
+                      {fields.map((field, index) => {
+                        const id = crypto.randomUUID()
 
-                      if (!field.required && field.type === "hidden") return
+                        if (!field.required && field.type === "hidden") return
 
-                      return (
-                        <Field key={field.name}>
-                          <FieldLabel htmlFor={id} className="capitalize">
-                            {field.label ?? field.name}
-                            {field.required ? "" : " (optional)"}
-                          </FieldLabel>
-                          {renderField(id, field, control)}
-                          <FieldDescription>
-                            {field.description}
-                          </FieldDescription>
-                          <FieldError>
-                            {errors[field.name!]?.message?.toString()}
-                          </FieldError>
-                        </Field>
-                      )
-                    })}
-                  </FieldGroup>
+                        return (
+                          <Field key={[group, field.name, index].join(".")}>
+                            <FieldLabel htmlFor={id} className="capitalize">
+                              {field.label ?? field.name}
+                              {field.required ? "" : " (optional)"}
+                            </FieldLabel>
+                            {renderField(id, field, control)}
+                            <FieldDescription>
+                              {field.description}
+                            </FieldDescription>
+                            <FieldError>
+                              {errors[field.name!]?.message?.toString()}
+                            </FieldError>
+                          </Field>
+                        )
+                      })}
+                    </FieldGroup>
+                  </FieldSet>
                 </React.Fragment>
               )
             })
             .filter(Boolean)}
 
-          <FieldGroup>
-            <Field orientation="horizontal">
-              <Button type="submit" disabled={isSubmitting || !fields.length}>
-                Submit
-              </Button>
-              <Button
-                variant="outline"
-                type="button"
-                onClick={() => navigate(-1)}
-              >
-                Cancel
-              </Button>
-            </Field>
-          </FieldGroup>
-        </FieldSet>
+          <FieldSet>
+            <FieldGroup>
+              <Field orientation="horizontal">
+                <Button type="submit" disabled={isSubmitting || !fields.length}>
+                  Submit
+                </Button>
+                <Button
+                  variant="outline"
+                  type="button"
+                  onClick={() => navigate(-1)}
+                >
+                  Cancel
+                </Button>
+              </Field>
+            </FieldGroup>
+          </FieldSet>
+        </FieldGroup>
       </form>
     </div>
   )

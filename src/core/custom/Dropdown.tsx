@@ -17,13 +17,17 @@ export const Dropdown: typeof Select = (props) => {
   return (
     <Select {...props}>
       <SelectTrigger className="w-full max-w-48">
-        <SelectValue />
+        <SelectValue placeholder="Select" />
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
           <SelectLabel>{props.name}</SelectLabel>
           {items?.map((item) => (
-            <SelectItem key={item.value ?? item} value={item.value ?? item} className="line-clamp-1">
+            <SelectItem
+              key={item.value ?? item}
+              value={item.value ?? item}
+              className="line-clamp-1"
+            >
               {item.label ?? item.value ?? item}
             </SelectItem>
           ))}

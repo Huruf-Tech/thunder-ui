@@ -82,8 +82,6 @@ export const coreRoutes = Object.entries(
     path: route.path,
   }))
 
-  console.log(group)
-
   return {
     path: group.toLowerCase().replace(" ", "-"),
     name: group,
