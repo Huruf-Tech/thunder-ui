@@ -131,7 +131,7 @@ export const renderField = ({
   if (field.type === "url" && field.fieldHint === "upload") {
     return (
       <Controller
-        name={field.name!}
+        name={name}
         control={control}
         rules={{ required: field.required && "This field is required!" }}
         render={(def) => {

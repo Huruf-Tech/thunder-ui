@@ -10,6 +10,7 @@ import {
   FieldLegend,
   FieldSet,
   FieldGroup,
+  FieldSeparator,
 } from "@/components/ui/field"
 import RenderInput from "./RenderInput"
 
@@ -44,6 +45,7 @@ export default function RenderObject({ name, field }: TRenderObjectProp) {
 
   return (
     <FieldGroup>
+      <FieldSeparator />
       <FieldSet>
         <FieldLegend>{field.label ?? field.name}</FieldLegend>
         {field.description && (
@@ -51,19 +53,21 @@ export default function RenderObject({ name, field }: TRenderObjectProp) {
         )}
         <FieldError>{getError(name)}</FieldError>
       </FieldSet>
-      <FieldGroup>
-        {(field.fields ?? []).map((subField, index) => {
-          const fieldName = [name, subField.name].filter(Boolean).join(".")
+      <FieldSet>
+        <FieldGroup>
+          {(field.fields ?? []).map((subField, index) => {
+            const fieldName = [name, subField.name].filter(Boolean).join(".")
 
-          return (
-            <Field
-              key={`${fieldName}_${index}`}
-              name={fieldName}
-              field={subField}
-            />
-          )
-        })}
-      </FieldGroup>
+            return (
+              <Field
+                key={`${fieldName}_${index}`}
+                name={fieldName}
+                field={subField}
+              />
+            )
+          })}
+        </FieldGroup>
+      </FieldSet>
     </FieldGroup>
   )
 }

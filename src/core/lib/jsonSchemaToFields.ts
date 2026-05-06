@@ -399,6 +399,7 @@ export class JSONSchemaToFields {
       return [
         {
           ...hints,
+          ...schema,
           name,
           type: "object",
           fields: Object.entries(schema.properties).flatMap(([prop, def]) =>
@@ -413,8 +414,6 @@ export class JSONSchemaToFields {
       ]
     }
 
-    if (name === "rosters") console.log(name, type, schema)
-
     if (
       type === "array" &&
       "items" in schema &&
@@ -428,6 +427,7 @@ export class JSONSchemaToFields {
         return [
           {
             ...hints,
+            ...schema,
             name,
             type: "array",
             fields: this._toFields(undefined, schema.items, {
@@ -439,29 +439,24 @@ export class JSONSchemaToFields {
 
       return this._toFields(name, schema.items, {
         ...hints,
+        ...schema,
         multi: true,
       })
     }
 
-    const { success, data, error } = this.jsonFieldSchema.safeParse(schema)
+    const field = {
+      ...hints,
+      ...schema,
+      name,
+      type: this.resolveFieldType(
+        type,
+        "format" in schema && typeof schema.format === "string"
+          ? schema.format
+          : undefined
+      ),
+    }
 
-    if (success) {
-      const field = {
-        ...hints,
-        ...data,
-        name,
-        type: this.resolveFieldType(
-          type,
-          "format" in schema && typeof schema.format === "string"
-            ? schema.format
-            : undefined
-        ),
-      }
-
-      return [field]
-    } else console.error(error)
-
-    return []
+    return [field]
   }
 
   static resolveRef?: (

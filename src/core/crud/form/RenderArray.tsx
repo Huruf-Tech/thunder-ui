@@ -10,6 +10,7 @@ import {
   FieldLegend,
   FieldSet,
   FieldGroup,
+  FieldSeparator,
 } from "@/components/ui/field"
 import { Button } from "@/components/ui/button"
 
@@ -52,6 +53,7 @@ export default function RenderArray({ name, field }: TRenderArrayProp) {
 
   return (
     <FieldGroup>
+      <FieldSeparator />
       <FieldSet>
         <FieldLegend>{field.label ?? field.name}</FieldLegend>
         {field.description && (
@@ -60,31 +62,35 @@ export default function RenderArray({ name, field }: TRenderArrayProp) {
         <FieldError>{getError(name)}</FieldError>
       </FieldSet>
 
-      {fields.map(({ id }, index) => {
-        return (
-          <FieldGroup key={id}>
-            {(field.fields ?? []).map((subField, subIndex) => {
-              const fieldName = [name, index, subField.name]
-                .filter((i) => i !== undefined)
-                .join(".")
+      <FieldSet>
+        {fields.map(({ id }, index) => {
+          return (
+            <FieldGroup key={id}>
+              {(field.fields ?? []).map((subField, subIndex) => {
+                const fieldName = [name, index, subField.name]
+                  .filter((i) => i !== undefined)
+                  .join(".")
 
-              return (
-                <RenderInput
-                  key={`${fieldName}_${subIndex}`}
-                  name={fieldName}
-                  field={subField}
-                />
-              )
-            })}
+                return (
+                  <RenderInput
+                    key={`${fieldName}_${subIndex}`}
+                    name={fieldName}
+                    field={subField}
+                  />
+                )
+              })}
 
-            <Button variant={"destructive"} onClick={() => remove(index)}>
-              Remove
-            </Button>
-          </FieldGroup>
-        )
-      })}
+              <Button variant={"destructive"} onClick={() => remove(index)}>
+                Remove
+              </Button>
+            </FieldGroup>
+          )
+        })}
 
-      <Button onClick={() => append({})}>Add</Button>
+        <FieldGroup>
+          <Button onClick={() => append({})}>Add</Button>
+        </FieldGroup>
+      </FieldSet>
     </FieldGroup>
   )
 }

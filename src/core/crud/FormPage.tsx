@@ -101,6 +101,8 @@ export function FormPage({ name }: IFormPageProps) {
     })()
   }, [metadata])
 
+  console.log(location.state?.record);
+
   const onSubmit: SubmitHandler<any> = async (body) => {
     if (isEditMode) {
       await ThunderSDK.getModule(name).update({
