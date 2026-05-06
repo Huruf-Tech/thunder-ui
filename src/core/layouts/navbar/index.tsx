@@ -221,7 +221,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                       onClick={() => {
                         window.location.href = new URL(
                           "/auth?returnUri=" + window.location.href,
-                          import.meta.env.VITE_API_BASE_URL ??
+                          import.meta.env.VITE_API_BASE_URL ||
                             window.location.origin
                         ).toString()
                       }}

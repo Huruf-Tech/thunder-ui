@@ -82,7 +82,7 @@ export function SelectTenant() {
                       onClick={() => {
                         window.location.href = new URL(
                           ("/auth?tab=members&tenant=" + tenant._id) as string,
-                          import.meta.env.VITE_API_BASE_URL ??
+                          import.meta.env.VITE_API_BASE_URL ||
                             window.location.origin
                         ).toString()
                       }}
