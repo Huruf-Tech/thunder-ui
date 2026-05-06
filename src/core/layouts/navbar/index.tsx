@@ -217,11 +217,21 @@ export function Layout({ children }: { children: React.ReactNode }) {
                   </DropdownMenuGroup>
                   <DropdownMenuSeparator />
                   <DropdownMenuGroup>
-                    <DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => {
+                        window.location.href = new URL(
+                          "/auth?returnUri=" + window.location.href,
+                          import.meta.env.VITE_API_BASE_URL ??
+                            window.location.origin
+                        ).toString()
+                      }}
+                    >
                       <IconUserCircle className="size-4" />
                       Account
                     </DropdownMenuItem>
-                    <DropdownMenuItem render={<Link to="/" />}>
+                    <DropdownMenuItem
+                      render={<Link to="/select-tenant/#list" />}
+                    >
                       <IconArrowsExchange className="size-4" />
                       Change tenant
                     </DropdownMenuItem>
@@ -241,7 +251,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
           </SidebarMenu>
         </SidebarFooter>
       </Sidebar>
-      <SidebarInset className="h-svh overflow-hidden md:p-2 p-3">
+      <SidebarInset className="h-svh overflow-hidden p-3 md:p-2">
         <div className="@container/main relative flex h-full w-full flex-1 flex-col gap-2 rounded-xl border-border xl:border">
           <header className="mx-auto w-full max-w-6xl">
             <div className="mx-auto flex items-center gap-3 py-2">

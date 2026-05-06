@@ -22,19 +22,20 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { getInitials, transformImage } from "../../lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
-import { SkeletonRepeater } from "@/core/custom/SkeletonRepeator"
+import { SkeletonRepeater } from "@/core/custom/SkeletonRepeater"
 import TenantForm from "./form"
 import { IconAlertCircle, IconUser } from "@tabler/icons-react"
 import { getTenants } from "@/core/lib/api"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { Navigate, useNavigate } from "react-router"
+import { Navigate, useLocation, useNavigate } from "react-router"
 
 export function SelectTenant() {
   const navigate = useNavigate()
+  const { hash } = useLocation()
   const tenants = React.useMemo(() => getTenants(), [])
   const { data, error, isLoading } = use(tenants)
 
-  if (data?.results.length === 1)
+  if (data?.results.length === 1 && hash !== "#list")
     return <Navigate to={`/${data?.results[0].tenant._id}`} />
 
   return (
@@ -76,6 +77,18 @@ export function SelectTenant() {
                     <ItemTitle>{tenant.name}</ItemTitle>
                   </ItemContent>
                   <ItemActions>
+                    <Button
+                      variant={"link"}
+                      onClick={() => {
+                        window.location.href = new URL(
+                          ("/auth?tab=members&tenant=" + tenant._id) as string,
+                          import.meta.env.VITE_API_BASE_URL ??
+                            window.location.origin
+                        ).toString()
+                      }}
+                    >
+                      Members
+                    </Button>
                     <Button onClick={() => navigate(`/${tenant._id}`)}>
                       Select
                     </Button>
