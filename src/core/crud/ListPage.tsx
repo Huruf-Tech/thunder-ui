@@ -86,6 +86,11 @@ export function ListPage({ name }: IListPageProps) {
   const get = React.useMemo(() => _get(), [_get])
   const { data, error, isLoading } = use(get)
 
+  const allowCreate = React.useMemo(
+    () => ThunderSDK.isPermitted(ThunderSDK.getModule(name).create),
+    [name]
+  )
+
   const metadata = React.useMemo(() => ThunderSDK.getMetadata(name), [name])
   const [fields, setFields] = React.useState<TField[]>([])
 
@@ -210,7 +215,7 @@ export function ListPage({ name }: IListPageProps) {
                   </DropdownMenuContent>
                 </DropdownMenu>
               ) : null}
-              {ThunderSDK.isPermitted(ThunderSDK.getModule(name).create) && (
+              {allowCreate && (
                 <Button onClick={() => navigate("form")}>Create</Button>
               )}
               {!!Card && (
