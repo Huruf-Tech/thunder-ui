@@ -507,6 +507,7 @@ export class JSONSchemaToFields {
         return this.flatten(
           field.fields,
           {
+            ...opts,
             parentName: [
               opts?.parentName,
               field.name,
