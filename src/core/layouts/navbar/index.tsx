@@ -225,6 +225,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
                           "returnUri",
                           window.location.href
                         )
+
+                        window.location.href = authUrl.toString()
                       }}
                     >
                       <IconUserCircle className="size-4" />
@@ -241,7 +243,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                       Notifications
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem variant="destructive">
+                    <DropdownMenuItem variant="destructive" onClick={logout}>
                       <IconLogout className="size-4" />
                       Log out
                     </DropdownMenuItem>
