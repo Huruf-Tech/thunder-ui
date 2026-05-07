@@ -52,8 +52,8 @@ export const DateOperator = {
 type BaseConfig = {
   id: string
   icon?: TablerIcon
+  label?: string
   placeholder?: string
-  displayName?: string
   enableOperator?: boolean
   operator?: string
 }
@@ -80,7 +80,6 @@ export type TNumberColumnConfig = BaseConfig & {
 
 export type TDateColumnConfig = BaseConfig & {
   type: "date"
-  presentation?: "month-year" | "year" | "date" | "month"
 } & (
     | {
         mode: "single"

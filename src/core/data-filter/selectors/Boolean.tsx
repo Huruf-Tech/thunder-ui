@@ -13,7 +13,7 @@ import {
 
 export const SwitchComp: React.FC<TBooleanColumnConfig> = ({
   id,
-  displayName,
+  label,
   enableOperator,
   operator = BooleanOperator.EQUAL,
   value,
@@ -27,7 +27,7 @@ export const SwitchComp: React.FC<TBooleanColumnConfig> = ({
           checked={value}
           onCheckedChange={(checked) => onValueChange(checked, operator)}
         />
-        {displayName}
+        {label}
       </Label>
 
       {enableOperator && (
@@ -35,7 +35,7 @@ export const SwitchComp: React.FC<TBooleanColumnConfig> = ({
           value={operator}
           onValueChange={(val) => onValueChange(value, val!)}
         >
-          <SelectTrigger className="w-45">
+          <SelectTrigger>
             <SelectValue placeholder="Selector" />
           </SelectTrigger>
           <SelectContent>

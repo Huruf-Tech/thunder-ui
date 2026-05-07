@@ -169,86 +169,62 @@ function DataFilterSelectors({ renderInitial }: { renderInitial?: boolean }) {
       {(renderInitial ? [columnsConfig[0]] : columnsConfig)
         .map((col) => ({
           ...col,
-          displayName: renderInitial ? undefined : col.displayName,
+          key: col.id,
+          displayName: renderInitial ? undefined : col.label,
           enableOperator: renderInitial ? false : advanced,
+          value: filterValue[col.id]?.value,
+          onValueChange: (val: unknown, operator: string) =>
+            changeHandler(col, val, operator),
         }))
         .map((column) => {
           switch (column.type) {
             case "string":
               return (
                 <SearchComp
-                  key={column.id}
                   {...column}
                   value={filterValue[column.id]?.value as string}
-                  onValueChange={(val, operator) =>
-                    changeHandler(column, val, operator)
-                  }
                 />
               )
             case "boolean":
               return (
                 <SwitchComp
-                  key={column.id}
                   {...column}
                   value={filterValue[column.id]?.value as boolean}
-                  onValueChange={(val, operator) =>
-                    changeHandler(column, val, operator)
-                  }
                 />
               )
             case "number":
               return (
                 <NumberComp
-                  key={column.id}
                   {...column}
                   value={filterValue[column.id]?.value as number[]}
-                  onValueChange={(val, operator) =>
-                    changeHandler(column, val, operator)
-                  }
                 />
               )
             case "option":
               return (
                 <SelectComp
-                  key={column.id}
                   {...column}
                   value={filterValue[column.id]?.value as string}
-                  onValueChange={(val, operator) =>
-                    changeHandler(column, val, operator)
-                  }
                 />
               )
             case "multiOption":
               return (
                 <MultiSelectComp
-                  key={column.id}
                   {...column}
                   value={filterValue[column.id]?.value as string[]}
-                  onValueChange={(val, operator) =>
-                    changeHandler(column, val, operator)
-                  }
                 />
               )
             case "date":
               return column.mode === "range" ? (
                 <CalendarComp
-                  key={column.id}
                   {...column}
                   mode="range"
                   value={filterValue[column.id]?.value as string[]}
-                  onValueChange={(val, operator) =>
-                    changeHandler(column, val, operator)
-                  }
                 />
               ) : (
                 <CalendarComp
-                  key={column.id}
                   {...column}
                   mode="single"
                   value={filterValue[column.id]?.value as string}
-                  onValueChange={(val, operator) =>
-                    changeHandler(column, val, operator)
-                  }
                 />
               )
             default:

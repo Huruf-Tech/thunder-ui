@@ -19,7 +19,8 @@ import {
 
 export const SearchComp: React.FC<TStringColumnConfig> = ({
   id,
-  displayName,
+  label,
+  placeholder,
   enableOperator,
   operator = StringOperator.MATCH,
   value,
@@ -28,10 +29,10 @@ export const SearchComp: React.FC<TStringColumnConfig> = ({
 }) => {
   return (
     <Field>
-      {displayName && <Label htmlFor={id}>{displayName}</Label>}
+      {label && <Label htmlFor={id}>{label}</Label>}
       <InputGroup>
         <InputGroupInput
-          placeholder={"Search..."}
+          placeholder={placeholder ?? "Search..."}
           value={value}
           onChange={(e) => onValueChange(e.target.value, operator)}
         />
@@ -45,7 +46,7 @@ export const SearchComp: React.FC<TStringColumnConfig> = ({
               onValueChange={(val) => onValueChange(value, val!)}
             >
               <SelectTrigger>
-                <SelectValue placeholder={displayName} />
+                <SelectValue placeholder={"Selector"} />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>

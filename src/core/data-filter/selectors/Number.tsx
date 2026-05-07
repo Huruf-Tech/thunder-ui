@@ -19,7 +19,7 @@ export const NumberComp: React.FC<TNumberColumnConfig> = ({
   value,
   min = 0,
   max,
-  displayName,
+  label,
   operator = RangeOperator.BETWEEN,
   ...props
 }) => {
@@ -38,14 +38,14 @@ export const NumberComp: React.FC<TNumberColumnConfig> = ({
             }
           >
             <div className="mb-3 flex items-center justify-between gap-1">
-              <FieldLabel htmlFor={id}>{displayName}</FieldLabel>
+              {label && <FieldLabel htmlFor={id}>{label}</FieldLabel>}
               <SliderValue />
             </div>
           </Slider>
         </Field>
       ) : (
         <Field>
-          <FieldLabel htmlFor={id}>{displayName}</FieldLabel>
+          {label && <FieldLabel htmlFor={id}>{label}</FieldLabel>}
           <ButtonGroup id={id}>
             <Input
               type="number"
@@ -91,7 +91,7 @@ export const NumberComp: React.FC<TNumberColumnConfig> = ({
           value={operator}
           onValueChange={(val) => props.onValueChange(value, val!)}
         >
-          <SelectTrigger className="w-45">
+          <SelectTrigger>
             <SelectValue placeholder="Selector" />
           </SelectTrigger>
           <SelectContent>

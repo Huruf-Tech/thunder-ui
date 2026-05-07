@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/combobox"
 
 export const SelectComp: React.FC<TOptionColumnConfig> = ({
-  displayName,
+  label,
   placeholder,
   options,
   operator = OptionOperator.EQUAL,
@@ -30,7 +30,7 @@ export const SelectComp: React.FC<TOptionColumnConfig> = ({
   return (
     <FieldGroup>
       <Field>
-        {displayName && <FieldLabel>{displayName}</FieldLabel>}
+        {label && <FieldLabel>{label}</FieldLabel>}
         <Combobox
           items={options ?? []}
           onValueChange={(val) => onValueChange(val as string, operator)}
@@ -55,7 +55,7 @@ export const SelectComp: React.FC<TOptionColumnConfig> = ({
             onValueChange={(val) => onValueChange(value, val!)}
           >
             <SelectTrigger>
-              <SelectValue placeholder={displayName} />
+              <SelectValue placeholder="Selector" />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>

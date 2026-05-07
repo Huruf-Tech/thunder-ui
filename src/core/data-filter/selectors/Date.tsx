@@ -22,9 +22,9 @@ export const CalendarComp: React.FC<TDateColumnConfig> = ({
   return (
     <FieldGroup>
       <Field>
-        {props.displayName && (
+        {props?.label && (
           <Label htmlFor={id} className="text-sm">
-            {props.displayName}
+            {props.label}
           </Label>
         )}
 
@@ -73,7 +73,7 @@ export const CalendarComp: React.FC<TDateColumnConfig> = ({
               props.onValueChange(props.value as any, val!)
             }
           >
-            <SelectTrigger className="w-45">
+            <SelectTrigger>
               <SelectValue placeholder="Selector" />
             </SelectTrigger>
             <SelectContent>

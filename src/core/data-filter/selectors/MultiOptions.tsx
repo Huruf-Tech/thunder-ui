@@ -32,7 +32,7 @@ export const MultiSelectComp: React.FC<TMultiOptionColumnConfig> = ({
   value,
   placeholder,
   operator = MultiOptionOperator.INCLUDES,
-  displayName,
+  label,
   enableOperator,
   onValueChange,
 }) => {
@@ -41,7 +41,7 @@ export const MultiSelectComp: React.FC<TMultiOptionColumnConfig> = ({
   return (
     <FieldGroup>
       <Field>
-        {displayName && <FieldLabel htmlFor={id}>{displayName}</FieldLabel>}
+        {label && <FieldLabel htmlFor={id}>{label}</FieldLabel>}
         <Combobox
           id={id}
           items={options ?? []}
