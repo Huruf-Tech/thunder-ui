@@ -501,7 +501,7 @@ export class JSONSchemaToFields {
       if (field.fields instanceof Array && field.fields.length) {
         return this.flatten(
           field.fields,
-          [parentName, field.type === "array" ? "0" : undefined, field.name]
+          [parentName, field.name, field.type === "array" ? "0" : undefined]
             .filter(Boolean).join("."),
         );
       }
