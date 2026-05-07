@@ -47,7 +47,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 const columnFromModuleMetadata = async (metadata: any) => {
   const fields = await fieldsFromModuleMetadata(metadata, "output")
 
-  return JSONSchemaToFields.flatten(fields)
+  return JSONSchemaToFields.flatten(fields, { excludeArray: true })
 }
 
 const prepareColumns = (fields: TField[]): ColumnDef<unknown, any>[] =>
