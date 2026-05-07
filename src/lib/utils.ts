@@ -13,15 +13,3 @@ export function appName() {
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
-
-export function resolveUrl(path?: string) {
-  const baseUrl = new URL(import.meta.env.BASE_URL, window.location.origin)
-    .toString()
-    .replace(/\/$/, "")
-
-  if (path) {
-    return [baseUrl, path.trim().replace(/^\//, "")].join("/")
-  }
-
-  return baseUrl
-}

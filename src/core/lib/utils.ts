@@ -46,3 +46,22 @@ export function getInitials(name?: string) {
     ? first.substring(0, 2).toUpperCase()
     : `${first[0].toUpperCase()}${last[0].toUpperCase()}`
 }
+
+export function resolveUrl(path?: string) {
+  const baseUrl = new URL(import.meta.env.BASE_URL, window.location.origin)
+    .toString()
+    .replace(/\/$/, "")
+
+  if (path) {
+    return [baseUrl, path.trim().replace(/^\//, "")].join("/")
+  }
+
+  return baseUrl
+}
+
+export function getAuthUrl() {
+  return new URL(
+    "/auth?returnUri=" + window.location.href,
+    import.meta.env.VITE_API_BASE_URL || window.location.origin
+  )
+}

@@ -46,7 +46,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { getMe } from "@/core/lib/api"
 import { use } from "@/core/hooks/use"
-import { getInitials, transformImage } from "@/core/lib/utils"
+import { getAuthUrl, getInitials, transformImage } from "@/core/lib/utils"
 import { useLogout } from "@/core/protected"
 
 function allowDisplay(display?: boolean | (() => boolean)) {
@@ -219,11 +219,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
                   <DropdownMenuGroup>
                     <DropdownMenuItem
                       onClick={() => {
-                        window.location.href = new URL(
-                          "/auth?returnUri=" + window.location.href,
-                          import.meta.env.VITE_API_BASE_URL ||
-                            window.location.origin
-                        ).toString()
+                        const authUrl = getAuthUrl()
+
+                        authUrl.searchParams.set(
+                          "returnUri",
+                          window.location.href
+                        )
                       }}
                     >
                       <IconUserCircle className="size-4" />

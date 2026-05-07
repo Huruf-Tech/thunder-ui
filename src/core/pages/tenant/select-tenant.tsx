@@ -20,7 +20,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { getInitials, transformImage } from "../../lib/utils"
+import { getAuthUrl, getInitials, transformImage } from "@/core/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
 import { SkeletonRepeater } from "@/core/custom/SkeletonRepeater"
 import TenantForm from "./form"
@@ -80,11 +80,12 @@ export function SelectTenant() {
                     <Button
                       variant={"link"}
                       onClick={() => {
-                        window.location.href = new URL(
-                          ("/auth?tab=members&tenant=" + tenant._id) as string,
-                          import.meta.env.VITE_API_BASE_URL ||
-                            window.location.origin
-                        ).toString()
+                        const authUrl = getAuthUrl()
+
+                        authUrl.searchParams.set("tab", "members")
+                        authUrl.searchParams.set("tenant", tenant._id as string)
+
+                        window.location.href = authUrl.toString()
                       }}
                     >
                       Members
