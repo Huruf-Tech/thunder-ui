@@ -4,7 +4,11 @@ import { hash } from "ohash"
 import { ThunderSDK } from "thunder-sdk"
 import { DataTable } from "../custom/Datatable"
 import { cards } from "@/overrides/crud/cards"
-import { getCoreRowModel, useReactTable } from "@tanstack/react-table"
+import {
+  getCoreRowModel,
+  useReactTable,
+  type ColumnDef,
+} from "@tanstack/react-table"
 import { Button } from "@/components/ui/button"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { useNavigate } from "react-router"
@@ -35,8 +39,26 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty"
-import columns from "./Columns"
 import { DataFilter } from "../data-filter/DataFilter"
+import { fieldsFromModuleMetadata } from "./FormPage"
+import { JSONSchemaToFields, type TField } from "../lib/jsonSchemaToFields"
+import { Checkbox } from "@/components/ui/checkbox"
+
+const columnFromModuleMetadata = async (metadata: any) => {
+  const fields = await fieldsFromModuleMetadata(metadata, "output")
+
+  return JSONSchemaToFields.flatten(fields)
+}
+
+const prepareColumns = (fields: TField[]): ColumnDef<unknown, any>[] =>
+  fields
+    .filter((field) => field.type !== "hidden")
+    .map((field) => ({
+      header: field.label ?? field.name!,
+      accessorKey: field.name!,
+      size: 220,
+      minSize: 120,
+    }))
 
 export interface IListPageProps {
   name: string
@@ -64,12 +86,48 @@ export function ListPage({ name }: IListPageProps) {
   const get = React.useMemo(() => _get(), [_get])
   const { data, error, isLoading } = use(get)
 
-  const [view, setView] = React.useState<string>("table")
-  const Card = cards[name as keyof typeof cards]
+  const metadata = React.useMemo(() => ThunderSDK.getMetadata(name), [name])
+  const [fields, setFields] = React.useState<TField[]>([])
 
   const table = useReactTable({
     data: data?.results ?? [],
-    columns: columns(name),
+    columns: [
+      {
+        id: "select",
+        header: ({ table }) => (
+          <Checkbox
+            checked={
+              table.getIsAllRowsSelected()
+                ? true
+                : table.getIsSomeRowsSelected()
+                  ? true
+                  : false
+            }
+            onCheckedChange={(value) => {
+              table.toggleAllRowsSelected(!!value)
+            }}
+            aria-label="Select all"
+          />
+        ),
+        cell: ({ row }) => (
+          <Checkbox
+            checked={row.getIsSelected()}
+            disabled={!row.getCanSelect()}
+            onCheckedChange={(value) => {
+              row.toggleSelected(!!value)
+            }}
+            onClick={(event) => event.stopPropagation()}
+            aria-label="Select row"
+          />
+        ),
+        size: 30,
+        enableSorting: false,
+        enableHiding: false,
+        enableResizing: false,
+        enablePinning: false,
+      },
+      ...prepareColumns(fields),
+    ],
     columnResizeMode: "onChange",
     getCoreRowModel: getCoreRowModel(),
     enableRowSelection: true,
@@ -77,6 +135,15 @@ export function ListPage({ name }: IListPageProps) {
 
   const selectedRows = table.getFilteredSelectedRowModel().rows
   const selectedCount = selectedRows.length
+
+  React.useEffect(() => {
+    ;(async () => {
+      setFields(await columnFromModuleMetadata(metadata))
+    })()
+  }, [metadata])
+
+  const [view, setView] = React.useState<string>("table")
+  const Card = cards[name as keyof typeof cards]
 
   return (
     <div className="relative flex h-full min-h-0 flex-1 flex-col gap-5">

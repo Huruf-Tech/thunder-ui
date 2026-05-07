@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react"
 import { useParams, useLocation, useNavigate } from "react-router"
@@ -15,16 +16,29 @@ import { Button } from "@/components/ui/button"
 import { JSONSchemaToFields, type TField } from "../lib/jsonSchemaToFields"
 import RenderInput from "./form/RenderInput"
 
-const fieldsFromModuleMetadata = async (metadata: any) => {
+export const fieldsFromModuleMetadata = async (
+  metadata: any,
+  type: "insert" | "update" | "output"
+) => {
   if (!metadata) return []
 
-  if (typeof metadata.crud?.insertSchema !== "object") return []
+  if (typeof metadata.crud !== "object") return []
+
+  const schema = (() => {
+    switch (type) {
+      case "insert":
+        return metadata.crud.insertSchema ?? metadata.crud.schema
+
+      case "update":
+        return metadata.crud.updateSchema ?? metadata.crud.insertSchema
+
+      default:
+        return metadata.crud.schema
+    }
+  })()
 
   // Convert json schema to fields data
-  const results = await JSONSchemaToFields.toFields(
-    undefined,
-    metadata.crud.insertSchema
-  )
+  const results = await JSONSchemaToFields.toFields(undefined, schema)
 
   console.log("Fields:", results)
 
@@ -96,11 +110,16 @@ export function FormPage({ name }: IFormPageProps) {
 
   React.useEffect(() => {
     ;(async () => {
-      setFields(await fieldsFromModuleMetadata(metadata))
+      setFields(
+        await fieldsFromModuleMetadata(
+          metadata,
+          isEditMode ? "update" : "insert"
+        )
+      )
     })()
-  }, [metadata])
+  }, [metadata, isEditMode])
 
-  console.log(location.state?.record);
+  console.log(location.state?.record)
 
   const onSubmit: SubmitHandler<any> = async (body) => {
     if (isEditMode) {

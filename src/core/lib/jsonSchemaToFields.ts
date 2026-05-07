@@ -299,7 +299,7 @@
     }
  */
 
-import z from "zod"
+import z from "zod";
 
 export const FieldTypes = [
   "text",
@@ -309,50 +309,50 @@ export const FieldTypes = [
   "email",
   "url",
   "hidden",
-] as const
+] as const;
 
-export type TFieldType = (typeof FieldTypes)[number]
+export type TFieldType = (typeof FieldTypes)[number];
 export type TField = {
-  type: TFieldType | "array" | "object"
-  fields?: Array<TField>
-  name?: string
-  parentName?: string
-  defaultValue?: unknown
-  label?: string
-  placeholder?: string
-  description?: string
-  multi?: boolean
-  minLength?: number
-  maxLength?: number
-  required?: boolean
-  enum?: string[] | Array<{ label: string; value: unknown }>
-  pattern?: string
-  example?: string
-  ref?: string
-  refLabel?: string | string[]
-  refValue?: string
-  fieldHint?: string
-}
+  type: TFieldType | "array" | "object";
+  fields?: Array<TField>;
+  name?: string;
+  parentName?: string;
+  defaultValue?: unknown;
+  label?: string;
+  placeholder?: string;
+  description?: string;
+  multi?: boolean;
+  minLength?: number;
+  maxLength?: number;
+  required?: boolean;
+  enum?: string[] | Array<{ label: string; value: unknown }>;
+  pattern?: string;
+  example?: string;
+  ref?: string;
+  refLabel?: string | string[];
+  refValue?: string;
+  fieldHint?: string;
+};
 
 export class JSONSchemaToFields {
   protected static resolveFieldType(type: string, format?: string): TFieldType {
     switch (format) {
       case "uri": {
-        return "url"
+        return "url";
       }
 
       case "date-time": {
-        return "date"
+        return "date";
       }
 
       case "email": {
-        return "email"
+        return "email";
       }
 
       default: {
         return FieldTypes.includes(type as TFieldType)
           ? (type as TFieldType)
-          : "text"
+          : "text";
       }
     }
   }
@@ -374,21 +374,20 @@ export class JSONSchemaToFields {
       refValue: z.string().optional(),
       fieldHint: z.string().optional(),
     })
-    .loose()
+    .loose();
 
   protected static _toFields(
     name: string | undefined,
     schema: unknown,
-    hints?: Partial<TField>
+    hints?: Partial<TField>,
   ): TField[] {
     if (typeof schema !== "object" || schema === null) {
-      throw new Error("Cannot construct form fields from an invalid schema!")
+      throw new Error("Cannot construct form fields from an invalid schema!");
     }
 
-    const type =
-      "type" in schema && typeof schema.type === "string"
-        ? schema.type
-        : "string"
+    const type = "type" in schema && typeof schema.type === "string"
+      ? schema.type
+      : "string";
 
     if (
       type === "object" &&
@@ -411,7 +410,7 @@ export class JSONSchemaToFields {
             })
           ),
         },
-      ]
+      ];
     }
 
     if (
@@ -434,14 +433,14 @@ export class JSONSchemaToFields {
               parentName: name,
             }),
           },
-        ]
+        ];
       }
 
       return this._toFields(name, schema.items, {
         ...hints,
         ...schema,
         multi: true,
-      })
+      });
     }
 
     const field = {
@@ -452,48 +451,65 @@ export class JSONSchemaToFields {
         type,
         "format" in schema && typeof schema.format === "string"
           ? schema.format
-          : undefined
+          : undefined,
       ),
-    }
+    };
 
-    return [field]
+    return [field];
   }
 
   static resolveRef?: (
     ref: string,
-    field: TField
-  ) => Promise<Array<{ label: string; value: unknown }>>
+    field: TField,
+  ) => Promise<Array<{ label: string; value: unknown }>>;
 
   protected static async resolveField(field: TField): Promise<TField> {
     if (typeof field.ref === "string") {
       if (typeof this.resolveRef !== "function") {
-        throw new Error("Unable to resolve reference! No implementation!")
+        throw new Error("Unable to resolve reference! No implementation!");
       }
 
-      field.enum = await this.resolveRef(field.ref, field)
+      field.enum = await this.resolveRef(field.ref, field);
     }
 
-    return field
+    return field;
   }
 
   protected static async resolveDeepFields(
-    fields: TField[]
+    fields: TField[],
   ): Promise<TField[]> {
     return await Promise.all(
       fields.map(async (field) => {
         if (["array", "object"].includes(field.type)) {
-          field.fields = await this.resolveDeepFields(field.fields ?? [])
+          field.fields = await this.resolveDeepFields(field.fields ?? []);
         }
 
-        return await this.resolveField(field)
-      })
-    )
+        return await this.resolveField(field);
+      }),
+    );
   }
 
   static async toFields(
     name: string | undefined,
-    schema: unknown
+    schema: unknown,
   ): Promise<TField[]> {
-    return await this.resolveDeepFields(this._toFields(name, schema))
+    return await this.resolveDeepFields(this._toFields(name, schema));
+  }
+
+  static flatten(fields: TField[], parentName?: string): TField[] {
+    return fields.flatMap((field) => {
+      if (field.fields instanceof Array && field.fields.length) {
+        return this.flatten(
+          field.fields,
+          [parentName, field.name].filter(Boolean).join("."),
+        );
+      }
+
+      delete field.parentName;
+
+      field.name = [parentName, field.name].filter(Boolean).join(".");
+
+      return field;
+    });
   }
 }
