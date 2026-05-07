@@ -501,9 +501,9 @@ export class JSONSchemaToFields {
     excludeArray?: boolean;
   }): TField[] {
     return fields.flatMap((field) => {
-      if (field.fields instanceof Array && field.fields.length) {
-        if (opts?.excludeArray && field.type === "array") return [];
+      if (opts?.excludeArray && field.type === "array") return [];
 
+      if (field.fields instanceof Array && field.fields.length) {
         return this.flatten(
           field.fields,
           {
