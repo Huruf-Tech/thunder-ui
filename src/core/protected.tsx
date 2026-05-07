@@ -6,11 +6,13 @@ import { ThunderSDK } from "thunder-sdk"
 import { LoadingScreen } from "./custom/LoadingScreen"
 import { IconBug, IconLoader, IconLogin } from "@tabler/icons-react"
 import { useParams } from "react-router"
+import { refreshThunder } from "./lib/thunder"
 
 function ProtectedWithOAuth({ children }: { children: React.ReactNode }) {
   const [ready, setReady] = React.useState(false)
   const [error, setError] = React.useState<Error | null>(null)
   const auth = useAuth()
+  const logout = useLogout()
 
   React.useEffect(() => {
     if (auth.isAuthenticated) {
@@ -46,9 +48,8 @@ function ProtectedWithOAuth({ children }: { children: React.ReactNode }) {
     auth.signinRedirect()
   }
 
-  const handleLogout = () => {
-    auth.removeUser()
-    auth.revokeTokens(["refresh_token", "access_token"])
+  const handleLogout = async () => {
+    await logout()
 
     setReady(false)
   }
@@ -233,6 +234,8 @@ export function useLogout() {
         // Ignore errors
       }
     }
+
+    await refreshThunder()
 
     window.location.href = import.meta.env.BASE_URL || "/"
   }

@@ -1,6 +1,6 @@
 import { StrictMode } from "react"
 import { createRoot } from "react-dom/client"
-import { ThunderSDK } from "thunder-sdk"
+import { initThunder } from "@/core/lib/thunder.ts"
 
 import "./index.css"
 
@@ -9,30 +9,14 @@ import { TooltipProvider } from "@/components/ui/tooltip"
 
 import App from "./App.tsx"
 
-ThunderSDK.init({
-  axiosConfig: {
-    baseURL: import.meta.env.VITE_API_BASE_URL || window.location.origin,
-    withCredentials: true,
-  },
-  cache: {
-    getter: (key: string) => localStorage.getItem(key) || undefined,
-    setter: (key: string, value: string) => {
-      localStorage.setItem(key, value)
-      return true
-    },
-    delete: async (key: string) => {
-      localStorage.removeItem(key)
-      return true
-    },
-  },
+initThunder().then(() => {
+  createRoot(document.getElementById("root")!).render(
+    <StrictMode>
+      <ThemeProvider>
+        <TooltipProvider>
+          <App />
+        </TooltipProvider>
+      </ThemeProvider>
+    </StrictMode>
+  )
 })
-
-createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <ThemeProvider>
-      <TooltipProvider>
-        <App />
-      </TooltipProvider>
-    </ThemeProvider>
-  </StrictMode>
-)
