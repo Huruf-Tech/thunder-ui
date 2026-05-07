@@ -45,7 +45,7 @@ export function ActionBar({
 }`}</style>
 
       <div
-        className={cn("t-panel-slide", containerClassName)}
+        className={cn("t-panel-slide rounded-full", containerClassName)}
         data-open="false"
         {...props}
       >
