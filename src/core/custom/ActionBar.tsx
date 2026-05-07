@@ -1,3 +1,5 @@
+import { cn } from "@/lib/utils"
+
 export function ActionBar({
   children,
   containerClassName = "",
@@ -7,7 +9,7 @@ export function ActionBar({
   containerClassName?: string
 } & React.ComponentProps<"div">) {
   return (
-    <div className={containerClassName}>
+    <>
       <style>{`:root {
   --panel-open-dur: 400ms;
   --panel-close-dur: 350ms;
@@ -42,9 +44,13 @@ export function ActionBar({
   .t-panel-slide { transition: none !important; }
 }`}</style>
 
-      <div className="t-panel-slide" data-open="false" {...props}>
+      <div
+        className={cn("t-panel-slide", containerClassName)}
+        data-open="false"
+        {...props}
+      >
         {children}
       </div>
-    </div>
+    </>
   )
 }

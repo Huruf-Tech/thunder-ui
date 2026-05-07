@@ -18,46 +18,40 @@ export function Breadcrumb() {
     [location.pathname]
   )
 
-  const crumbs = parts.slice(0, parts.length - 1)
+  if (parts.length <= 1) return null
 
-  return parts.length > 1 ? (
+  const lastPart = parts.at(-1)
+  const crumbs = parts.slice(0, -1)
+
+  return (
     <_Breadcrumb>
       <BreadcrumbList>
         {crumbs.map((crumb, index) => {
+          const to = "/" + parts.slice(0, index + 1).join("/")
+
           return (
-            <React.Fragment key={crumb + index}>
-              {index === 0 ? (
-                <BreadcrumbItem>
-                  <BreadcrumbLink
-                    render={<Link to={"/" + crumb} replace viewTransition />}
-                  >
+            <React.Fragment key={to}>
+              <BreadcrumbItem>
+                <BreadcrumbLink
+                  render={<Link to={to} replace viewTransition />}
+                >
+                  {index === 0 ? (
                     <IconBrandGoogleHome className="size-4" />
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-              ) : (
-                <BreadcrumbItem>
-                  <BreadcrumbLink
-                    render={
-                      <Link
-                        to={"/" + crumbs.join("/")}
-                        replace
-                        viewTransition
-                      />
-                    }
-                  >
-                    {crumb}
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-              )}
+                  ) : (
+                    crumb
+                  )}
+                </BreadcrumbLink>
+              </BreadcrumbItem>
 
               <BreadcrumbSeparator />
             </React.Fragment>
           )
         })}
+
         <BreadcrumbItem>
-          <BreadcrumbPage>{parts.at(-1)}</BreadcrumbPage>
+          <BreadcrumbPage>{lastPart}</BreadcrumbPage>
         </BreadcrumbItem>
       </BreadcrumbList>
     </_Breadcrumb>
-  ) : null
+  )
 }

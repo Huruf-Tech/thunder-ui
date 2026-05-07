@@ -12,7 +12,7 @@ import {
   SidebarFooter,
   SidebarHeader,
 } from "@/components/ui/sidebar"
-import { NavMenu } from "./NavMenu"
+import { NavMenu } from "./nav-menu"
 import { useLayout } from "@/core/layouts/layout-provider"
 import type { TRouteObject } from "@/core/router"
 import { Breadcrumb } from "@/core/layouts/shared/breadcrumb"

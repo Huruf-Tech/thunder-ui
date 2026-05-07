@@ -14,8 +14,12 @@ import { LayoutProvider } from "@/core/layouts/layout-provider"
 import { coreRoutes, type TRouteObject } from "@/core/router"
 import { Protected } from "@/core/protected"
 import { LoadingProvider } from "@/core/context/LoaderProvider"
+<<<<<<< Updated upstream
 import { ActionSheet } from "@/components/ActionSheet"
 import { ActionSheetRef } from "@/registry/ActionSheet"
+=======
+import { resolveUrl } from "@/lib/utils"
+>>>>>>> Stashed changes
 import { SelectTenant } from "@/core/pages/tenant/select-tenant"
 import { NotFound } from "./core/layouts/shared/not-found"
 import { resolveUrl } from "./core/lib/utils"
@@ -65,13 +69,7 @@ const router = createBrowserRouter(
 
 export function App() {
   const currentUri = resolveUrl()
-
-  const children = (
-    <>
-      <RouterProvider router={router} />
-      <ActionSheet ref={ActionSheetRef} />
-    </>
-  )
+  const children = <RouterProvider router={router} />
 
   return (
     <LoadingProvider>

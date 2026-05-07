@@ -19,7 +19,7 @@ import { Multiselect } from "../../custom/Multiselect"
 import { Tag, TagInput, TagInputBadges } from "../../custom/TagInput"
 import { AvatarUpload } from "../../custom/AvatarUpload"
 import { ImageUpload } from "../../custom/ImageUpload"
-import { handleUpload } from "../../lib/utils"
+import { formatDateForInput, handleUpload } from "../../lib/utils"
 import RenderArray from "./RenderArray"
 import RenderObject from "./RenderObject"
 
@@ -71,18 +71,6 @@ export default function RenderInput({ name, field }: TRenderInputProps) {
       <FieldError>{getError(name)}</FieldError>
     </Field>
   )
-}
-
-const formatDateForInput = (value: Date | string | null | undefined) => {
-  if (!value) return ""
-
-  const date = new Date(value)
-
-  const year = date.getFullYear()
-  const month = String(date.getMonth() + 1).padStart(2, "0")
-  const day = String(date.getDate()).padStart(2, "0")
-
-  return `${year}-${month}-${day}`
 }
 
 export const renderField = ({
@@ -300,7 +288,7 @@ export const renderField = ({
             type={field.type}
             placeholder={field.example ?? field.name}
             maxLength={field.maxLength}
-            value={value}
+            {...(field.type === "date" ? { defaultValue: value } : { value })}
             onChange={(e) =>
               def.field.onChange(
                 field.type === "number"

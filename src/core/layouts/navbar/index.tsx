@@ -3,7 +3,6 @@ import { useLayout } from "@/core/layouts/layout-provider"
 import type { TRouteObject } from "@/core/router"
 import { useTheme } from "@/components/theme-provider"
 import {
-  IconAlertCircle,
   IconArrowsExchange,
   IconDotsVertical,
   IconLogout,
@@ -16,8 +15,7 @@ import {
 } from "@tabler/icons-react"
 import { Button } from "@/components/ui/button"
 import Logo from "/logo.png"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Link, useLocation, useNavigate } from "react-router"
+import { Link, useLocation } from "react-router"
 import React from "react"
 import {
   Sidebar,
@@ -31,7 +29,7 @@ import {
   SidebarProvider,
   useSidebar,
 } from "@/components/ui/sidebar"
-import { NavMenu } from "./NavMenu"
+import { NavMenu } from "./nav-menu"
 import { appName } from "@/lib/utils"
 import {
   DropdownMenu,
@@ -48,6 +46,14 @@ import { getMe } from "@/core/lib/api"
 import { use } from "@/core/hooks/use"
 import { getAuthUrl, getInitials, transformImage } from "@/core/lib/utils"
 import { useLogout } from "@/core/protected"
+import { SubNav } from "./sub-nav"
+
+export type TNav = {
+  title: string
+  icon?: TablerIcon
+  path?: string
+  parent?: string
+}
 
 function allowDisplay(display?: boolean | (() => boolean)) {
   if (typeof display === "function") return display()
@@ -71,7 +77,6 @@ function SidebarTrigger() {
 export function Layout({ children }: { children: React.ReactNode }) {
   const { router } = useLayout()
   const location = useLocation()
-  const navigate = useNavigate()
   const { theme, setTheme } = useTheme()
   const isMobile = useIsMobile()
   const logout = useLogout()
@@ -80,18 +85,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const { data: me } = use(_me)
 
   const { routes, subRoutes } = React.useMemo(() => {
-    const routes: {
-      title: string
-      icon?: TablerIcon
-      path: string
-    }[] = []
-
-    const subRoutes: {
-      title: string
-      icon?: TablerIcon
-      path?: string
-      parent?: string
-    }[] = []
+    const routes: TNav[] = []
+    const subRoutes: TNav[] = []
 
     for (const route of router.routes as TRouteObject[]) {
       if (!allowDisplay(route.display)) continue
@@ -123,7 +118,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
     return { routes, subRoutes: Object.groupBy(subRoutes, (i) => i.parent!) }
   }, [router.routes])
 
-  const [, activeParent, activeChild] = React.useMemo(
+  const [, activeParent] = React.useMemo(
     () => location.pathname.split("/").filter(Boolean),
     [location.pathname]
   )
@@ -295,34 +290,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
               </div>
             </div>
 
-            {subNavItems?.length ? (
-              <Tabs
-                value={activeChild ?? ""}
-                onValueChange={(path) => {
-                  navigate([activeParent, path].join("/"), {
-                    viewTransition: true,
-                  })
-                }}
-                className="no-scrollbar overflow-x-auto mask-r-from-98%"
-              >
-                <TabsList variant="line">
-                  {subNavItems.map((nav) => (
-                    <TabsTrigger
-                      key={nav.title}
-                      value={nav.path}
-                      className="group-data-[variant=line]/tabs-list:data-active:after:rounded-xl"
-                    >
-                      {nav.icon ? <nav.icon /> : <IconAlertCircle />}
-                      {nav.title}
-                    </TabsTrigger>
-                  ))}
-                </TabsList>
-              </Tabs>
-            ) : null}
+            {subNavItems?.length ? <SubNav navMenu={subNavItems} /> : null}
           </header>
 
           {/* Main Content */}
-          <main className="relative mx-auto flex min-h-0 w-full max-w-6xl flex-1 flex-col gap-3 pt-5 pb-3">
+          <main className="relative mx-auto flex min-h-0 w-full max-w-6xl flex-1 flex-col gap-3 pt-5 pb-3 page-transition">
             {/* You can use Breadcrumb component here */}
             <Breadcrumb />
 
