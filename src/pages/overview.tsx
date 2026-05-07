@@ -8,7 +8,7 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty"
 import Logo from "/logo.png"
-import { appName } from "@/lib/utils"
+import { appName } from "@/core/lib/utils"
 
 export default function Overview() {
   return (

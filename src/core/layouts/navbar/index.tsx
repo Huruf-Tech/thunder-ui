@@ -30,7 +30,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import { NavMenu } from "./nav-menu"
-import { appName } from "@/lib/utils"
+import { appName } from "@/core/lib/utils"
 import {
   DropdownMenu,
   DropdownMenuContent,

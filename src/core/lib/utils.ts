@@ -1,5 +1,14 @@
 import { ThunderSDK } from "thunder-sdk";
 import { upload } from "@imagekit/react";
+import Package from "../../../package.json";
+
+export function appName() {
+  return Package.name
+    .replace("-", " ")
+    .split(" ")
+    .map((v) => ([2, 3].includes(v.length) ? v.toUpperCase() : v))
+    .join(" ");
+}
 
 export const handleUpload = async (
   file: File,
