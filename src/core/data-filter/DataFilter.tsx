@@ -99,47 +99,49 @@ export const DataFilter = <T extends TColumnConfig>({
         advanced,
       }}
     >
-      <Dialog>
-        <DialogTrigger
-          render={(props) => (
-            <div className="flex items-center gap-3">
-              <DataFilterSelectors renderInitial />
+      {columns.length ? (
+        <Dialog>
+          <DialogTrigger
+            render={(props) => (
+              <div className="flex items-center gap-3">
+                <DataFilterSelectors renderInitial />
 
-              <Button variant="outline" {...props}>
-                <IconFilter />
-                <span className="hidden md:block">Filters</span>
+                <Button variant="outline" {...props}>
+                  <IconFilter />
+                  <span className="hidden md:block">Filters</span>
+                </Button>
+              </div>
+            )}
+          ></DialogTrigger>
+          <DialogPopup>
+            <DialogHeader>
+              <DialogTitle>Filters</DialogTitle>
+              <DialogDescription>
+                Use below fields to apply the filters
+              </DialogDescription>
+            </DialogHeader>
+            <DialogPanel>
+              <DataFilterSelectors />
+            </DialogPanel>
+            <DialogFooter variant="bare">
+              <Button
+                variant="ghost"
+                onClick={() => setAdvanced(!advanced)}
+                className="mr-auto"
+              >
+                {advanced ? "Hide" : "Show"} Advanced
               </Button>
-            </div>
-          )}
-        ></DialogTrigger>
-        <DialogPopup>
-          <DialogHeader>
-            <DialogTitle>Filters</DialogTitle>
-            <DialogDescription>
-              Use below fields to apply the filters
-            </DialogDescription>
-          </DialogHeader>
-          <DialogPanel>
-            <DataFilterSelectors />
-          </DialogPanel>
-          <DialogFooter variant="bare">
-            <Button
-              variant="ghost"
-              onClick={() => setAdvanced(!advanced)}
-              className="mr-auto"
-            >
-              {advanced ? "Hide" : "Show"} Advanced
-            </Button>
 
-            <Button variant="destructive" onClick={handleReset}>
-              Reset
-            </Button>
-            <DialogClose
-              render={<Button variant="secondary">Dismiss</Button>}
-            ></DialogClose>
-          </DialogFooter>
-        </DialogPopup>
-      </Dialog>
+              <Button variant="destructive" onClick={handleReset}>
+                Reset
+              </Button>
+              <DialogClose
+                render={<Button variant="secondary">Dismiss</Button>}
+              ></DialogClose>
+            </DialogFooter>
+          </DialogPopup>
+        </Dialog>
+      ) : null}
     </DataFilterContext.Provider>
   )
 }

@@ -88,112 +88,80 @@ export function ListPage({ name }: IListPageProps) {
         </Alert>
       )}
       <div className="flex min-h-0 flex-1 flex-col gap-3">
-        <div className="flex items-center justify-between gap-2">
-          <div className="max-w-xl grow">
-            <DataFilter
-              columnsConfig={[
-                {
-                  id: "search",
-                  type: "string",
-                },
-                {
-                  id: "options",
-                  type: "option",
-                  placeholder: "Options",
-                  options: [
-                    { label: "hello", value: "hello" },
-                    { label: "world", value: "world" },
-                    { label: "cool", value: "cool" },
-                  ],
-                },
-                {
-                  id: "dateRange",
-                  type: "date",
-                  mode: "range",
-                },
-                {
-                  id: "numberRange",
-                  type: "number",
-                  displayName: "Number Range",
-                  min: 10,
-                  max: 100,
-                },
-                {
-                  id: "multiOption",
-                  type: "multiOption",
-                  displayName: "Multi Options",
-                  options: [
-                    { label: "hello", value: "hello" },
-                    { label: "world", value: "world" },
-                    { label: "cool", value: "cool" },
-                  ],
-                },
-              ]}
-              onValueChange={(value) => {
-                console.log(value)
-              }}
-            />
-          </div>
+        {!isLoading ? (
+          <div className="flex items-center justify-between gap-2">
+            <div className="max-w-xl grow">
+              <DataFilter
+                columnsConfig={[]}
+                onValueChange={(value) => {
+                  console.log(value)
+                }}
+              />
+            </div>
 
-          <div className="flex items-center gap-3">
-            {data?.results.length ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger
-                  render={
-                    <Button variant="outline" className="max-w-fit">
-                      Visibility
-                    </Button>
-                  }
-                ></DropdownMenuTrigger>
-
-                <DropdownMenuContent
-                  align="end"
-                  className="no-scrollbar max-h-100 overflow-auto"
-                >
-                  <DropdownMenuCheckboxItem
-                    checked={table.getIsAllColumnsVisible()}
-                    onCheckedChange={(value) =>
-                      table.toggleAllColumnsVisible(!!value)
+            <div className="flex items-center gap-3">
+              {data?.results.length ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger
+                    render={
+                      <Button variant="outline" className="max-w-fit">
+                        Visibility
+                      </Button>
                     }
+                  ></DropdownMenuTrigger>
+
+                  <DropdownMenuContent
+                    align="end"
+                    className="no-scrollbar max-h-100 overflow-auto"
                   >
-                    Select all
-                  </DropdownMenuCheckboxItem>
-                  {table
-                    .getAllColumns()
-                    .filter((col) => col.getCanHide())
-                    .map((column) => {
-                      return (
-                        <DropdownMenuCheckboxItem
-                          key={column.id}
-                          checked={column.getIsVisible()}
-                          onCheckedChange={(value) =>
-                            column.toggleVisibility(!!value)
-                          }
-                        >
-                          <span className="line-clamp-1 truncate">
-                            {column.columnDef.header as string}
-                          </span>
-                        </DropdownMenuCheckboxItem>
-                      )
-                    })}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            ) : null}
-            {ThunderSDK.isPermitted(ThunderSDK.getModule(name).create) && (
-              <Button onClick={() => navigate("form")}>Create</Button>
-            )}
-            {!!Card && (
-              <ToggleGroup value={view} onValueChange={(v) => v && setView(v)}>
-                <ToggleGroupItem value="table" aria-label="Table view">
-                  <IconTable className="size-4" />
-                </ToggleGroupItem>
-                <ToggleGroupItem value="card" aria-label="Card view">
-                  <IconLayoutGrid className="size-4" />
-                </ToggleGroupItem>
-              </ToggleGroup>
-            )}
+                    <DropdownMenuCheckboxItem
+                      checked={table.getIsAllColumnsVisible()}
+                      onCheckedChange={(value) =>
+                        table.toggleAllColumnsVisible(!!value)
+                      }
+                    >
+                      Select all
+                    </DropdownMenuCheckboxItem>
+                    {table
+                      .getAllColumns()
+                      .filter((col) => col.getCanHide())
+                      .map((column) => {
+                        return (
+                          <DropdownMenuCheckboxItem
+                            key={column.id}
+                            checked={column.getIsVisible()}
+                            onCheckedChange={(value) =>
+                              column.toggleVisibility(!!value)
+                            }
+                          >
+                            <span className="line-clamp-1 truncate">
+                              {column.columnDef.header as string}
+                            </span>
+                          </DropdownMenuCheckboxItem>
+                        )
+                      })}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : null}
+              {ThunderSDK.isPermitted(ThunderSDK.getModule(name).create) && (
+                <Button onClick={() => navigate("form")}>Create</Button>
+              )}
+              {!!Card && (
+                <ToggleGroup
+                  value={view}
+                  onValueChange={(v) => v && setView(v)}
+                >
+                  <ToggleGroupItem value="table" aria-label="Table view">
+                    <IconTable className="size-4" />
+                  </ToggleGroupItem>
+                  <ToggleGroupItem value="card" aria-label="Card view">
+                    <IconLayoutGrid className="size-4" />
+                  </ToggleGroupItem>
+                </ToggleGroup>
+              )}
+            </div>
           </div>
-        </div>
+        ) : null}
 
         <ActionBar
           containerClassName="absolute bottom-10 left-3 right-3 max-w-md mx-auto z-20 shadow-sm"
@@ -224,12 +192,9 @@ export function ListPage({ name }: IListPageProps) {
               )}
 
               <ConfirmationDialog
-                type="strict"
-                hint="Super"
                 trigger={
                   <Button size="sm" variant="destructive">
                     <IconTrash />
-                    Delete {selectedCount > 1 ? ` (${selectedCount})` : ""}
                   </Button>
                 }
                 onConfirm={async (dismiss) => {

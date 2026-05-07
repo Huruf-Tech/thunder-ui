@@ -11,6 +11,7 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
@@ -46,12 +47,15 @@ const getPinningStyles = (column: Column<any>): React.CSSProperties => {
 
 export function DataTable({ table }: DataTableProps) {
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-hidden rounded-xl border">
+    <div className="flex flex-col gap-3 overflow-hidden rounded-xl border">
       <div className="relative min-h-0 w-full flex-1 [&>div]:h-full [&>div]:overflow-y-auto">
         <Table className="table-fixed">
-          <TableHeader className="sticky top-0 z-10 bg-muted/30 *:[tr]:first:*:[th]:first:rounded-ss-xl *:[tr]:last:*:[th]:last:rounded-se-xl">
+          <TableHeader className="sticky top-0 z-10 bg-muted/30 backdrop-blur-sm *:[tr]:first:*:[th]:first:rounded-ss-xl *:[tr]:last:*:[th]:last:rounded-se-xl">
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
+              <TableRow
+                key={headerGroup.id}
+                className="border-b-2! border-background"
+              >
                 {headerGroup.headers.map((header) => {
                   const { column } = header
                   const isPinned = column.getIsPinned()
@@ -218,7 +222,7 @@ export function DataTable({ table }: DataTableProps) {
                   return (
                     <TableCell
                       key={cell.id}
-                      className="group relative truncate py-4 data-pinned:bg-background/90 data-pinned:border-primary! data-pinned:backdrop-blur-xs"
+                      className="group relative truncate border-b-2! border-background py-4 data-pinned:border-primary! data-pinned:bg-background/90 data-pinned:backdrop-blur-xs"
                       data-last-col={
                         isLastLeftPinned
                           ? "left"
@@ -242,6 +246,23 @@ export function DataTable({ table }: DataTableProps) {
               </TableRow>
             ))}
           </TableBody>
+
+          <TableFooter className="sticky bottom-0 z-10 bg-muted/30 backdrop-blur-sm">
+            {table.getFooterGroups().map((footerGroup) => (
+              <TableRow key={footerGroup.id}>
+                {footerGroup.headers.map((header) => (
+                  <TableCell key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.footer,
+                          header.getContext()
+                        )}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))}
+          </TableFooter>
         </Table>
       </div>
     </div>
