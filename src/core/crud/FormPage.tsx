@@ -18,14 +18,17 @@ import RenderInput from "./form/RenderInput"
 
 export const fieldsFromModuleMetadata = async (
   metadata: any,
-  type: "insert" | "update" | "output"
+  opts: {
+    type: "insert" | "update" | "output"
+    resolveRef?: boolean
+  }
 ) => {
   if (!metadata) return []
 
   if (typeof metadata.crud !== "object") return []
 
   const schema = (() => {
-    switch (type) {
+    switch (opts.type) {
       case "insert":
         return metadata.crud.insertSchema ?? metadata.crud.schema
 
@@ -38,7 +41,9 @@ export const fieldsFromModuleMetadata = async (
   })()
 
   // Convert json schema to fields data
-  const results = await JSONSchemaToFields.toFields(undefined, schema)
+  const results = await JSONSchemaToFields.toFields(undefined, schema, {
+    resolveRef: opts.resolveRef,
+  })
 
   console.log("Fields:", results)
 
@@ -111,10 +116,10 @@ export function FormPage({ name }: IFormPageProps) {
   React.useEffect(() => {
     ;(async () => {
       setFields(
-        await fieldsFromModuleMetadata(
-          metadata,
-          isEditMode ? "update" : "insert"
-        )
+        await fieldsFromModuleMetadata(metadata, {
+          type: isEditMode ? "update" : "insert",
+          resolveRef: true,
+        })
       )
     })()
   }, [metadata, isEditMode])

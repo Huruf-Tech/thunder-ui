@@ -45,7 +45,9 @@ import { JSONSchemaToFields, type TField } from "../lib/jsonSchemaToFields"
 import { Checkbox } from "@/components/ui/checkbox"
 
 const columnFromModuleMetadata = async (metadata: any) => {
-  const fields = await fieldsFromModuleMetadata(metadata, "output")
+  const fields = await fieldsFromModuleMetadata(metadata, {
+    type: "output",
+  })
 
   return JSONSchemaToFields.flatten(fields, { excludeArray: true })
 }

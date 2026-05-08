@@ -492,8 +492,15 @@ export class JSONSchemaToFields {
   static async toFields(
     name: string | undefined,
     schema: unknown,
+    opts?: {
+      resolveRef?: boolean;
+    },
   ): Promise<TField[]> {
-    return await this.resolveDeepFields(this._toFields(name, schema));
+    const fields = this._toFields(name, schema);
+
+    if (!opts?.resolveRef) return fields;
+
+    return await this.resolveDeepFields(fields);
   }
 
   static flatten(fields: TField[], opts?: {
