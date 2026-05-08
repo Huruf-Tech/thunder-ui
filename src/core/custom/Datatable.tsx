@@ -209,7 +209,7 @@ export function DataTable({ table }: DataTableProps) {
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
-                className="data-[state=selected]:bg-primary/10"
+                className="group data-[state=selected]:bg-primary/10"
               >
                 {row.getVisibleCells().map((cell) => {
                   const { column } = cell
@@ -222,7 +222,7 @@ export function DataTable({ table }: DataTableProps) {
                   return (
                     <TableCell
                       key={cell.id}
-                      className="group relative truncate border-b-2! border-background py-4 data-pinned:border-primary! data-pinned:bg-background/90 data-pinned:backdrop-blur-xs"
+                      className="group relative truncate border-b-2! group-data-[state=selected]:border-background py-4 data-pinned:border-primary! data-pinned:bg-background/90 data-pinned:backdrop-blur-xs"
                       data-last-col={
                         isLastLeftPinned
                           ? "left"

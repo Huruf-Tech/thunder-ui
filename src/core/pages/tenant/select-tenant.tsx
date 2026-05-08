@@ -61,7 +61,7 @@ export function SelectTenant() {
           <CardContent>
             <ScrollArea className="h-50 w-full">
               {data?.results.map(({ tenant }) => (
-                <Item variant="muted" size="xs" key={tenant._id as string}>
+                <Item variant="muted" size="xs" key={tenant._id as string} className="first:rounded-b-lg last:rounded-t-lg mb-1">
                   <ItemMedia variant="default">
                     <Avatar size="lg">
                       <AvatarImage
