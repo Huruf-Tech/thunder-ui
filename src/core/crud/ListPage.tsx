@@ -106,11 +106,7 @@ export function ListPage({ name }: IListPageProps) {
             header: ({ table }) => (
               <Checkbox
                 checked={
-                  table.getIsAllRowsSelected()
-                    ? true
-                    : table.getIsSomeRowsSelected()
-                      ? true
-                      : false
+                  table.getIsAllRowsSelected() || table.getIsSomeRowsSelected()
                 }
                 onCheckedChange={(value) => {
                   table.toggleAllRowsSelected(!!value)
@@ -145,10 +141,7 @@ export function ListPage({ name }: IListPageProps) {
     )
   )
 
-  const selectedRows = React.useMemo(
-    () => table.getFilteredSelectedRowModel().rows,
-    [table]
-  )
+  const selectedRows = table.getFilteredSelectedRowModel().rows
 
   React.useEffect(() => {
     ;(async () => {
