@@ -96,52 +96,59 @@ export function ListPage({ name }: IListPageProps) {
   const metadata = React.useMemo(() => ThunderSDK.getMetadata(name), [name])
   const [fields, setFields] = React.useState<TField[]>([])
 
-  const table = useReactTable({
-    data: data?.results ?? [],
-    columns: [
-      {
-        id: "select",
-        header: ({ table }) => (
-          <Checkbox
-            checked={
-              table.getIsAllRowsSelected()
-                ? true
-                : table.getIsSomeRowsSelected()
-                  ? true
-                  : false
-            }
-            onCheckedChange={(value) => {
-              table.toggleAllRowsSelected(!!value)
-            }}
-            aria-label="Select all"
-          />
-        ),
-        cell: ({ row }) => (
-          <Checkbox
-            checked={row.getIsSelected()}
-            disabled={!row.getCanSelect()}
-            onCheckedChange={(value) => {
-              row.toggleSelected(!!value)
-            }}
-            onClick={(event) => event.stopPropagation()}
-            aria-label="Select row"
-          />
-        ),
-        size: 30,
-        enableSorting: false,
-        enableHiding: false,
-        enableResizing: false,
-        enablePinning: false,
-      },
-      ...prepareColumns(fields),
-    ],
-    columnResizeMode: "onChange",
-    getCoreRowModel: getCoreRowModel(),
-    enableRowSelection: true,
-  })
+  const table = useReactTable(
+    React.useMemo(
+      () => ({
+        data: data?.results ?? [],
+        columns: [
+          {
+            id: "select",
+            header: ({ table }) => (
+              <Checkbox
+                checked={
+                  table.getIsAllRowsSelected()
+                    ? true
+                    : table.getIsSomeRowsSelected()
+                      ? true
+                      : false
+                }
+                onCheckedChange={(value) => {
+                  table.toggleAllRowsSelected(!!value)
+                }}
+                aria-label="Select all"
+              />
+            ),
+            cell: ({ row }) => (
+              <Checkbox
+                checked={row.getIsSelected()}
+                disabled={!row.getCanSelect()}
+                onCheckedChange={(value) => {
+                  row.toggleSelected(!!value)
+                }}
+                onClick={(event) => event.stopPropagation()}
+                aria-label="Select row"
+              />
+            ),
+            size: 30,
+            enableSorting: false,
+            enableHiding: false,
+            enableResizing: false,
+            enablePinning: false,
+          },
+          ...prepareColumns(fields),
+        ],
+        columnResizeMode: "onChange",
+        getCoreRowModel: getCoreRowModel(),
+        enableRowSelection: true,
+      }),
+      [data, fields]
+    )
+  )
 
-  const selectedRows = table.getFilteredSelectedRowModel().rows
-  const selectedCount = selectedRows.length
+  const selectedRows = React.useMemo(
+    () => table.getFilteredSelectedRowModel().rows,
+    [table]
+  )
 
   React.useEffect(() => {
     ;(async () => {
@@ -151,6 +158,8 @@ export function ListPage({ name }: IListPageProps) {
 
   const [view, setView] = React.useState<string>("table")
   const Card = cards[name as keyof typeof cards]
+
+  console.log("Rendered")
 
   return (
     <div className="relative flex h-full min-h-0 flex-1 flex-col gap-5">
@@ -239,15 +248,16 @@ export function ListPage({ name }: IListPageProps) {
 
         <ActionBar
           containerClassName="absolute bottom-10 left-3 right-3 max-w-md mx-auto z-20 shadow-sm"
-          data-open={!!selectedCount}
+          data-open={!!selectedRows.length}
         >
           <div className="flex w-full items-center justify-between gap-2 rounded-full border bg-background p-3 dark:bg-black">
             <p className="text-sm md:ltr:ml-3 md:rtl:mr-3">
-              {selectedCount} <span className="font-medium">selected</span>
+              {selectedRows.length}{" "}
+              <span className="font-medium">selected</span>
             </p>
 
             <div className="flex items-center gap-2">
-              {selectedCount === 1 && (
+              {selectedRows.length === 1 && (
                 <Button
                   size="icon-sm"
                   variant="outline"
