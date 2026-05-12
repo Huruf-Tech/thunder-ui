@@ -9,6 +9,7 @@ import { FormPage } from "@/core/crud/FormPage"
 import { ViewPage } from "@/core/crud/ViewPage"
 
 import Overview from "@/pages/overview"
+import { lists } from "@/overrides/crud/lists"
 
 export type TRouteObject = {
   name?: string
@@ -30,11 +31,18 @@ const rawRoutes = ThunderSDK.getModuleNames()
     const hasCreate = "create" in module
     const hasUpdate = "update" in module
 
+    const List = lists[name as keyof typeof lists]
+
     const children: TRouteObject[] = [
       {
         index: true,
         display: false,
-        Component: () => <ListPage group={group} name={name} />,
+        Component: () =>
+          List ? (
+            <List group={group} name={name} />
+          ) : (
+            <ListPage group={group} name={name} />
+          ),
       },
     ]
 
