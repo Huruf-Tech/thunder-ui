@@ -43,10 +43,25 @@ export const handleUpload = async (
 };
 
 export function transformImage(
-  url?: string | null,
+  src?: string | null,
   opts?: { width: number; height: number },
 ) {
-  return [url, `?tr=w-${opts?.width ?? 100},h-${opts?.height ?? 100}`].join("");
+  if (src) {
+    const tr = `w-${opts?.width ?? 100},h-${opts?.height ?? 100}`;
+
+    try {
+      const url = new URL(src);
+
+      url.searchParams.set(
+        "tr",
+        `w-${opts?.width ?? 100},h-${opts?.height ?? 100}`,
+      );
+
+      return url.toString();
+    } catch {
+      return [src, "?tr=", tr].join("");
+    }
+  }
 }
 
 export function getInitials(name?: string) {
