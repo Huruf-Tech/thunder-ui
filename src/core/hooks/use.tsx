@@ -12,6 +12,7 @@ type TRequester<T> = {
 
 type TUseOpts = {
   maxRetries?: number
+  triggerTarget?: string
 }
 
 export function use<T>(
@@ -28,12 +29,15 @@ export function use<T>(
   const _onExpire = typeof request === "object" ? request.onExpire : undefined
   const _offExpire = typeof request === "object" ? request.offExpire : undefined
 
+  const [can, setCan] = React.useState(!!options?.triggerTarget)
   const [isLoading, setLoading] = React.useState(true)
   const [count, setCount] = React.useState(0)
   const [data, setData] = React.useState<T | null>(null)
   const [error, setError] = React.useState<Error | null>(null)
 
   const SendRequest = React.useCallback(async () => {
+    if (!can) return
+
     setLoading(true)
 
     for (let attempt = 0; attempt <= (options?.maxRetries ?? 0); attempt++) {
@@ -53,12 +57,35 @@ export function use<T>(
         }
       }
     }
-  }, [_request, options?.maxRetries])
+  }, [_request, can, options?.maxRetries])
+
+  const triggerElement =
+    options?.triggerTarget && document.getElementById(options.triggerTarget)
+
+  React.useEffect(() => {
+    if (triggerElement) {
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) {
+            setCan(true)
+          }
+        },
+        {
+          root: null,
+          threshold: 0.2,
+        }
+      )
+
+      observer.observe(triggerElement)
+
+      return () => {
+        observer.disconnect()
+      }
+    }
+  }, [SendRequest, triggerElement])
 
   React.useEffect(() => {
     const handleChange = () => SendRequest()
-
-    SendRequest()
 
     window.addEventListener("online", handleChange)
 
@@ -76,7 +103,11 @@ export function use<T>(
       _offInvalidate?.(setData)
       _offExpire?.(handleExpire)
     }
-  }, [count, SendRequest, _onInvalidate, _offInvalidate, _onExpire, _offExpire])
+  }, [SendRequest, _onInvalidate, _offInvalidate, _onExpire, _offExpire])
+
+  React.useEffect(() => {
+    SendRequest()
+  }, [count, SendRequest])
 
   return {
     isLoading,
