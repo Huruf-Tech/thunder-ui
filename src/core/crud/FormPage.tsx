@@ -99,6 +99,7 @@ JSONSchemaToFields.resolveRef = async (ref, field) => {
 }
 
 export interface IFormPageProps {
+  group?: string
   name: string
 }
 

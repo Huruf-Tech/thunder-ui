@@ -11,7 +11,7 @@ import {
 } from "@tanstack/react-table"
 import { Button } from "@/components/ui/button"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
-import { useNavigate } from "react-router"
+import { Link, useNavigate } from "react-router"
 import { use } from "../hooks/use"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import {
@@ -43,6 +43,7 @@ import { DataFilter } from "../data-filter/DataFilter"
 import { fieldsFromModuleMetadata } from "./FormPage"
 import { JSONSchemaToFields, type TField } from "../lib/jsonSchemaToFields"
 import { Checkbox } from "@/components/ui/checkbox"
+import { getLocalUrl } from "../lib/utils"
 
 const columnFromModuleMetadata = async (metadata: any) => {
   const fields = await fieldsFromModuleMetadata(metadata, {
@@ -52,7 +53,10 @@ const columnFromModuleMetadata = async (metadata: any) => {
   return JSONSchemaToFields.flatten(fields, { excludeArray: true })
 }
 
-const prepareColumns = (fields: TField[]): ColumnDef<unknown, any>[] =>
+const prepareColumns = (
+  fields: TField[],
+  group?: string
+): ColumnDef<unknown, any>[] =>
   fields
     .filter((field) => field.type !== "hidden")
     .map((field) => ({
@@ -60,13 +64,39 @@ const prepareColumns = (fields: TField[]): ColumnDef<unknown, any>[] =>
       accessorKey: field.name!,
       size: 220,
       minSize: 120,
+      cell: ({ getValue }) =>
+        field.ref ? (
+          <Button
+            variant={"link"}
+            size="sm"
+            className="p-0"
+            render={
+              <Link
+                to={getLocalUrl(
+                  [
+                    group?.toLowerCase().replace(" ", "-"),
+                    field.ref,
+                    getValue(),
+                  ]
+                    .filter(Boolean)
+                    .join("/")
+                ).toString()}
+              >
+                {getValue()}
+              </Link>
+            }
+          ></Button>
+        ) : (
+          getValue()
+        ),
     }))
 
 export interface IListPageProps {
+  group?: string
   name: string
 }
 
-export function ListPage({ name }: IListPageProps) {
+export function ListPage({ group, name }: IListPageProps) {
   const navigate = useNavigate()
 
   const _get = React.useCallback(
@@ -131,13 +161,13 @@ export function ListPage({ name }: IListPageProps) {
             enableResizing: false,
             enablePinning: false,
           },
-          ...prepareColumns(fields),
+          ...prepareColumns(fields, group),
         ],
         columnResizeMode: "onChange",
         getCoreRowModel: getCoreRowModel(),
         enableRowSelection: true,
       }),
-      [data, fields]
+      [data, fields, group]
     )
   )
 
@@ -151,8 +181,6 @@ export function ListPage({ name }: IListPageProps) {
 
   const [view, setView] = React.useState<string>("table")
   const Card = cards[name as keyof typeof cards]
-
-  console.log("Rendered")
 
   return (
     <div className="relative flex h-full min-h-0 flex-1 flex-col gap-5">

@@ -62,10 +62,17 @@ export function resolveUrl(path?: string) {
     .replace(/\/$/, "");
 
   if (path) {
-    return [baseUrl, path.trim().replace(/^\//, "")].join("/");
+    return new URL([baseUrl, path.trim().replace(/^\//, "")].join("/"));
   }
 
-  return baseUrl;
+  return new URL(baseUrl);
+}
+
+export function getLocalUrl(path?: string) {
+  return resolveUrl(
+    [ThunderSDK.plugins.essentials.getTenant(), path?.trim().replace(/^\//, "")]
+      .filter(Boolean).join("/"),
+  );
 }
 
 export function getAuthUrl() {

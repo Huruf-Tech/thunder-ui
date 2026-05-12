@@ -324,6 +324,8 @@ export type TField = {
   multi?: boolean;
   minLength?: number;
   maxLength?: number;
+  minimum?: number;
+  maximum?: number;
   required?: boolean;
   enum?: string[] | Array<{ label: string; value: unknown }>;
   pattern?: string;
@@ -364,6 +366,8 @@ export class JSONSchemaToFields {
       label: z.string().optional(),
       minLength: z.number().optional(),
       maxLength: z.number().optional(),
+      minimum: z.number().optional(),
+      maximum: z.number().optional(),
       enum: z.array(z.string()).optional(),
       pattern: z.string().optional(),
       placeholder: z.string().optional(),
