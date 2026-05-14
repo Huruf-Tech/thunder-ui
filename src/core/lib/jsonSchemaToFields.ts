@@ -336,6 +336,7 @@ export type TField = {
   refLabel?: string | string[];
   refValue?: string;
   fieldHint?: string;
+  const?: unknown;
 };
 
 export class JSONSchemaToFields {
@@ -381,6 +382,7 @@ export class JSONSchemaToFields {
       refLabel: z.union([z.string(), z.string().array()]).optional(),
       refValue: z.string().optional(),
       fieldHint: z.string().optional(),
+      const: z.any(),
     })
     .loose();
 

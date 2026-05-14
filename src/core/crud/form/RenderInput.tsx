@@ -55,19 +55,25 @@ export default function RenderInput({ name, field }: TRenderInputProps) {
     [errors]
   )
 
+  if (field.type === "hidden" && (!field.required || !!field.const)) return null
+
   return (
     <Field>
-      <FieldLabel htmlFor={id}>
-        {field.label ?? name}
-        {field.required ? "" : " (optional)"}
-      </FieldLabel>
+      {field.type === "hidden" ? null : (
+        <FieldLabel htmlFor={id}>
+          {field.label ?? name}
+          {field.required ? "" : " (optional)"}
+        </FieldLabel>
+      )}
       {renderField({
         id,
         name,
         field,
         control,
       })}
-      <FieldDescription>{field.description}</FieldDescription>
+      {field.type === "hidden" ? null : (
+        <FieldDescription>{field.description}</FieldDescription>
+      )}
       <FieldError>{getError(name)}</FieldError>
     </Field>
   )
