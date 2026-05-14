@@ -261,6 +261,7 @@ export const renderField = ({
             <Textarea
               id={id}
               placeholder={field.example ?? field.name}
+              minLength={field.minLength}
               maxLength={field.maxLength}
               value={def.field.value ?? ""}
               onChange={(e) => def.field.onChange(e.target.value)}
@@ -271,34 +272,61 @@ export const renderField = ({
     }
   }
 
+  if (field.type === "date") {
+    if (field.fieldHint === "datetime-local") {
+      return (
+        <Controller
+          name={name}
+          control={control}
+          rules={{ required: field.required && "This field is required!" }}
+          render={(def) => (
+            <Input
+              id={id}
+              type="datetime-local"
+              placeholder={field.example ?? field.name}
+              defaultValue={formatDateForInput(def.field.value, true)}
+              onChange={(e) => def.field.onChange(e.target.valueAsNumber)}
+            />
+          )}
+        />
+      )
+    }
+
+    return (
+      <Controller
+        name={name}
+        control={control}
+        rules={{ required: field.required && "This field is required!" }}
+        render={(def) => (
+          <Input
+            id={id}
+            type={field.type}
+            placeholder={field.example ?? field.name}
+            defaultValue={formatDateForInput(def.field.value)}
+            onChange={(e) => def.field.onChange(e.target.valueAsNumber)}
+          />
+        )}
+      />
+    )
+  }
+
   return (
     <Controller
       name={name}
       control={control}
       rules={{ required: field.required && "This field is required!" }}
-      render={(def) => {
-        const value =
-          field.type === "date"
-            ? formatDateForInput(def.field.value)
-            : (def.field.value ?? "")
-
-        return (
-          <Input
-            id={id}
-            type={field.type}
-            placeholder={field.example ?? field.name}
-            maxLength={field.maxLength}
-            {...(field.type === "date" ? { defaultValue: value } : { value })}
-            onChange={(e) =>
-              def.field.onChange(
-                field.type === "number"
-                  ? e.target.valueAsNumber
-                  : e.target.value
-              )
-            }
-          />
-        )
-      }}
+      render={(def) => (
+        <Input
+          id={id}
+          type={field.type}
+          placeholder={field.example ?? field.name}
+          minLength={field.minLength}
+          maxLength={field.maxLength}
+          pattern={field.pattern}
+          value={def.field.value ?? ""}
+          onChange={(e) => def.field.onChange(e.target.value)}
+        />
+      )}
     />
   )
 }
