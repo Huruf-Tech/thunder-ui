@@ -331,13 +331,14 @@ export function ListPage({ group, name }: IListPageProps) {
                   </Button>
                 }
                 onConfirm={async (dismiss) => {
-                  const ids = selectedRows.map((row: any) => row._id)
+                  const ids = selectedRows.map((row: any) => row.original._id)
                   for (const id of ids) {
                     await ThunderSDK.getModule(name).del({
                       params: { id },
                     })
                   }
-
+                  table.resetRowSelection()
+                  get.invalidate()
                   dismiss()
                 }}
               />
