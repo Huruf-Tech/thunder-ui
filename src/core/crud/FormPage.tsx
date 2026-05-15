@@ -92,10 +92,14 @@ JSONSchemaToFields.resolveRef = async (ref, field) => {
     return item._id
   }
 
-  return results.map((item: any) => ({
-    label: resolveLabel(item),
-    value: resolveValue(item),
-  }))
+  return results.map((item: any) => {
+    const value = resolveValue(item)
+
+    return {
+      label: resolveLabel(item) || value,
+      value,
+    }
+  })
 }
 
 export interface IFormPageProps {

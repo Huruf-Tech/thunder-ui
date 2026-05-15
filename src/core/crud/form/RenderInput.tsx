@@ -291,7 +291,7 @@ export const renderField = ({
               type="datetime-local"
               placeholder={field.example ?? field.name}
               defaultValue={formatDateForInput(def.field.value, true)}
-              onChange={(e) => def.field.onChange(e.target.valueAsNumber)}
+              onChange={(e) => def.field.onChange(new Date(e.target.value))}
             />
           )}
         />
@@ -309,7 +309,7 @@ export const renderField = ({
             type={field.type}
             placeholder={field.example ?? field.name}
             defaultValue={formatDateForInput(def.field.value)}
-            onChange={(e) => def.field.onChange(e.target.valueAsNumber)}
+            onChange={(e) => def.field.onChange(new Date(e.target.value))}
           />
         )}
       />
