@@ -10,6 +10,7 @@ import { IconPhoto, IconUpload, IconX } from "@tabler/icons-react"
 
 export function ImageUpload({
   onUpload,
+  onRemove,
   multi = false,
   initialFile,
   initialFiles,
@@ -19,6 +20,7 @@ export function ImageUpload({
   initialFile?: FileMetadata
   initialFiles?: FileMetadata[]
   onUpload: (file: FileWithPreview, signal: AbortSignal) => Promise<void>
+  onRemove?: (id: string) => void
 } & React.ComponentProps<"input">) {
   const [busy, setBusy] = React.useState(false)
   const signalRef = React.useRef<AbortController>(null)
@@ -82,6 +84,7 @@ export function ImageUpload({
                 className="absolute -top-1 -right-1 opacity-0 transition-opacity group-hover:opacity-100"
                 onClick={() => {
                   removeFile(f.id)
+                  onRemove?.(f.id)
                   signalRef.current?.abort()
                 }}
               >
@@ -167,6 +170,7 @@ export function ImageUpload({
             className="h-6 px-2 text-xs text-muted-foreground"
             onClick={() => {
               removeFile(file!.id)
+              onRemove?.(file!.id)
               signalRef.current?.abort()
             }}
           >

@@ -110,6 +110,9 @@ export const renderField = ({
                 def.field.onChange(res.url)
               }
             }}
+            onRemove={() => {
+              def.field.onChange(null)
+            }}
           />
         )}
       />
@@ -166,6 +169,18 @@ export const renderField = ({
                   } else {
                     def.field.onChange(res.url)
                   }
+                }
+              }}
+              onRemove={(removedId) => {
+                if (field.multi) {
+                  const prev = Array.isArray(def.field.value)
+                    ? def.field.value
+                    : []
+                  def.field.onChange(
+                    prev.filter((url: string) => url !== removedId)
+                  )
+                } else {
+                  def.field.onChange(null)
                 }
               }}
             />
