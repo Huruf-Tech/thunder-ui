@@ -10,6 +10,7 @@ import { IconUser, IconX } from "@tabler/icons-react"
 
 export function AvatarUpload({
   onUpload,
+  onRemove,
   initialFile,
   showCancel = true,
   ...props
@@ -17,6 +18,7 @@ export function AvatarUpload({
   showCancel?: boolean
   initialFile?: FileMetadata
   onUpload: (file: FileWithPreview, signal: AbortSignal) => Promise<void>
+  onRemove?: () => void
 } & React.ComponentProps<"input">) {
   const [busy, setBusy] = React.useState(false)
   const signalRef = React.useRef<AbortController>(null)
@@ -92,6 +94,7 @@ export function AvatarUpload({
             className="absolute -top-1 -right-1"
             onClick={() => {
               removeFile(files[0]?.id)
+              onRemove?.()
               signalRef.current?.abort()
             }}
           >
