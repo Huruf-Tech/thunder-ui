@@ -370,7 +370,7 @@ export function ListPage({ group, name }: IListPageProps) {
               </EmptyDescription>
             </EmptyHeader>
           </Empty>
-        ) : view === "card" && Cards ? (
+        ) : view === "cards" && Cards ? (
           <Cards isLoading={isLoading} data={data?.results ?? []} />
         ) : (
           <DataTable table={table} />
