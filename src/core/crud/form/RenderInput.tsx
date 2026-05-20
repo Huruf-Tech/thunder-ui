@@ -345,7 +345,11 @@ export const renderField = ({
           maxLength={field.maxLength}
           pattern={field.pattern}
           value={def.field.value ?? ""}
-          onChange={(e) => def.field.onChange(e.target.value)}
+          onChange={(e) =>
+            def.field.onChange(
+              field.type === "number" ? e.target.valueAsNumber : e.target.value
+            )
+          }
         />
       )}
     />
