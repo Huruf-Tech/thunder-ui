@@ -102,6 +102,12 @@ export const coreRoutes = Object.entries(
     icon: icons[group],
     Component: () => <Outlet />,
     children,
+    display: () =>
+      children.some(
+        (child) =>
+          child.display === true ||
+          (typeof child.display === "function" && child.display())
+      ),
   } as TRouteObject
 })
 
