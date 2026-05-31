@@ -148,7 +148,7 @@ export function FormPage({ name }: IFormPageProps) {
       setFields(fields)
       setIsFieldsLoading(false)
     })()
-  }, [metadata, isEditMode])
+  }, [metadata, isEditMode, name, id, methods, navigate])
 
   const isFormLoading = isFieldsLoading || (isEditMode && isRecordLoading)
   const onSubmit: SubmitHandler<any> = async (body) => {
@@ -163,8 +163,6 @@ export function FormPage({ name }: IFormPageProps) {
       })
     }
   }
-
-  console.log("FormPage Render", { name, id, isEditMode, metadata, fields })
 
   return (
     <div className="min-h-0 flex-1 overflow-y-auto">

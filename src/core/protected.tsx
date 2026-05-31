@@ -5,12 +5,15 @@ import { useAuth } from "react-oidc-context"
 import { ThunderSDK } from "thunder-sdk"
 import { LoadingScreen } from "./custom/LoadingScreen"
 import { IconBug, IconLoader, IconLogin } from "@tabler/icons-react"
-import { useParams } from "react-router"
+import { useNavigate, useParams } from "react-router"
 import { refreshThunder } from "./lib/thunder"
+import { getAuthUrl } from "./lib/utils"
+import { AxiosError } from "axios"
 
 function ProtectedWithOAuth({ children }: { children: React.ReactNode }) {
   const [ready, setReady] = React.useState(false)
   const [error, setError] = React.useState<Error | null>(null)
+
   const auth = useAuth()
   const logout = useLogout()
 
@@ -114,6 +117,8 @@ function ProtectedWithSession({ children }: { children: React.ReactNode }) {
   const [loggedIn, setLoggedIn] = React.useState(true)
   const [error, setError] = React.useState<Error | null>(null)
 
+  const navigate = useNavigate()
+
   const sessionIsLoggedIn = React.useCallback(async () => {
     try {
       const res = await fetch(
@@ -140,13 +145,19 @@ function ProtectedWithSession({ children }: { children: React.ReactNode }) {
             setReady(true)
           })
           .catch((error) => {
+            if (error instanceof AxiosError && error.response?.status === 403) {
+              navigate("/select-tenant/#list")
+
+              return
+            }
+
             setError(error)
           })
       } else {
         setLoggedIn(false)
       }
     })()
-  }, [sessionIsLoggedIn])
+  }, [navigate, sessionIsLoggedIn])
 
   if (!loggedIn) {
     return (
@@ -167,6 +178,18 @@ function ProtectedWithSession({ children }: { children: React.ReactNode }) {
     )
   }
 
+  const gotoAccount = () => {
+    const authUrl = getAuthUrl()
+
+    authUrl.searchParams.set("returnUri", window.location.href)
+
+    window.location.href = authUrl.toString()
+  }
+
+  const handleRefresh = () => {
+    window.location.reload()
+  }
+
   if (error) {
     return (
       <LoadingScreen
@@ -176,7 +199,12 @@ function ProtectedWithSession({ children }: { children: React.ReactNode }) {
           error?.message ??
           "An unexpected error has been encountered! Please contact support."
         }
-      ></LoadingScreen>
+      >
+        <Button variant="outline" onClick={gotoAccount}>
+          Goto Account
+        </Button>
+        <Button onClick={handleRefresh}>Retry</Button>
+      </LoadingScreen>
     )
   }
 
