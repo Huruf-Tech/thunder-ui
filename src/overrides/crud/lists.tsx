@@ -1,9 +1,6 @@
-import type React from "react"
+import type { TListPagesOverride } from "@/core/types"
 
-export const lists: Record<
-  string,
-  React.ComponentType<{ group?: string; name: string }>
-> = {
+export const lists: TListPagesOverride = {
   // Add your custom list page components here
   // E.g: posts: PostPage
 }

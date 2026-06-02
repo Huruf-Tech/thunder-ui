@@ -1,14 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import type React from "react"
+import type { TCardsOverride } from "@/core/types"
 
-export const cards: Record<
-  string,
-  React.ComponentType<{
-    isLoading: boolean
-    data: any[]
-    fetcher: (projection: Record<string, 1>) => void
-  }>
-> = {
+export const cards: TCardsOverride = {
   // Add your custom cards components here
   // E.g: posts: PostCards
 }

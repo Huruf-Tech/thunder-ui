@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable react-refresh/only-export-components */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react"
@@ -15,6 +16,7 @@ import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { JSONSchemaToFields, type TField } from "../lib/jsonSchemaToFields"
 import RenderInput from "./form/RenderInput"
+import { forms } from "@/overrides/crud/forms"
 
 export const fieldsFromModuleMetadata = async (
   metadata: any,
@@ -60,7 +62,6 @@ JSONSchemaToFields.resolveRef = async (ref, field) => {
     return Object.fromEntries(fields.map((field) => [field, 1]))
   }
 
-  // eslint-disable-next-line react-hooks/rules-of-hooks
   const { results } = await ThunderSDK.useCache(
     async () =>
       (await ThunderSDK.getModule(ref).get({
@@ -116,37 +117,49 @@ export interface IFormPageProps {
 }
 
 export function FormPage({ name }: IFormPageProps) {
+  const CustomForm = forms[name as keyof typeof forms]
+
+  if (CustomForm) return <CustomForm />
+
   const { id } = useParams<{ id?: string }>()
+
   const navigate = useNavigate()
+
   const isEditMode = !!id
-  const metadata = React.useMemo(() => ThunderSDK.getMetadata(name), [name])
   const methods = useForm<any>()
-  const [fields, setFields] = React.useState<TField[]>([])
-  const [isFieldsLoading, setIsFieldsLoading] = React.useState(true)
+
   const [isRecordLoading, setIsRecordLoading] = React.useState(true)
+
+  React.useEffect(() => {
+    if (isEditMode)
+      void (async () => {
+        setIsRecordLoading(true)
+
+        const { results } = (await ThunderSDK.getModule(name)
+          .get({
+            params: { id },
+          })
+          .finally(() => {
+            setIsRecordLoading(false)
+          })) as { results: any[] }
+
+        if (results.length === 0) {
+          navigate(-1)
+          return
+        }
+
+        methods.reset(results[0])
+      })()
+  }, [id, isEditMode, methods, name, navigate])
+
+  const metadata = React.useMemo(() => ThunderSDK.getMetadata(name), [name])
+
+  const [isFieldsLoading, setIsFieldsLoading] = React.useState(true)
+  const [fields, setFields] = React.useState<TField[]>([])
 
   React.useEffect(() => {
     ;(async () => {
       setIsFieldsLoading(true)
-
-      if (isEditMode)
-        void (async () => {
-          setIsRecordLoading(true)
-          const { results } = (await ThunderSDK.getModule(name)
-            .get({
-              params: { id },
-            })
-            .finally(() => {
-              setIsRecordLoading(false)
-            })) as { results: any[] }
-
-          if (results.length === 0) {
-            navigate(-1)
-            return
-          }
-
-          methods.reset(results[0])
-        })()
 
       const fields = await fieldsFromModuleMetadata(metadata, {
         type: isEditMode ? "update" : "insert",
@@ -156,7 +169,7 @@ export function FormPage({ name }: IFormPageProps) {
       setFields(fields)
       setIsFieldsLoading(false)
     })()
-  }, [metadata, isEditMode, name, id, methods, navigate])
+  }, [isEditMode, metadata])
 
   const isFormLoading = isFieldsLoading || (isEditMode && isRecordLoading)
   const onSubmit: SubmitHandler<any> = async (body) => {

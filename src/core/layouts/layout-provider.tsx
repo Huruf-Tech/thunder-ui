@@ -1,6 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import React from "react"
 import { createBrowserRouter } from "react-router"
+import { Toaster } from "sonner"
 
 export interface ILayoutContext {
   router: ReturnType<typeof createBrowserRouter>
@@ -24,6 +25,20 @@ export function LayoutProvider({
   return (
     <LayoutContext.Provider value={{ router }}>
       <Layout>{children}</Layout>
+
+      <Toaster
+        theme={"light"}
+        position="bottom-center"
+        toastOptions={{
+          className: "!items-start !gap-3 !rounded-4xl !p-5",
+          classNames: {
+            icon: "[&>svg]:!size-7 [&>svg]:mt-2",
+            title: "!text-lg",
+            description: "!text-sm !text-muted-foreground",
+            actionButton: "!p-4 !h-6 !rounded-full capitalize",
+          },
+        }}
+      />
     </LayoutContext.Provider>
   )
 }

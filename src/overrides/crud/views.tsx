@@ -1,7 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import type React from "react"
+import type { TViewsOverride } from "@/core/types"
 
-export const views: Record<string, React.ComponentType<{ data: any }>> = {
+export const views: TViewsOverride = {
   // Add your custom detail components here
   // E.g: posts: PostDetails
 }

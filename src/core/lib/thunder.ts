@@ -1,4 +1,5 @@
 import { ThunderSDK } from "thunder-sdk";
+import { toast } from "sonner";
 
 export const initThunder = () =>
     ThunderSDK.init({
@@ -18,7 +19,7 @@ export const initThunder = () =>
                 localStorage.removeItem(key);
                 return true;
             },
-            keys: () => Object.keys(localStorage)
+            keys: () => Object.keys(localStorage),
         },
     });
 
@@ -27,4 +28,19 @@ export const cleanThunder = () => ThunderSDK.clean();
 export const refreshThunder = async () => {
     await cleanThunder();
     await initThunder();
+
+    ThunderSDK._axios?.interceptors.response.use(
+        (response) => response,
+        async (error) => {
+            if (error.response?.data?.messages?.length) {
+                error.response.data.messages.map((v: { message: string }) =>
+                    toast.error(v.message)
+                );
+            } else if (error?.message !== "canceled") {
+                toast.error(error.message);
+            }
+            
+            return Promise.reject(error);
+        },
+    );
 };
