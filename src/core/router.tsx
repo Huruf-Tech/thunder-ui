@@ -58,14 +58,15 @@ const rawRoutes = ThunderSDK.getModuleNames()
           path: `form/:id`,
           display: false,
           Component: () => <FormPage group={group} name={name} />,
-        },
-        {
-          path: `:id`,
-          display: false,
-          Component: () => <ViewPage group={group} name={name} />,
         }
       )
     }
+
+    children.push({
+      path: `:id`,
+      display: false,
+      Component: () => <ViewPage group={group} name={name} />,
+    })
 
     return {
       name: name,
