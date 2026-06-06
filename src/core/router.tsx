@@ -11,6 +11,7 @@ import { ViewPage } from "@/core/crud/ViewPage"
 import Overview from "@/pages/overview"
 import { lists } from "@/overrides/crud/lists"
 import { allowDisplayRoute } from "./lib/utils"
+import { routes } from "@/overrides/routes"
 
 export type TRouteObject = {
   name?: string
@@ -22,6 +23,12 @@ export type TRouteObject = {
 
 const rawRoutes = ThunderSDK.getModuleNames()
   .map((name) => {
+    const overrideRoute = routes[name as keyof typeof routes]
+
+    if (overrideRoute) {
+      return overrideRoute
+    }
+
     if (!ThunderSDK.getMetadata(name)) {
       return
     }
