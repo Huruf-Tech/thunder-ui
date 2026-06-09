@@ -8,7 +8,7 @@ import { useNavigate, useParams } from "react-router"
 import { refreshThunder } from "./lib/thunder"
 import { getAuthUrl } from "./lib/utils"
 import { isAxiosError } from "axios"
-import { useAuth } from "./context/AuthProvider"
+import { useAuth, useOptionalAuth } from "./context/AuthProvider"
 
 function ProtectedWithOAuth({ children }: { children: React.ReactNode }) {
   const [ready, setReady] = React.useState(false)
@@ -237,12 +237,12 @@ export function Protected({ children }: { children: React.ReactNode }) {
 }
 
 export function useLogout() {
-  const auth = useAuth()
+  const auth = useOptionalAuth()
 
   return async () => {
     if (import.meta.env.VITE_OAUTH_CLIENT_ID) {
-      auth.userManager.removeUser()
-      auth.userManager.revokeTokens(["refresh_token", "access_token"])
+      auth?.userManager.removeUser()
+      auth?.userManager.revokeTokens(["refresh_token", "access_token"])
     } else {
       try {
         await fetch(
