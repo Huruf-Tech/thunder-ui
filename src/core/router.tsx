@@ -29,7 +29,7 @@ const rawRoutes = moduleNames
   .map((name) => {
     const overrideRoute = routes[name as keyof typeof routes]
 
-    if (overrideRoute) {
+    if (overrideRoute && !overrideRoute.merge) {
       return overrideRoute
     }
 
@@ -89,6 +89,7 @@ const rawRoutes = moduleNames
         ThunderSDK.isPermitted(name, "create"),
       Component: () => <Outlet />,
       children,
+      ...overrideRoute,
     }
   })
   .filter(Boolean) as TRouteObject[]
