@@ -251,7 +251,7 @@ export function DataTable({ table }: DataTableProps) {
                     ref={virtualizer.measureElement}
                     data-index={virtualRow.index}
                     data-state={row.getIsSelected() && "selected"}
-                    className="absolute top-0 left-0 flex min-h-10 w-full data-[state=selected]:bg-primary/10"
+                    className="absolute top-0 ltr:left-0 rtl:right-0 flex min-h-10 w-full data-[state=selected]:bg-primary/10"
                     style={{
                       transform: `translateY(${virtualRow.start}px)`,
                     }}
