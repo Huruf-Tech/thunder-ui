@@ -28,7 +28,6 @@ import {
   IconAlertCircle,
   IconDots,
   IconPlus,
-  IconTrash,
   IconUser,
 } from "@tabler/icons-react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
