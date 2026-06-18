@@ -21,11 +21,15 @@ export type TRouteObject = {
   children?: TRouteObject[]
 } & RouteObject
 
-const rawRoutes = ThunderSDK.getModuleNames()
+const moduleNames = Array.from(
+  new Set([...ThunderSDK.getModuleNames(), ...Object.keys(routes)])
+)
+
+const rawRoutes = moduleNames
   .map((name) => {
     const overrideRoute = routes[name as keyof typeof routes]
 
-    if (overrideRoute) {
+    if (overrideRoute && !overrideRoute.merge) {
       return overrideRoute
     }
 
@@ -85,6 +89,7 @@ const rawRoutes = ThunderSDK.getModuleNames()
         ThunderSDK.isPermitted(name, "create"),
       Component: () => <Outlet />,
       children,
+      ...overrideRoute,
     }
   })
   .filter(Boolean) as TRouteObject[]

@@ -5,6 +5,10 @@
 @import "@fontsource-variable/geist";
 @import "./core/styles/index.css";
 
+@source inline(
+  "grid grid-cols-{1..12} grid-rows-{1..12} gap-{1..10} grid-flow-{col|row} col-span-{1..12}"
+);
+
 @custom-variant dark (&:is(.dark *));
 
 :root {
@@ -129,7 +133,7 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-white dark:bg-black text-foreground;
   }
   button:not(:disabled),
   [role="button"]:not(:disabled) {

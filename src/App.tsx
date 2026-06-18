@@ -5,8 +5,6 @@ import {
   Navigate,
 } from "react-router"
 
-/** You can change the following layout from "sidebar" to some other layout */
-import { Layout } from "@/core/layouts/navbar"
 import { LayoutProvider } from "@/core/layouts/layout-provider"
 
 /** Create a router with the core routes as the child routes of the root path */
@@ -15,6 +13,7 @@ import { Protected } from "@/core/protected"
 import { SelectTenant } from "@/core/pages/tenant/select-tenant"
 import { NotFound } from "./core/layouts/shared/not-found"
 import AppWrapper from "./core/AppWrapper"
+import { Onboarding } from "./components/onboarding"
 
 const router = createBrowserRouter(
   [
@@ -44,7 +43,7 @@ const router = createBrowserRouter(
       path: "/:tenant",
       Component: () => (
         <Protected>
-          <LayoutProvider layout={Layout} router={router}>
+          <LayoutProvider router={router}>
             <Outlet />
           </LayoutProvider>
         </Protected>
@@ -62,6 +61,7 @@ const router = createBrowserRouter(
 export function App() {
   return (
     <AppWrapper>
+      <Onboarding />
       <RouterProvider router={router} />
     </AppWrapper>
   )

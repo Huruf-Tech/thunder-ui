@@ -3,6 +3,10 @@ import React from "react"
 import { createBrowserRouter } from "react-router"
 import { Toaster } from "sonner"
 
+import { Layout as NavbarLayout } from "@/core/layouts/navbar"
+import { Layout as MobileLayout } from "@/core/layouts/mobile"
+import { Layout as SidebarLayout } from "@/core/layouts/sidebar"
+
 export interface ILayoutContext {
   router: ReturnType<typeof createBrowserRouter>
 }
@@ -10,18 +14,28 @@ export interface ILayoutContext {
 const LayoutContext = React.createContext<ILayoutContext | null>(null)
 
 export interface ILayoutProps {
-  layout: React.ComponentType<{
+  layout?: React.ComponentType<{
     children: React.ReactNode
   }>
   router: ReturnType<typeof createBrowserRouter>
   children: React.ReactNode
 }
 
-export function LayoutProvider({
-  children,
-  layout: Layout,
-  router,
-}: ILayoutProps) {
+export function LayoutProvider({ children, layout, router }: ILayoutProps) {
+  const Layout =
+    layout ??
+    (() => {
+      switch (import.meta.env.VITE_APP_LAYOUT) {
+        case "mobile":
+          return MobileLayout
+
+        case "sidebar":
+          return SidebarLayout
+
+        default:
+          return NavbarLayout
+      }
+    })()
 
   return (
     <LayoutContext.Provider value={{ router }}>

@@ -12,7 +12,8 @@ import {
   IconUserCircle,
 } from "@tabler/icons-react"
 import { Button } from "@/components/ui/button"
-import Logo from "/logo.png"
+import LogoDark from "/logo-dark.png"
+import LogoLight from "/logo-light.png"
 import { Link, useLocation } from "react-router"
 import React from "react"
 import {
@@ -45,6 +46,7 @@ import { getAuthUrl, getInitials, transformImage } from "@/core/lib/utils"
 import { useLogout } from "@/core/protected"
 import { SubNav } from "../shared/sub-nav"
 import { ThunderSDK } from "thunder-sdk"
+import { Container } from "@/components/container"
 
 function SidebarTrigger() {
   const { toggleSidebar } = useSidebar()
@@ -76,7 +78,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
   const { data: me } = use(_me)
 
-  const { routes, subRoutes } = React.useMemo(() => getNavRoutes(router.routes), [router.routes])
+  const { routes, subRoutes } = React.useMemo(
+    () => getNavRoutes(router.routes),
+    [router.routes]
+  )
 
   const [, activeParent] = React.useMemo(
     () => location.pathname.split("/").filter(Boolean),
@@ -94,13 +99,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <SidebarProvider defaultOpen={false}>
-      <Sidebar collapsible="icon" variant="floating">
+      <Sidebar collapsible="icon" variant="floating" className="bg-background">
         <SidebarHeader>
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton className="rounded-md py-0! ring-transparent group-data-[collapsible=icon]:size-8! hover:bg-transparent! group-data-[collapsible=icon]:[&>img]:block">
                 <img
-                  src={Logo}
+                  src={resolvedTheme === "dark" ? LogoDark : LogoLight}
                   alt="Logo"
                   className="hidden h-5 w-auto shrink-0"
                 />
@@ -209,9 +214,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
           </SidebarMenu>
         </SidebarFooter>
       </Sidebar>
-      <SidebarInset className="h-svh overflow-hidden p-3 md:p-2">
+      <SidebarInset className="h-svh overflow-hidden">
         <div className="@container/main relative flex h-full w-full flex-1 flex-col gap-2 rounded-xl border-border xl:border">
-          <header className="mx-auto w-full max-w-6xl">
+          <header className="mx-auto w-full max-w-6xl p-3 md:p-2">
             <div className="mx-auto flex items-center gap-3 py-2">
               {/* Logo / Brand */}
               <div className="flex shrink-0 items-center gap-3">
@@ -237,12 +242,21 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 </Button>
 
                 <Button
+                  className="hidden md:inline-flex"
                   variant="destructive"
                   onClick={logout}
-                  id="logout-button"
                   aria-label="Logout"
                 >
                   <IconLogout className="size-4" /> Logout
+                </Button>
+                <Button
+                  className="inline-flex md:hidden"
+                  variant="destructive"
+                  onClick={logout}
+                  size={"icon"}
+                  aria-label="Logout"
+                >
+                  <IconLogout className="size-4" />
                 </Button>
 
                 <SidebarTrigger />
@@ -253,9 +267,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
           </header>
 
           {/* Main Content */}
-          <main className="page-transition relative mx-auto flex min-h-0 w-full max-w-6xl flex-1 flex-col gap-3 pt-5 pb-3">
+          <main className="page-transition relative mx-auto flex min-h-0 w-full flex-1 flex-col gap-3 pb-3">
             {/* You can use Breadcrumb component here */}
-            <Breadcrumb />
+            <Container>
+              <Breadcrumb />
+            </Container>
 
             {children}
           </main>
