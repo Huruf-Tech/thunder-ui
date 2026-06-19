@@ -1,12 +1,14 @@
 import {
   useFileUpload,
+  formatBytes,
   type FileMetadata,
   type FileWithPreview,
 } from "@/core/hooks/use-file-upload"
 import { Button } from "@/components/ui/button"
 import React from "react"
 import { Spinner } from "@/components/ui/spinner"
-import { IconPhoto, IconUpload, IconX } from "@tabler/icons-react"
+import { IconPhoto, IconUpload, IconX, IconInfoCircle } from "@tabler/icons-react"
+import { toast } from "sonner"
 
 export function ImageUpload({
   onUpload,
@@ -31,8 +33,11 @@ export function ImageUpload({
     return []
   }, [initialFile, initialFiles])
 
+  const MAX_SIZE = 2 * 1024 * 1024
+  const MAX_SIZE_LABEL = formatBytes(MAX_SIZE)
+
   const [
-    { files, isDragging },
+    { files, isDragging, errors },
     {
       removeFile,
       openFileDialog,
@@ -45,7 +50,7 @@ export function ImageUpload({
   ] = useFileUpload({
     initialFiles: initFiles.length ? initFiles : undefined,
     multiple: multi,
-    maxSize: 5 * 1024 * 1024,
+    maxSize: MAX_SIZE,
     accept: "image/*",
     onFilesAdded: (addedFiles) => {
       for (const f of addedFiles) {
@@ -56,6 +61,35 @@ export function ImageUpload({
       }
     },
   })
+
+
+  // Show toast when file validation errors occur (e.g. file too large)
+  React.useEffect(() => {
+    if (errors.length > 0) {
+      toast.error(errors[0])
+    }
+  }, [errors])
+
+  // Show a reminder toast when user drags a file over the drop zone
+  const dragToastShown = React.useRef(false)
+  const handleDragEnterWithAlert = (e: React.DragEvent<HTMLElement>) => {
+    handleDragEnter(e)
+    if (!dragToastShown.current) {
+      dragToastShown.current = true
+      toast.info(`Maximum file size is ${MAX_SIZE_LABEL}`, { duration: 2000 })
+    }
+  }
+  const handleDragLeaveWithReset = (e: React.DragEvent<HTMLElement>) => {
+    handleDragLeave(e)
+    // Only reset when truly leaving the container, not when crossing child elements
+    if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+      dragToastShown.current = false
+    }
+  }
+  const handleDropWithReset = (e: React.DragEvent<HTMLElement>) => {
+    handleDrop(e)
+    dragToastShown.current = false
+  }
 
   if (multi) {
     return (
@@ -98,10 +132,10 @@ export function ImageUpload({
             type="button"
             className="flex size-20 items-center justify-center rounded-lg border border-dashed border-input transition-colors hover:bg-accent/50 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 data-[dragging=true]:bg-accent/50"
             onClick={openFileDialog}
-            onDragEnter={handleDragEnter}
-            onDragLeave={handleDragLeave}
+            onDragEnter={handleDragEnterWithAlert}
+            onDragLeave={handleDragLeaveWithReset}
             onDragOver={handleDragOver}
-            onDrop={handleDrop}
+            onDrop={handleDropWithReset}
             data-dragging={isDragging || undefined}
             disabled={busy}
           >
@@ -121,6 +155,11 @@ export function ImageUpload({
           tabIndex={-1}
           disabled={busy}
         />
+
+        <p className="flex items-center gap-1 text-[11px] text-muted-foreground">
+          <IconInfoCircle className="size-3 shrink-0" />
+          Max file size: {MAX_SIZE_LABEL}
+        </p>
       </div>
     )
   }
@@ -136,10 +175,10 @@ export function ImageUpload({
         className="relative flex h-32 w-full items-center justify-center overflow-hidden rounded-lg border border-dashed border-input transition-colors outline-none hover:bg-accent/50 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 has-disabled:pointer-events-none has-disabled:opacity-50 has-[img]:border-none data-[dragging=true]:bg-accent/50"
         data-dragging={isDragging || undefined}
         onClick={openFileDialog}
-        onDragEnter={handleDragEnter}
-        onDragLeave={handleDragLeave}
+        onDragEnter={handleDragEnterWithAlert}
+        onDragLeave={handleDragLeaveWithReset}
         onDragOver={handleDragOver}
-        onDrop={handleDrop}
+        onDrop={handleDropWithReset}
         disabled={busy}
       >
         {busy ? (
@@ -155,6 +194,9 @@ export function ImageUpload({
             <IconPhoto className="size-6 opacity-40" />
             <span className="text-xs text-muted-foreground">
               Click to upload or drag and drop
+            </span>
+            <span className="text-[11px] text-muted-foreground/70">
+              Max file size: {MAX_SIZE_LABEL}
             </span>
           </div>
         )}
