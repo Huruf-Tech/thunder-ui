@@ -169,10 +169,11 @@ export interface IListPageProps {
   name: string;
 }
 
+const DEFAULT_LIMIT = import.meta.env.VITE_DEFAULT_PAGINATION_LIMIT ?? 100;
+
 export function ListPage({ group, name }: IListPageProps) {
   const navigate = useNavigate();
-
-  const DEFAULT_LIMIT = import.meta.env.VITE_DEFAULT_PAGINATION_LIMIT;
+  
   const [filters, setFilters] = React.useState<TFilterValue>();
   const [fields, setFields] = React.useState<TField[]>([]);
   const [page, setPage] = React.useState(0);
