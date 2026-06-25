@@ -43,7 +43,7 @@ import {
 import { fieldsFromModuleMetadata } from "./FormPage"
 import { JSONSchemaToFields, type TField } from "../lib/jsonSchemaToFields"
 import { Checkbox } from "@/components/ui/checkbox"
-import { getLocalUrl, transformImage } from "../lib/utils"
+import { getLocalUrl, isMobileLayout, transformImage } from "../lib/utils"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Filters, type TFilterValue } from "./filters"
 import { filterToMongo } from "./filters/lib/filterToMongo"
@@ -55,9 +55,10 @@ import {
 } from "@/components/ui/popover"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Badge } from "@/components/ui/badge"
-import { Container } from "@/components/container"
+import { Container } from "@/core/custom/Container"
 import { Pagination } from "@/components/pagination"
 import { toast } from "sonner"
+import { cn } from "@/lib/utils"
 
 const columnFromModuleMetadata = async (metadata: any, resolveRef = false) => {
   const fields = await fieldsFromModuleMetadata(metadata, {
@@ -254,7 +255,8 @@ export function ListPage({ group, name }: IListPageProps) {
   })
 
   const error = countError || getError
-  const isLoading = getLoading
+  const isLoading = !!!getData?.results.length && getLoading
+  // const isRefetching = getLoading
 
   const fetcher = React.useCallback(
     (project?: Record<string, 1>, sort?: Record<string, 1 | -1>) => {
@@ -345,102 +347,169 @@ export function ListPage({ group, name }: IListPageProps) {
   }, [metadata])
 
   return (
-    <div className={"relative flex h-full min-h-0 flex-1 flex-col gap-3"}>
-      {error && (
-        <Container className="mb-2">
-          <Alert variant="destructive">
-            <IconAlertCircle />
-            <AlertTitle>Error Occurred!</AlertTitle>
-            <AlertDescription>{error.message}</AlertDescription>
-          </Alert>
-        </Container>
-      )}
-      <Container className="flex flex-wrap-reverse items-center justify-between gap-2 lg:flex-nowrap">
-        <Filters fields={fields} filters={filters} onChange={setFilters} />
+    <React.Fragment>
+      <div
+        className={"relative flex h-full min-h-0 flex-1 flex-col gap-3 pt-2"}
+      >
+        {error && (
+          <Container className="mb-2">
+            <Alert variant="destructive">
+              <IconAlertCircle />
+              <AlertTitle>Error Occurred!</AlertTitle>
+              <AlertDescription>{error.message}</AlertDescription>
+            </Alert>
+          </Container>
+        )}
+        <Container className="flex flex-wrap-reverse items-center justify-between gap-3 lg:flex-nowrap">
+          <Filters fields={fields} filters={filters} onChange={setFilters} />
 
-        <div className="flex flex-1 shrink-0 grow items-center justify-end gap-3">
-          {isLoading ? (
-            <>
-              <Skeleton className="h-9 w-18" />
-              <Skeleton className="h-9 w-18" />
-            </>
-          ) : (
-            <>
-              {getData?.results.length && !isCard ? (
-                <DropdownMenu>
-                  <DropdownMenuTrigger
-                    render={
-                      <Button variant="outline" size="icon">
-                        <IconTableColumn />
-                      </Button>
-                    }
-                  ></DropdownMenuTrigger>
-
-                  <DropdownMenuContent
-                    align="end"
-                    className="no-scrollbar max-h-100 overflow-auto"
-                  >
-                    <DropdownMenuCheckboxItem
-                      checked={table.getIsAllColumnsVisible()}
-                      onCheckedChange={(value) =>
-                        table.toggleAllColumnsVisible(!!value)
+          <div className="flex flex-1 shrink-0 grow items-center justify-end gap-3">
+            {isLoading ? (
+              <>
+                <Skeleton className="h-9 w-18" />
+                <Skeleton className="h-9 w-18" />
+              </>
+            ) : (
+              <>
+                {getData?.results.length && !isCard ? (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger
+                      render={
+                        <Button variant="outline" size="icon">
+                          <IconTableColumn />
+                        </Button>
                       }
-                    >
-                      Select all
-                    </DropdownMenuCheckboxItem>
-                    {table
-                      .getAllColumns()
-                      .filter((col) => col.getCanHide())
-                      .map((column) => {
-                        return (
-                          <DropdownMenuCheckboxItem
-                            key={column.id}
-                            checked={column.getIsVisible()}
-                            onCheckedChange={(value) =>
-                              column.toggleVisibility(!!value)
-                            }
-                          >
-                            <span className="line-clamp-1 truncate">
-                              {column.columnDef.header as string}
-                            </span>
-                          </DropdownMenuCheckboxItem>
-                        )
-                      })}
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              ) : null}
-              {allowCreate && (
-                <Button onClick={() => navigate("form")}>Create</Button>
-              )}
-              {!!Cards && (
-                <ToggleGroup
-                  value={view}
-                  onValueChange={(view) => {
-                    setView(view)
+                    ></DropdownMenuTrigger>
 
-                    if (view === "table") {
-                      setFetchCount(0)
-                      setFetchController(null)
-                      setProject({})
-                      setSort({})
-                    }
-                  }}
-                >
-                  <ToggleGroupItem value="cards" aria-label="Cards view">
-                    <IconLayoutGrid className="size-4" />
-                  </ToggleGroupItem>
-                  <ToggleGroupItem value="table" aria-label="Table view">
-                    <IconTable className="size-4" />
-                  </ToggleGroupItem>
-                </ToggleGroup>
-              )}
-            </>
-          )}
-        </div>
-      </Container>
+                    <DropdownMenuContent
+                      align="end"
+                      className="no-scrollbar max-h-100 overflow-auto"
+                    >
+                      <DropdownMenuCheckboxItem
+                        checked={table.getIsAllColumnsVisible()}
+                        onCheckedChange={(value) =>
+                          table.toggleAllColumnsVisible(!!value)
+                        }
+                      >
+                        Select all
+                      </DropdownMenuCheckboxItem>
+                      {table
+                        .getAllColumns()
+                        .filter((col) => col.getCanHide())
+                        .map((column) => {
+                          return (
+                            <DropdownMenuCheckboxItem
+                              key={column.id}
+                              checked={column.getIsVisible()}
+                              onCheckedChange={(value) =>
+                                column.toggleVisibility(!!value)
+                              }
+                            >
+                              <span className="line-clamp-1 truncate">
+                                {column.columnDef.header as string}
+                              </span>
+                            </DropdownMenuCheckboxItem>
+                          )
+                        })}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                ) : null}
+                {allowCreate && (
+                  <Button onClick={() => navigate("form")}>Create</Button>
+                )}
+                {!!Cards && (
+                  <ToggleGroup
+                    value={view}
+                    onValueChange={(view) => {
+                      setView(view)
+
+                      if (view === "table") {
+                        setFetchCount(0)
+                        setFetchController(null)
+                        setProject({})
+                        setSort({})
+                      }
+                    }}
+                  >
+                    <ToggleGroupItem value="cards" aria-label="Cards view">
+                      <IconLayoutGrid className="size-4" />
+                    </ToggleGroupItem>
+                    <ToggleGroupItem value="table" aria-label="Table view">
+                      <IconTable className="size-4" />
+                    </ToggleGroupItem>
+                  </ToggleGroup>
+                )}
+              </>
+            )}
+          </div>
+        </Container>
+
+        {isCard ? (
+          <>
+            <Cards
+              isLoading={isLoading}
+              data={getData?.results ?? []}
+              fetcher={fetcher}
+              selectedIds={selectedRows.map((v) => (v.original as any)._id)}
+              toggleSelect={(id) => {
+                const row = table
+                  .getRowModel()
+                  .rows.find((v) => (v.original as any)._id === id)
+
+                if (row) row.toggleSelected()
+                else table.toggleAllRowsSelected()
+              }}
+            />
+
+            {countLoading && !countData ? (
+              <div className="flex items-center justify-center">
+                <Skeleton className="h-9 w-sm" />
+              </div>
+            ) : countData?.count ? (
+              <Pagination
+                active={page}
+                limit={DEFAULT_LIMIT}
+                total={countData.count ?? 0}
+                onChange={(page) => {
+                  setPage(page)
+                }}
+              />
+            ) : null}
+
+            {isMobileLayout() && <div className="h-20"></div>}
+          </>
+        ) : null}
+
+        {!isCard ? (
+          <Container className="flex h-full min-h-0 flex-1 flex-col gap-3">
+            {isLoading ? (
+              <TableSkeleton />
+            ) : getData?.results.length === 0 && !isLoading ? (
+              <Empty>
+                <EmptyHeader>
+                  <EmptyMedia variant="icon" className="bg-destructive/10">
+                    <IconXMark className="text-destructive" />
+                  </EmptyMedia>
+                  <EmptyTitle>No results!</EmptyTitle>
+                  <EmptyDescription>
+                    adjust or clear filters to reveal issues.
+                  </EmptyDescription>
+                </EmptyHeader>
+              </Empty>
+            ) : (
+              <DataTable table={table} />
+            )}
+
+            {isMobileLayout() && <div className="h-20"></div>}
+          </Container>
+        ) : null}
+      </div>
 
       <ActionBar
-        containerClassName="absolute bottom-10 left-3 right-3 max-w-md mx-auto z-20 shadow-sm"
+        containerClassName={cn(
+          "fixed inset-x-3 z-20 mx-auto max-w-md shadow-sm",
+          !isMobileLayout() ? "bottom-20" : ""
+        )}
         data-open={!!selectedRows.length}
       >
         <div className="flex w-full items-center justify-between gap-2 rounded-full border bg-background p-3 dark:bg-black">
@@ -497,67 +566,6 @@ export function ListPage({ group, name }: IListPageProps) {
           </div>
         </div>
       </ActionBar>
-
-      {isCard ? (
-        <>
-          <Cards
-            isLoading={isLoading}
-            data={getData?.results ?? []}
-            fetcher={fetcher}
-            selectedIds={selectedRows.map((v) => (v.original as any)._id)}
-            toggleSelect={(id) => {
-              const row = table
-                .getRowModel()
-                .rows.find((v) => (v.original as any)._id === id)
-
-              if (row) row.toggleSelected()
-              else table.toggleAllRowsSelected()
-            }}
-          />
-
-          {countLoading && !countData ? (
-            <div className="flex items-center justify-center">
-              <Skeleton className="h-9 w-sm" />
-            </div>
-          ) : countData?.count ? (
-            <Pagination
-              active={page}
-              limit={DEFAULT_LIMIT}
-              total={countData.count ?? 0}
-              onChange={(page) => {
-                setPage(page)
-              }}
-            />
-          ) : null}
-        </>
-      ) : null}
-
-      {!isCard ? (
-        <Container className="flex h-full min-h-0 flex-1 flex-col gap-3">
-          {isLoading ? (
-            <TableSkeleton />
-          ) : getData?.results.length === 0 && !isLoading ? (
-            <Empty>
-              <EmptyHeader>
-                <EmptyMedia variant="icon" className="bg-destructive/10">
-                  <IconXMark className="text-destructive" />
-                </EmptyMedia>
-                <EmptyTitle>No results!</EmptyTitle>
-                <EmptyDescription>
-                  adjust or clear filters to reveal issues.
-                </EmptyDescription>
-              </EmptyHeader>
-            </Empty>
-          ) : (
-            <DataTable
-              table={table}
-              // endReached={() => {
-              //   if (page <= totalPages) setPage(page + 1)
-              // }}
-            />
-          )}
-        </Container>
-      ) : null}
-    </div>
+    </React.Fragment>
   )
 }

@@ -17,7 +17,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { JSONSchemaToFields, type TField } from "../lib/jsonSchemaToFields";
 import { forms } from "@/overrides/crud/forms";
 import { RenderFieldGroup } from "./form/RenderFieldGroup";
-import { Container } from "@/components/container";
+import { Container } from "@/core/custom/Container";
 import { toast } from "sonner";
 
 export const fieldsFromModuleMetadata = async (

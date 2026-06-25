@@ -1,7 +1,7 @@
 import React from "react"
 import { Virtuoso } from "react-virtuoso"
 import { Card, CardContent, CardHeader } from "./ui/card"
-import { Container } from "./container"
+import { Container } from "@/core/custom/Container"
 
 export function AttendanceCard({ data, fetcher }: any) {
   React.useEffect(() => {

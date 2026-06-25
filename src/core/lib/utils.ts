@@ -178,3 +178,7 @@ export function rgbToHex(oklch: string) {
 
   return formatHex(rgb)
 }
+
+export function isMobileLayout() {
+  return ["mobile"].includes(import.meta.env.VITE_APP_LAYOUT)
+}
