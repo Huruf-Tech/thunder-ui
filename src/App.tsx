@@ -14,6 +14,8 @@ import { SelectTenant } from "@/core/pages/tenant/select-tenant"
 import { NotFound } from "./core/layouts/shared/not-found"
 import AppWrapper from "./core/AppWrapper"
 import { Onboarding } from "./components/onboarding"
+import { useTranslation } from "react-i18next"
+import React from "react"
 
 const router = createBrowserRouter(
   [
@@ -59,6 +61,30 @@ const router = createBrowserRouter(
 )
 
 export function App() {
+  const { i18n } = useTranslation() // 2. Access active i18n instance
+
+  // Dynamic RTL / LTR effect based on i18n language changes
+  React.useEffect(() => {
+    const root = document.documentElement
+    const currentLang = i18n.language || "en"
+    const isRtl = currentLang === "ar"
+
+    const applyDirection = () => {
+      root.setAttribute("dir", isRtl ? "rtl" : "ltr")
+      root.setAttribute("lang", currentLang)
+    }
+
+    if (typeof document.startViewTransition === "function") {
+      root.classList.add("lang-transition")
+      const transition = document.startViewTransition(applyDirection)
+      transition.finished.finally(() => {
+        root.classList.remove("lang-transition")
+      })
+    } else {
+      applyDirection()
+    }
+  }, [i18n.language])
+
   return (
     <AppWrapper>
       <Onboarding />

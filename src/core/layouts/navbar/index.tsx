@@ -3,6 +3,7 @@ import { useLayout } from "@/core/layouts/layout-provider"
 import { useTheme } from "@/components/theme-provider"
 import {
   IconArrowsExchange,
+  IconCheck,
   IconDotsVertical,
   IconLogout,
   IconMenu2,
@@ -10,6 +11,7 @@ import {
   IconNotification,
   IconSun,
   IconUserCircle,
+  IconWorld,
 } from "@tabler/icons-react"
 import { Button } from "@/components/ui/button"
 import LogoDark from "/logo-dark.png"
@@ -36,7 +38,11 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuPortal,
   DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -47,6 +53,7 @@ import { useLogout } from "@/core/protected"
 import { SubNav } from "../shared/sub-nav"
 import { ThunderSDK } from "thunder-sdk"
 import { Container } from "@/core/custom/Container"
+import { useTranslation } from "react-i18next"
 
 function SidebarTrigger() {
   const { toggleSidebar } = useSidebar()
@@ -69,6 +76,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const { resolvedTheme, setTheme } = useTheme()
   const isMobile = useIsMobile()
   const logout = useLogout()
+  const { t, i18n } = useTranslation()
+
+  const isRtl = i18n.language === "ar"
 
   const _me = React.useCallback(
     async ({ signal }: { signal?: AbortSignal }) => {
@@ -107,7 +117,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <SidebarProvider defaultOpen={false}>
-      <Sidebar collapsible="icon" variant="floating" className="bg-background">
+      <Sidebar
+        side={isRtl ? "right" : "left"}
+        collapsible="icon"
+        variant="floating"
+        className="bg-background"
+      >
         <SidebarHeader>
           <SidebarMenu>
             <SidebarMenuItem>
@@ -117,7 +132,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
                   alt="Logo"
                   className="hidden h-5 w-auto shrink-0"
                 />
-                <span className="text-base font-semibold">Main Menu</span>
+                <span className="text-base font-semibold">
+                  {t("Main Menu")}
+                </span>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
@@ -156,7 +173,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 ></DropdownMenuTrigger>
                 <DropdownMenuContent
                   className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
-                  side={isMobile ? "bottom" : "right"}
+                  side={isMobile ? "bottom" : isRtl ? "left" : "right"}
                   align="end"
                   sideOffset={4}
                 >
@@ -198,22 +215,49 @@ export function Layout({ children }: { children: React.ReactNode }) {
                       }}
                     >
                       <IconUserCircle className="size-4" />
-                      Account
+                      {t("Account")}
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       render={<Link to="/select-tenant/#list" />}
                     >
                       <IconArrowsExchange className="size-4" />
-                      Change tenant
+                      {t("Change tenant")}
                     </DropdownMenuItem>
                     <DropdownMenuItem>
                       <IconNotification className="size-4" />
-                      Notifications
+                      {t("Notifications")}
                     </DropdownMenuItem>
+
+                    {/* language sub menu */}
+                    <DropdownMenuSub>
+                      <DropdownMenuSubTrigger>
+                        <IconWorld className="size-4" />
+                        {t("Language")}
+                      </DropdownMenuSubTrigger>
+
+                      <DropdownMenuPortal>
+                        <DropdownMenuSubContent>
+
+                          <DropdownMenuItem onClick={() => i18n.changeLanguage("en")}>
+                            <span className="flex-1">{t("English")}</span>
+                            {i18n.language === "en" && <IconCheck className="size-4" />}
+                          </DropdownMenuItem>
+
+                          <DropdownMenuItem onClick={() => i18n.changeLanguage("ar")}>
+                            <span className="flex-1">{t("Arabic")}</span>
+                            {i18n.language === "ar" && <IconCheck className="size-4" />}
+                          </DropdownMenuItem>
+
+                        </DropdownMenuSubContent>
+                      </DropdownMenuPortal>
+                    </DropdownMenuSub>
+
+
+
                     <DropdownMenuSeparator />
                     <DropdownMenuItem variant="destructive" onClick={logout}>
                       <IconLogout className="size-4" />
-                      Log out
+                      {t("Log out")}
                     </DropdownMenuItem>
                   </DropdownMenuGroup>
                 </DropdownMenuContent>
@@ -255,7 +299,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
                   onClick={logout}
                   aria-label="Logout"
                 >
-                  <IconLogout className="size-4" /> Logout
+                  <IconLogout className="size-4" />
+                  {t("Logout")}
                 </Button>
                 <Button
                   className="inline-flex md:hidden"

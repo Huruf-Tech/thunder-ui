@@ -9,13 +9,19 @@ import { TooltipProvider } from "@/components/ui/tooltip"
 
 import App from "./App.tsx"
 
+import "../i18n.ts";
+import i18next from "i18next";
+
+import { DirectionProvider } from "@/components/ui/direction"
 initThunder().then(() => {
   createRoot(document.getElementById("root")!).render(
     <StrictMode>
       <ThemeProvider>
-        <TooltipProvider>
-          <App />
-        </TooltipProvider>
+        <DirectionProvider direction={i18next.language === "ar" ? "rtl" : "ltr"}>
+          <TooltipProvider>
+            <App />
+          </TooltipProvider>
+        </DirectionProvider>
       </ThemeProvider>
     </StrictMode>
   )

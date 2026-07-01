@@ -219,7 +219,7 @@ export function ListPage({ group, name }: IListPageProps) {
     async ({ signal }) =>
       (await ThunderSDK.getModule(name).count({
         signal,
-        query,
+        query: countQuery,
       })) as { count: number },
     { cacheTTL: parseInt(import.meta.env.VITE_DEFAULT_CACHE_TTL ?? "1") }
   )
