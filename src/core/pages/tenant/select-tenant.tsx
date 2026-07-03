@@ -1,4 +1,5 @@
 import React from "react"
+import { AnimatePresence, motion } from "motion/react"
 import {
   Card,
   CardContent,
@@ -34,6 +35,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Navigate, useLocation, useNavigate } from "react-router"
 import { ThunderSDK } from "thunder-sdk"
 import { useLoading } from "@/core/context/LoaderProvider"
+import { useTranslation } from "react-i18next"
 import {
   Select,
   SelectContent,
@@ -42,8 +44,66 @@ import {
   SelectLabel,
   SelectTrigger,
 } from "@/components/ui/select"
+import { cn } from "@/lib/utils"
+
+
+// delay controls
+const TENANT_LIST_REVEAL_START_DELAY_SECONDS = 0.08
+const TENANT_ITEM_REVEAL_STAGGER_SECONDS = 0.08
+const TENANT_ITEM_REVEAL_SECONDS = 0.45
+const TENANT_ITEM_REVEAL_EASE = [0.16, 1, 0.3, 1] as const
+
+// type TenantItemMotionProps = Pick<
+//   React.ComponentProps<typeof motion.div>,
+//   "initial" | "animate" | "exit" | "whileTap"
+// >
+type TenantItemMotionProps = React.ComponentProps<typeof motion.div>
+const tenantItemRevealMotion: TenantItemMotionProps = {
+  initial: {
+    opacity: 0,
+    y: 28,
+    scale: 0.98,
+    filter: "blur(4px)",
+  },
+  animate: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    filter: "blur(0px)",
+  },
+  exit: {
+    opacity: 0,
+    y: -16,
+    scale: 0.96,
+    filter: "blur(6px)",
+    transition: {
+      duration: 0.25,
+      ease: "easeOut",
+    },
+  },
+  whileTap: {
+    scale: 0.96,
+    y: 2,
+  },
+}
+
+function getTenantItemRevealDelay(index: number) {
+  return (
+    TENANT_LIST_REVEAL_START_DELAY_SECONDS +
+    TENANT_ITEM_REVEAL_STAGGER_SECONDS * index
+  )
+}
+
+function getTenantItemRevealTransition(index: number) {
+  return {
+    delay: getTenantItemRevealDelay(index),
+    duration: TENANT_ITEM_REVEAL_SECONDS,
+    ease: TENANT_ITEM_REVEAL_EASE,
+  } satisfies TenantItemMotionProps["transition"]
+}
 
 export function SelectTenant() {
+  const { t } = useTranslation()
   const { setLoading } = useLoading()
   const [AddTenant, setAddTenant] = React.useState<
     { _id?: string; logo?: string; name: string } | undefined
@@ -72,8 +132,8 @@ export function SelectTenant() {
       {error ? (
         <Alert variant="destructive" className="max-w-md">
           <IconAlertCircle />
-          <AlertTitle>{error.name}</AlertTitle>
-          <AlertDescription>{error.message}</AlertDescription>
+          <AlertTitle>{t(error.name)}</AlertTitle>
+          <AlertDescription>{t(error.message)}</AlertDescription>
         </Alert>
       ) : null}
       {isLoading ? (
@@ -85,8 +145,8 @@ export function SelectTenant() {
               <div className="flex shrink-0 items-center gap-3">
                 <img src={Logo} alt="Logo" className="h-5 w-auto shrink-0" />
               </div>
-              <CardTitle>Select Tenant</CardTitle>
-              <CardDescription>Choose a tenant to proceed</CardDescription>
+              <CardTitle>{t("Select Tenant")}</CardTitle>
+              <CardDescription>{t("Choose a tenant to proceed")}</CardDescription>
             </div>
 
             <div className="flex w-full items-center justify-end">
@@ -101,106 +161,123 @@ export function SelectTenant() {
           </CardHeader>
           <CardContent className="p-0">
             <div className="h-50 w-full overflow-y-auto px-5 scroll-mask-y-from-90%">
-              {data?.results.map(({ tenant }) => (
-                <Item
-                  variant="muted"
-                  size="xs"
-                  key={tenant._id as string}
-                  className="mb-1 cursor-pointer first:rounded-b-lg last:rounded-t-lg"
-                >
-                  <ItemMedia variant="default">
-                    <Avatar size="lg">
-                      <AvatarImage
-                        src={transformImage(tenant.logo)}
-                        alt={tenant.name}
-                      />
-                      <AvatarFallback className="bg-muted-foreground/10">
-                        {getInitials(tenant.name)}
-                      </AvatarFallback>
-                    </Avatar>
-                  </ItemMedia>
-                  <ItemContent>
-                    <ItemTitle
-                      className="line-clamp-1"
-                      title={tenant.name}
-                      onClick={() => navigate(`/${tenant._id}`)}
-                    >
-                      {tenant.name}
-                    </ItemTitle>
-                  </ItemContent>
-                  <ItemActions>
-                    <Button
-                      variant={"link"}
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        const authUrl = getAuthUrl()
+              <AnimatePresence mode="popLayout">
+                {data?.results.map(({ tenant }, index) => {
+                  const isFirst = index === 0
+                  const isLast = index === data.results.length - 1
 
-                        authUrl.searchParams.set("tab", "members")
-                        authUrl.searchParams.set("tenant", tenant._id as string)
-
-                        window.location.href = authUrl.toString()
-                      }}
+                  return (
+                    <motion.div
+                      key={tenant._id as string}
+                      {...tenantItemRevealMotion}
+                      transition={getTenantItemRevealTransition(index)}
+                      layout="position"
+                      className="mb-1 transform-gpu will-change-transform"
                     >
-                      Members
-                    </Button>
+                      <Item
+                        variant="muted"
+                        size="xs"
+                        key={tenant._id as string}
+                        className={cn(
+                          "cursor-pointer transition-colors",
+                          isFirst ? "rounded-b-lg" : "",
+                          isLast ? "rounded-t-lg" : "",
+                        )}
+                      >
+                        <ItemMedia variant="default">
+                          <Avatar size="lg">
+                            <AvatarImage
+                              src={transformImage(tenant.logo)}
+                              alt={tenant.name}
+                            />
+                            <AvatarFallback className="bg-muted-foreground/10">
+                              {getInitials(tenant.name)}
+                            </AvatarFallback>
+                          </Avatar>
+                        </ItemMedia>
 
-                    <Select
-                      items={[
-                        { label: "Edit", value: "edit" },
-                        { label: "Delete", value: "delete" },
-                      ]}
-                      onValueChange={async (value) => {
-                        switch (value) {
-                          case "edit":
-                            setAddTenant({
-                              _id: tenant._id,
-                              logo: tenant.logo,
-                              name: tenant.name,
-                            })
-                            break
-                          case "delete":
-                            {
-                              setLoading(true)
-                              await ThunderSDK.tenants.del({
-                                params: { id: tenant._id },
-                              })
-                              setLoading(false)
-                              refetch()
-                            }
-                            break
-                        }
-                      }}
-                    >
-                      <SelectTrigger
-                        render={
-                          <Button variant="outline" size="icon-sm">
-                            <IconDots />
+                        <ItemContent>
+                          <ItemTitle
+                            className="line-clamp-1"
+                            title={tenant.name}
+                            onClick={() => navigate(`/${tenant._id}`)}
+                          >
+                            {tenant.name}
+                          </ItemTitle>
+                        </ItemContent>
+                        
+                        <ItemActions>
+                          <Button
+                            variant={"link"}
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              const authUrl = getAuthUrl()
+
+                              window.location.href = authUrl.toString()
+                            }}
+                          >
+                            {t("Members")}
                           </Button>
-                        }
-                      ></SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          <SelectLabel>Actions</SelectLabel>
-                          {[
-                            { label: "Edit", value: "edit" },
-                            { label: "Delete", value: "delete" },
-                          ].map((item) => (
-                            <SelectItem key={item.value} value={item.value}>
-                              {item.label}
-                            </SelectItem>
-                          ))}
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
-                  </ItemActions>
-                </Item>
-              ))}
+
+                          <Select
+                            items={[
+                              { label: t("Edit"), value: "edit" },
+                              { label: t("Delete"), value: "delete" },
+                            ]}
+                            onValueChange={async (value) => {
+                              switch (value) {
+                                case "edit":
+                                  setAddTenant({
+                                    _id: tenant._id,
+                                    logo: tenant.logo,
+                                    name: tenant.name,
+                                  })
+                                  break
+                                case "delete":
+                                  {
+                                    setLoading(true)
+                                    await ThunderSDK.tenants.del({
+                                      params: { id: tenant._id },
+                                    })
+                                    setLoading(false)
+                                    refetch()
+                                  }
+                                  break
+                              }
+                            }}
+                          >
+                            <SelectTrigger
+                              render={
+                                <Button variant="outline" size="icon-sm">
+                                  <IconDots />
+                                </Button>
+                              }
+                            ></SelectTrigger>
+                            <SelectContent>
+                              <SelectGroup>
+                                <SelectLabel>{t("Actions")}</SelectLabel>
+                                {[
+                                  { label: t("Edit"), value: "edit" },
+                                  { label: t("Delete"), value: "delete" },
+                                ].map((item) => (
+                                  <SelectItem key={item.value} value={item.value}>
+                                    {item.label}
+                                  </SelectItem>
+                                ))}
+                              </SelectGroup>
+                            </SelectContent>
+                          </Select>
+                        </ItemActions>
+                      </Item>
+                    </motion.div>
+                  )
+                })}
+              </AnimatePresence>
             </div>
           </CardContent>
           <CardFooter className="text-center">
             <small className="text-muted-foreground">
-              Tenant selection is required so that you can access the
-              appropriate resources and settings.
+              {t("Tenant selection is required so that you can access the appropriate resources and settings.")}
             </small>
           </CardFooter>
         </Card>
@@ -211,9 +288,9 @@ export function SelectTenant() {
               <IconUser className="size-4" />
             </div>
 
-            <CardTitle>Create Tenant</CardTitle>
+            <CardTitle>{t("Create Tenant")}</CardTitle>
             <CardDescription>
-              Please fill the form to create a new tenant
+              {t("Please fill the form to create a new tenant")}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -230,7 +307,7 @@ export function SelectTenant() {
                     variant="secondary"
                     onClick={() => setAddTenant(undefined)}
                   >
-                    Dismiss
+                    {t("Dismiss")}
                   </Button>
                 ) : null
               }
@@ -273,3 +350,4 @@ function CardSkeleton() {
     </Card>
   )
 }
+
