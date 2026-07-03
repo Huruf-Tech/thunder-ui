@@ -2,6 +2,7 @@
 import React from "react"
 import { hash } from "ohash"
 import { ThunderSDK } from "thunder-sdk"
+import type { TFilters } from "thunder-sdk/types"
 import { DataTable } from "../custom/Datatable"
 import { cards } from "@/overrides/crud/cards"
 import {
@@ -183,7 +184,9 @@ export function ListPage({ group, name }: IListPageProps) {
   const [fetchCount, setFetchCount] = React.useState(0)
   const [fetchController, setFetchController] =
     React.useState<AbortController | null>(null)
-  const [filters, setFilters] = React.useState<TFilterValue>()
+
+  const [filters, setFilters] = React.useState<TFilters>()
+  const [subFilters, setSubFilters] = React.useState<TFilterValue>()
   const [project, setProject] = React.useState<Record<string, 1 | -1>>({})
   const [sort, setSort] = React.useState<Record<string, 1 | -1>>({})
 
@@ -197,8 +200,9 @@ export function ListPage({ group, name }: IListPageProps) {
 
   const query = React.useMemo(
     () => ({
-      filters: filters
-        ? filterToMongo(filters, {
+      filters: filters,
+      subFilters: subFilters
+        ? filterToMongo(subFilters, {
             typeResolver: (key) => {
               const field = fields.find((v) => v.name === key)
 
@@ -215,7 +219,7 @@ export function ListPage({ group, name }: IListPageProps) {
       project: Object.keys(project).length ? project : undefined,
       sort: Object.keys(sort).length ? sort : undefined,
     }),
-    [filters, isCard, project, sort, page]
+    [filters, subFilters, isCard, project, sort, page]
   )
 
   const countQuery = React.useMemo(() => ({ filters: query.filters }), [query])
@@ -374,7 +378,7 @@ export function ListPage({ group, name }: IListPageProps) {
             </Container>
           )}
           <Container className="flex flex-wrap-reverse items-center justify-between gap-3 lg:flex-nowrap">
-            <Filters fields={fields} filters={filters} onChange={setFilters} />
+            <Filters fields={fields} filters={subFilters} onChange={setSubFilters} />
 
             <div className="flex flex-1 shrink-0 grow items-center justify-end gap-3">
               {isLoading ? (
@@ -464,6 +468,9 @@ export function ListPage({ group, name }: IListPageProps) {
               <Cards
                 isLoading={isLoading}
                 data={getData?.results ?? []}
+                setFilters={setFilters}
+                setProject={setProject}
+                setSort={setSort}
                 fetcher={fetcher}
                 selectedIds={selectedRows.map((v) => (v.original as any)._id)}
                 toggleSelect={(id) => {
