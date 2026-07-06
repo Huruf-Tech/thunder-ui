@@ -1,5 +1,6 @@
 import type { TablerIcon } from "@tabler/icons-react";
 import type { TRouteObject } from "./router";
+import type { TFilters } from "thunder-sdk/types";
 
 export type TCardProps = {
   isLoading: boolean;
@@ -8,6 +9,10 @@ export type TCardProps = {
     projection?: Record<string, 1>,
     sorting?: Record<string, 1 | -1>,
   ) => void;
+  setFilters: React.Dispatch<React.SetStateAction<TFilters | undefined>>;
+  setProject: React.Dispatch<React.SetStateAction<Record<string, 1 | -1>>>;
+  setSort: React.Dispatch<React.SetStateAction<Record<string, 1 | -1>>>;
+  setPage: React.Dispatch<React.SetStateAction<number>>;
   selectedIds: string[];
   toggleSelect: (id?: string) => void;
 };

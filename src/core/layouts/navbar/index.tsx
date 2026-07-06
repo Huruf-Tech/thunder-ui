@@ -161,13 +161,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
                           {getInitials(me?.name)}
                         </AvatarFallback>
                       </Avatar>
-                      <div className="grid flex-1 text-left text-sm leading-tight">
+                      <div className="grid flex-1 text-start text-sm leading-tight">
                         <span className="truncate font-medium">{me?.name}</span>
                         <span className="truncate text-xs text-muted-foreground">
                           {me?.email}
                         </span>
                       </div>
-                      <IconDotsVertical className="ml-auto size-4" />
+                      <IconDotsVertical className="ms-auto size-4" />
                     </SidebarMenuButton>
                   }
                 ></DropdownMenuTrigger>
@@ -179,7 +179,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 >
                   <DropdownMenuGroup>
                     <DropdownMenuLabel className="p-0 font-normal">
-                      <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+                      <div className="flex items-center gap-2 px-1 py-1.5 text-start text-sm">
                         <Avatar className="h-8 w-8 rounded-lg">
                           <AvatarImage
                             src={transformImage(me?.image)}
@@ -189,7 +189,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                             {getInitials(me?.name)}
                           </AvatarFallback>
                         </Avatar>
-                        <div className="grid flex-1 text-left text-sm leading-tight">
+                        <div className="grid flex-1 text-start text-sm leading-tight">
                           <span className="truncate font-medium">
                             {me?.name ?? "Unamed"}
                           </span>
@@ -279,7 +279,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
               </div>
 
               {/* Right Actions */}
-              <div className="ml-auto flex items-center gap-3">
+              <div className="ms-auto flex items-center gap-3">
                 <Button
                   onClick={toggleTheme}
                   variant="outline"
