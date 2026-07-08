@@ -24,7 +24,7 @@ export function MarkdownEditor({
 }: IMarkdownEditorProps) {
   return (
     <MDXEditor
-      markdown={value}
+      markdown={value ?? ""}
       onChange={onChange}
       plugins={[
         headingsPlugin(),
