@@ -45,3 +45,8 @@ export type TRoutesOverride = Record<
   string,
   TRouteObject & { merge?: boolean }
 >;
+
+export type THeaderOverride = {
+  showSettingsLink?: boolean;
+  showLogoutButton?: boolean;
+};
