@@ -31,7 +31,6 @@ import { cn } from "@/lib/utils"
 import type { TNav } from "./bottom-tabs"
 import { useTranslation } from "react-i18next"
 import i18next from "i18next"
-import { header } from "@/overrides/header"
 
 export function MoreSheet({
   overflowItems,
@@ -201,22 +200,18 @@ export function MoreSheet({
           </Button>
         </div>
 
-        {header.showLogoutButton !== false && (
-          <>
-            <Separator />
+        <Separator />
 
-            <div className="p-3">
-              <Button
-                variant="destructive"
-                className="w-full"
-                onClick={logout}
-                aria-label="Logout"
-              >
-                <IconLogout className="size-4" />   {t("Log out")}
-              </Button>
-            </div>
-          </>
-        )}
+        <div className="p-3">
+          <Button
+            variant="destructive"
+            className="w-full"
+            onClick={logout}
+            aria-label="Logout"
+          >
+            <IconLogout className="size-4" />   {t("Log out")}
+          </Button>
+        </div>
       </SheetContent>
     </Sheet>
   )

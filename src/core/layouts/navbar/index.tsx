@@ -9,7 +9,6 @@ import {
   IconMenu2,
   IconMoon,
   IconNotification,
-  IconSettings,
   IconSun,
   IconUserCircle,
   IconWorld,
@@ -55,7 +54,6 @@ import { SubNav } from "../shared/sub-nav"
 import { ThunderSDK } from "thunder-sdk"
 import { Container } from "@/core/custom/Container"
 import { useTranslation } from "react-i18next"
-import { header } from "@/overrides/header"
 
 function SidebarTrigger() {
   const { toggleSidebar } = useSidebar()
@@ -96,7 +94,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
     [router.routes]
   )
 
-  const [tenant, activeParent] = React.useMemo(
+  const [, activeParent] = React.useMemo(
     () => location.pathname.split("/").filter(Boolean),
     [location.pathname]
   )
@@ -219,14 +217,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
                       <IconUserCircle className="size-4" />
                       {t("Account")}
                     </DropdownMenuItem>
-                    {header.showSettingsLink && (
-                      <DropdownMenuItem
-                        render={<Link to={`/${tenant}/settings`} />}
-                      >
-                        <IconSettings className="size-4" />
-                        {t("Settings")}
-                      </DropdownMenuItem>
-                    )}
                     <DropdownMenuItem
                       render={<Link to="/select-tenant/#list" />}
                     >
@@ -262,15 +252,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
                       </DropdownMenuPortal>
                     </DropdownMenuSub>
 
-                    {header.showLogoutButton !== false && (
-                      <>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem variant="destructive" onClick={logout}>
-                          <IconLogout className="size-4" />
-                          {t("Log out")}
-                        </DropdownMenuItem>
-                      </>
-                    )}
+
+
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem variant="destructive" onClick={logout}>
+                      <IconLogout className="size-4" />
+                      {t("Log out")}
+                    </DropdownMenuItem>
                   </DropdownMenuGroup>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -305,28 +293,24 @@ export function Layout({ children }: { children: React.ReactNode }) {
                   )}
                 </Button>
 
-                {header.showLogoutButton !== false && (
-                  <>
-                    <Button
-                      className="hidden md:inline-flex"
-                      variant="destructive"
-                      onClick={logout}
-                      aria-label="Logout"
-                    >
-                      <IconLogout className="size-4" />
-                      {t("Logout")}
-                    </Button>
-                    <Button
-                      className="inline-flex md:hidden"
-                      variant="destructive"
-                      onClick={logout}
-                      size={"icon"}
-                      aria-label="Logout"
-                    >
-                      <IconLogout className="size-4" />
-                    </Button>
-                  </>
-                )}
+                <Button
+                  className="hidden md:inline-flex"
+                  variant="destructive"
+                  onClick={logout}
+                  aria-label="Logout"
+                >
+                  <IconLogout className="size-4" />
+                  {t("Logout")}
+                </Button>
+                <Button
+                  className="inline-flex md:hidden"
+                  variant="destructive"
+                  onClick={logout}
+                  size={"icon"}
+                  aria-label="Logout"
+                >
+                  <IconLogout className="size-4" />
+                </Button>
 
                 <SidebarTrigger />
               </div>
