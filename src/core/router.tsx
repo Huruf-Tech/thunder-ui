@@ -13,7 +13,7 @@ import { FormPage } from "@/core/crud/FormPage"
 import { ViewPage } from "@/core/crud/ViewPage"
 
 import Overview from "@/pages/overview"
-import { WalletCard } from "@/pages/wallet"
+import { WalletCard } from "@/core/pages/wallet"
 import { lists } from "@/overrides/crud/lists"
 import { allowDisplayRoute } from "./lib/utils"
 import { routes as overrideRoutes } from "@/overrides/routes"

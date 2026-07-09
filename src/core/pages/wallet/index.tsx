@@ -2,14 +2,17 @@
 // beui.dev/components/blocks/wallet-card
 
 import {IconEye , IconEyeOff } from "@tabler/icons-react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { ActionSwapText } from "./action-swap";
 // import { CurrencySwitcher } from "./currency-switcher";
 // import { WalletActions } from "./actions";
 import { TransactionHistory } from "./transaction-history";
 import { BalanceDelta } from "./balance-delta";
-
 import { Container } from "@/core/custom/Container";
+import { use } from "@/core/hooks/use";
+import { getWallets } from "@/core/endpoints/wallet";
+import { Skeleton } from "@/components/ui/skeleton";
+
 /**
  * Composed wallet overview card: a currency switcher whose trigger morphs open
  * into a full-width panel, a search icon that morphs into a search bar, a
@@ -17,67 +20,28 @@ import { Container } from "@/core/custom/Container";
  * actions. Actions and search are plain callbacks — the resulting flow is left
  * to the consumer.
  */
+export function WalletCard() {
+  const [balanceHidden, setBalanceHidden] = useState(false);
 
-export interface WalletCardProps {
-  // currencies: WalletCurrency[];
-  // currencyId?: string;
-  // defaultCurrencyId?: string;
-  // onCurrencyChange?: (id: string) => void;
-  // balance: number;
-  balancePrefix?: string;
-  /** Initial balance change shown in the pill before any live change. */
-  defaultChange?: number;
-  /** Start with the balance hidden behind dots. */
-  defaultBalanceHidden?: boolean;
-  onSend?: () => void;
-  onDeposit?: () => void;
-  onSwap?: () => void;
-  onBuy?: () => void;
-  searchPlaceholder?: string;
-  /** Recent searches shown in the expanded search panel. */
-  searchRecent?: string[];
-  onSearchChange?: (value: string) => void;
-  onSearchSubmit?: (value: string) => void;
-  /** Show an unread pulse on the notifications bell. */
-  hasNotifications?: boolean;
-  onNotifications?: () => void;
-  className?: string;
-}
-export function WalletCard({
-  // currencies,
-  // currencyId,
-  // defaultCurrencyId,
-  // onCurrencyChange,
-  // balance,
-  balancePrefix = "$",
-  defaultChange,
-  defaultBalanceHidden = false,
-  // onSend,
-  // onDeposit,
-  // onSwap,
-  // onBuy
-}: WalletCardProps) {
-  // const currencyControlled = currencyId !== undefined;
-  // const [internalCurrencyId, 
-    // setInternalCurrencyId
-  // ] = useState(
-    // defaultCurrencyId ?? currencies[0]?.id,
-  // );
-  const [balanceHidden, setBalanceHidden] = useState(defaultBalanceHidden);
+  const walletRequest = React.useMemo(() => getWallets(), []);
+  const { data: walletData, isLoading } = use(walletRequest);
 
-  const shownBalance = `${balancePrefix}${(5).toLocaleString(undefined, {
+  const wallet = (walletData?.results ?? [])[0] as
+    | { balance: number; previousBalance: number; currency: string }
+    | undefined;
+
+  const balance = wallet?.balance ?? 0;
+  const previousBalance = wallet?.previousBalance ?? 0;
+  const defaultChange = balance - previousBalance;
+  const balancePrefix = wallet?.currency
+    ? `${wallet.currency.toUpperCase()} `
+    : "$";
+
+  const shownBalance = `${balancePrefix}${balance.toLocaleString(undefined, {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   })}`;
   const maskedBalance = "*".repeat(7);
-  // const activeCurrencyId = currencyControlled ? currencyId : internalCurrencyId;
-  // const activeCurrency =
-  //   currencies.find((a) => a.id === activeCurrencyId) ?? currencies[0];
-
-  // const handleCurrencyChange = (id: string) => {
-  //   if (!currencyControlled) setInternalCurrencyId(id);
-  //   onCurrencyChange?.(id);
-  // };
 
   return (
      <div className="flex h-full min-h-0 flex-1 flex-col overflow-y-auto mask-y-from-98%">
@@ -96,7 +60,7 @@ export function WalletCard({
           <p className="text-xs text-muted-foreground">Balance</p>
           <button
             type="button"
-            onClick={() => setBalanceHidden((h) => !h)}
+            onClick={() => setBalanceHidden((h: unknown) => !h)}
             aria-label={balanceHidden ? "Show balance" : "Hide balance"}
             aria-pressed={balanceHidden}
             className="text-muted-foreground outline-none transition-colors hover:text-foreground"
@@ -110,21 +74,29 @@ export function WalletCard({
         </div>
         {/* One ActionSwapText swaps the number and the asterisk mask with a
             per-letter cascade — same baseline, no overlap or layout shift. */}
-        <ActionSwapText
-          value={balanceHidden ? "hidden" : shownBalance}
-          animation="cascade"
-          className="text-3xl font-semibold text-foreground"
-        >
-          {balanceHidden ? maskedBalance : shownBalance}
-        </ActionSwapText>
+        {isLoading ? (
+          <Skeleton className="mt-1 h-9 w-40" />
+        ) : (
+          <ActionSwapText
+            value={balanceHidden ? "hidden" : shownBalance}
+            animation="cascade"
+            className="text-3xl font-semibold text-foreground"
+          >
+            {balanceHidden ? maskedBalance : shownBalance}
+          </ActionSwapText>
+        )}
         {balanceHidden ? (
           <div className="mt-2 flex h-7 items-center justify-center">
             <span className="translate-y-0.75 text-sm font-semibold text-muted-foreground leading-none tracking-[0.3em]">
               *****
             </span>
           </div>
+        ) : isLoading ? (
+          <div className="mt-2 flex h-7 items-center justify-center">
+            <Skeleton className="h-5 w-24" />
+          </div>
         ) : (
-          <BalanceDelta balance={5} initialChange={defaultChange} />
+          <BalanceDelta balance={balance} initialChange={defaultChange !== 0 ? defaultChange : undefined} />
         )}
       </div>
 
@@ -135,7 +107,7 @@ export function WalletCard({
           onSwap={onSwap}
           onBuy={onBuy}
         />
-      </div> */}
+      </div>  */}
 
       <div className="mt-6">
         <TransactionHistory />

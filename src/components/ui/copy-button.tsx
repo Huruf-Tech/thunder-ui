@@ -2,7 +2,7 @@
 
 import { IconCheck , IconCopy  } from "@tabler/icons-react";
 import { useState } from "react";
-import { ActionSwapIcon } from "../../pages/wallet/action-swap";
+import { ActionSwapIcon } from "@/core/pages/wallet/action-swap";
 import { cn } from "@/lib/utils";
 
 /**

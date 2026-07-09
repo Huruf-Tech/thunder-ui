@@ -5,8 +5,8 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
-import { HEAD, ITEM, LIST, MORPH } from "../../lib/constants";
-import { CopyButton } from "../../components/ui/copy-button";
+import { HEAD, ITEM, LIST, MORPH } from "../../../lib/constants";
+import { CopyButton } from "../../../components/ui/copy-button";
 
 
 
