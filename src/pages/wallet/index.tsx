@@ -5,10 +5,10 @@ import {IconEye , IconEyeOff } from "@tabler/icons-react";
 import { useState } from "react";
 import { ActionSwapText } from "./action-swap";
 // import { CurrencySwitcher } from "./currency-switcher";
-import { WalletActions } from "./actions";
+// import { WalletActions } from "./actions";
 import { TransactionHistory } from "./transaction-history";
 import { BalanceDelta } from "./balance-delta";
-import type { WalletCardProps } from "../../typings";
+
 import { Container } from "@/core/custom/Container";
 /**
  * Composed wallet overview card: a currency switcher whose trigger morphs open
@@ -17,6 +17,32 @@ import { Container } from "@/core/custom/Container";
  * actions. Actions and search are plain callbacks — the resulting flow is left
  * to the consumer.
  */
+
+export interface WalletCardProps {
+  // currencies: WalletCurrency[];
+  // currencyId?: string;
+  // defaultCurrencyId?: string;
+  // onCurrencyChange?: (id: string) => void;
+  balance: number;
+  balancePrefix?: string;
+  /** Initial balance change shown in the pill before any live change. */
+  defaultChange?: number;
+  /** Start with the balance hidden behind dots. */
+  defaultBalanceHidden?: boolean;
+  onSend?: () => void;
+  onDeposit?: () => void;
+  onSwap?: () => void;
+  onBuy?: () => void;
+  searchPlaceholder?: string;
+  /** Recent searches shown in the expanded search panel. */
+  searchRecent?: string[];
+  onSearchChange?: (value: string) => void;
+  onSearchSubmit?: (value: string) => void;
+  /** Show an unread pulse on the notifications bell. */
+  hasNotifications?: boolean;
+  onNotifications?: () => void;
+  className?: string;
+}
 export function WalletCard({
   // currencies,
   // currencyId,
@@ -26,10 +52,10 @@ export function WalletCard({
   balancePrefix = "$",
   defaultChange,
   defaultBalanceHidden = false,
-  onSend,
-  onDeposit,
-  onSwap,
-  onBuy
+  // onSend,
+  // onDeposit,
+  // onSwap,
+  // onBuy
 }: WalletCardProps) {
   // const currencyControlled = currencyId !== undefined;
   // const [internalCurrencyId, 
@@ -102,14 +128,14 @@ export function WalletCard({
         )}
       </div>
 
-      <div className="mt-8">
+      {/* <div className="mt-8">
         <WalletActions
           onSend={onSend}
           onDeposit={onDeposit}
           onSwap={onSwap}
           onBuy={onBuy}
         />
-      </div>
+      </div> */}
 
       <div className="mt-6">
         <TransactionHistory />

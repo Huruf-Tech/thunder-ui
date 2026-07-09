@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 
 import { HEAD, ITEM, LIST, MORPH } from "../../lib/constants";
 import { CopyButton } from "../../components/ui/copy-button";
-import type { WalletCurrency } from "../../typings";
+
 
 
 /**
@@ -15,6 +15,14 @@ import type { WalletCurrency } from "../../typings";
  * full width (covering the header icons) and downward at the same time, via a
  * shared layoutId. Self-contained — not the generic MorphSelect.
  */
+
+export type WalletCurrency = {
+  id: string;
+  name: string;
+  symbol: string;
+};
+
+
 export function CurrencySwitcher({
   currencies,
   activeCurrency,

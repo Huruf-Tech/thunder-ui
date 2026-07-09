@@ -5,6 +5,8 @@ import {
   IconArrowsExchange,
   IconCheck,
   IconDotsVertical,
+  IconEye,
+  IconEyeOff,
   IconLogout,
   IconMenu2,
   IconMoon,
@@ -79,6 +81,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const { t, i18n } = useTranslation()
 
   const isRtl = i18n.language === "ar"
+  const [balanceVisible, setBalanceVisible] = React.useState(false)
 
   const _me = React.useCallback(
     async ({ signal }: { signal?: AbortSignal }) => {
@@ -280,6 +283,25 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
               {/* Right Actions */}
               <div className="ms-auto flex items-center gap-3">
+              {/* Balance Toggle */}
+                <div className="flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5">
+                  <button
+                    type="button"
+                    onClick={() => setBalanceVisible((v) => !v)}
+                    aria-label={balanceVisible ? "Hide balance" : "Show balance"}
+                    className="text-muted-foreground hover:text-foreground"
+                  >
+                    {balanceVisible ? (
+                      <IconEye className="size-4" />
+                    ) : (
+                      <IconEyeOff className="size-4" />
+                    )}
+                  </button>
+                  <span className="text-sm font-semibold text-foreground">
+                    {balanceVisible ? "$5.00" : "•••••"}
+                  </span>
+                </div>
+
                 <Button
                   onClick={toggleTheme}
                   variant="outline"
