@@ -28,7 +28,7 @@ const TYPE_LABELS: Record<TWalletLedger["type"], string> = {
 
 function formatAmount(amount: number, type: TWalletLedger["type"], currency: string) {
   const sign = type === "credit" ? "+" : "-";
-  return `${sign}${amount.toLocaleString(undefined, {
+  return `${sign}${(amount / 100).toLocaleString(undefined, {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   })} ${currency.toUpperCase()}`;

@@ -1,6 +1,8 @@
 "use client";
 
-import { IconArrowDownDashed , IconArrowNarrowUp , IconCreditCardPay , IconRepeat  } from "@tabler/icons-react";
+import { IconArrowDownDashed , IconArrowNarrowUp , IconCreditCardPay , 
+  // IconRepeat 
+ } from "@tabler/icons-react";
 import { motion, useReducedMotion } from "motion/react";
 import type { ComponentType } from "react";
 import { SPRING_PRESS } from "@/lib/ease";
@@ -18,12 +20,12 @@ type WalletAction = {
 export function WalletActions({
   onSend,
   onDeposit,
-  onSwap,
+  // onSwap,
   onBuy,
 }: {
   onSend?: () => void;
   onDeposit?: () => void;
-  onSwap?: () => void;
+  // onSwap?: () => void;
   onBuy?: () => void;
 }) {
   const reduce = useReducedMotion();
@@ -31,7 +33,7 @@ export function WalletActions({
   const actions: WalletAction[] = [
     { key: "send", label: "Send", icon: IconArrowNarrowUp, onClick: onSend },
     { key: "deposit", label: "Deposit", icon: IconArrowDownDashed, onClick: onDeposit },
-    { key: "swap", label: "Swap", icon: IconRepeat, onClick: onSwap },
+    // { key: "swap", label: "Swap", icon: IconRepeat, onClick: onSwap },
     { key: "buy", label: "Buy", icon: IconCreditCardPay, onClick: onBuy },
   ];
 

@@ -56,7 +56,7 @@ export function BalanceDelta({
             ) : (
               <IconTrendingDown3 className="h-3.5 w-3.5" />
             )}
-            {up ? "+" : "-"}$
+            {up ? "+" : "-"}
             {Math.abs(delta.amount).toLocaleString(undefined, {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
