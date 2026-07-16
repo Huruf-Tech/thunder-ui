@@ -40,7 +40,7 @@ export function Wallet() {
   const defaultChange = balance - previousBalance;
   const balancePrefix = wallet?.currency
     ? `${wallet.currency.toUpperCase()} `
-    : "LYD";
+    : "LYD ";
 
   const shownBalance = `${balancePrefix}${balance.toLocaleString(undefined, {
     minimumFractionDigits: 2,
