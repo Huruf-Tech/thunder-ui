@@ -115,7 +115,7 @@ export function TransactionHistory({
     for (const [key, filter] of Object.entries(nextFilters)) {
       const field = activeFields.find((item) => item.name === key);
 
-
+      
       if (field?.enum && filter.operator === "$all") {
         nextFilters[key] = {
           ...filter,
@@ -123,21 +123,21 @@ export function TransactionHistory({
         };
       }
 
-
+    
       if (key === "amount" && filter?.value !== undefined && filter?.value !== null) {
         const rawVal = filter.value;
         const cents = Math.abs(rawVal) * 100;
-        nextFilters[key] = {
-          operator: "$in",
-          value: [cents, -cents],
-        };
+          nextFilters[key] = {
+            operator: "$in",
+            value: [cents, -cents],
+          };
       }
     }
 
     return nextFilters;
   }, [activeFields, filters]);
 
-
+  
   const query = useMemo(() => {
     const mongoFilters = filterToMongo(outboundFilters);
     const hasFilters = Object.keys(mongoFilters).length > 0;
@@ -210,8 +210,9 @@ export function TransactionHistory({
                 className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-muted/40"
               >
                 <span
-                  className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${TYPE_ICON_BG_CLASS[txType]
-                    } ${TYPE_COLOR_CLASS[txType]}`}
+                  className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${
+                    TYPE_ICON_BG_CLASS[txType]
+                  } ${TYPE_COLOR_CLASS[txType]}`}
                 >
                   <Icon className="h-4 w-4" />
                 </span>
@@ -234,8 +235,9 @@ export function TransactionHistory({
 
                 <div className="flex shrink-0 flex-col items-end">
                   <span
-                    className={`text-sm font-medium ${TYPE_COLOR_CLASS[txType]
-                      }`}
+                    className={`text-sm font-medium ${
+                      TYPE_COLOR_CLASS[txType]
+                    }`}
                   >
                     {formatAmount(tx.amount, tx.currency, i18n.language)}
                   </span>
