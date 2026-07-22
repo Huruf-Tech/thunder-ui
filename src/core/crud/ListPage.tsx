@@ -203,18 +203,18 @@ export function ListPage({ group, name }: IListPageProps) {
       filters: filters,
       subFilters: subFilters
         ? filterToMongo(subFilters, {
-            typeResolver: (key) => {
-              const field = fields.find((v) => v.name === key)
+          typeResolver: (key) => {
+            const field = fields.find((v) => v.name === key)
 
-              return field?.ref ? "objectId" : undefined
-            },
-          })
+            return field?.ref ? "objectId" : undefined
+          },
+        })
         : undefined,
       ...(isCard
         ? {
-            offset: page * DEFAULT_LIMIT,
-            limit: DEFAULT_LIMIT,
-          }
+          offset: page * DEFAULT_LIMIT,
+          limit: DEFAULT_LIMIT,
+        }
         : {}),
       project: Object.keys(project).length ? project : undefined,
       sort: Object.keys(sort).length ? sort : undefined,
@@ -347,7 +347,7 @@ export function ListPage({ group, name }: IListPageProps) {
   const selectedRows = table.getFilteredSelectedRowModel().rows
 
   React.useEffect(() => {
-    ;(async () => {
+    ; (async () => {
       setFields(await columnFromModuleMetadata(metadata))
       setFields(await columnFromModuleMetadata(metadata, true))
     })()
@@ -490,17 +490,19 @@ export function ListPage({ group, name }: IListPageProps) {
                   <Skeleton className="h-9 w-sm" />
                 </div>
               ) : countData?.count ? (
-                <Pagination
-                  active={page}
-                  limit={DEFAULT_LIMIT}
-                  total={countData.count ?? 0}
-                  onChange={(page) => {
-                    setPage(page)
-                  }}
-                />
+                <div className="mb-2">
+                  <Pagination
+                    active={page}
+                    limit={DEFAULT_LIMIT}
+                    total={countData.count ?? 0}
+                    onChange={(page) => {
+                      setPage(page)
+                    }}
+                  />
+                </div>
               ) : null}
 
-              {isMobileLayout() && totalPages > 1 && (
+              {isMobileLayout() && totalPages > 1 && selectedRows.length > 0 && (
                 <div className="h-20"></div>
               )}
             </>
@@ -526,7 +528,7 @@ export function ListPage({ group, name }: IListPageProps) {
                 <DataTable table={table} />
               )}
 
-              {isMobileLayout() && <div className="h-20"></div>}
+              {isMobileLayout() && selectedRows.length > 0 && <div className="h-20"></div>}
             </Container>
           ) : null}
         </div>
