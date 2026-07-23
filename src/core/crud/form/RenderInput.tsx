@@ -15,6 +15,7 @@ import type { TField } from "@/core/lib/jsonSchemaToFields"
 
 import { Switch } from "@/components/ui/switch"
 import { Input } from "@/components/ui/input"
+import { Input as NumberInput } from "@/components/ui/number-input"
 import { Textarea } from "@/components/ui/textarea"
 import { Dropdown } from "../../custom/Dropdown"
 import { Multiselect } from "../../custom/Multiselect"
@@ -354,6 +355,28 @@ export const renderField = ({
             placeholder={field.example ?? field.name}
             defaultValue={formatDateForInput(def.field.value)}
             onChange={(e) => def.field.onChange(new Date(e.target.value))}
+          />
+        )}
+      />
+    )
+  }
+
+  if (field.type === "number" && field.fieldHint === "amount") {
+    return (
+      <Controller
+        name={name}
+        control={control}
+        rules={{ required: field.required && t("This field is required!") }}
+        render={(def) => (
+          <NumberInput
+            id={id}
+            type={field.type}
+            placeholder={field.example ?? field.name}
+            minLength={field.minLength}
+            maxLength={field.maxLength}
+            pattern={field.pattern}
+            value={def.field.value ?? ""}
+            onChange={(e) => def.field.onChange(e.target.valueAsNumber)}
           />
         )}
       />
