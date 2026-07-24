@@ -7,6 +7,7 @@ import {
   IconArrowDownDashed,
   IconArrowNarrowUp,
   IconCalendar,
+  IconFileTypePdf,
 } from "@tabler/icons-react";
 import { use } from "@/core/hooks/use";
 import { getWalletLedgers } from "@/core/endpoints/wallet";
@@ -18,6 +19,11 @@ import { fieldsFromModuleMetadata } from "@/core/crud/FormPage";
 import { JSONSchemaToFields, type TField } from "@/core/lib/jsonSchemaToFields";
 import { CopyButton } from "@/components/ui/copy-button";
 import { filterToMongo } from "@/core/crud/filters/lib/filterToMongo";
+import {
+  WalletHistoryPrintHandler,
+  type WalletHistoryPrintHandlerRef,
+} from "./print/template/WalletHistoryPrintTemplate";
+import { Button } from "@/components/ui/button";
 
 type TWalletLedger =
   typeof TSDKType.walletLedgers.type.get$return.results[number];
@@ -80,6 +86,18 @@ export function TransactionHistory({
   const { t, i18n } = useTranslation();
   const [filters, setFilters] = React.useState<TFilterValue>();
   const [fields, setFields] = React.useState<TField[]>([]);
+  const printHandlerRef = React.useRef<WalletHistoryPrintHandlerRef>(null);
+  const [isPrinting, setIsPrinting] = React.useState(false);
+
+  const handleExportPDF = React.useCallback(async () => {
+    if (!printHandlerRef.current) return;
+    setIsPrinting(true);
+    try {
+      await printHandlerRef.current.print();
+    } finally {
+      setIsPrinting(false);
+    }
+  }, []);
 
   const metadata = useMemo(
     () => ThunderSDK.getMetadata("walletLedgers"),
@@ -167,8 +185,24 @@ export function TransactionHistory({
         <h3 className="text-sm font-semibold text-foreground shrink-0">
           {t("Transactions")}
         </h3>
+        {transactions.length > 0 && (
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-1.5 text-xs"
+            onClick={handleExportPDF}
+            disabled={isPrinting}
+          >
+            <IconFileTypePdf className="size-4" />
+            {isPrinting ? t("Exporting...") : t("Export PDF")}
+          </Button>
+        )}
       </div>
 
+      <WalletHistoryPrintHandler
+        ref={printHandlerRef}
+        data={{ transactions }}
+      />
       {isLoading && (
         <div className="flex flex-col divide-y divide-border rounded-2xl border border-border bg-card">
           {Array.from({ length: 3 }).map((_, i) => (
