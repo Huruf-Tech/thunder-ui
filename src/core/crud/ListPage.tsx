@@ -203,18 +203,18 @@ export function ListPage({ group, name }: IListPageProps) {
       filters: filters,
       subFilters: subFilters
         ? filterToMongo(subFilters, {
-            typeResolver: (key) => {
-              const field = fields.find((v) => v.name === key)
+          typeResolver: (key) => {
+            const field = fields.find((v) => v.name === key)
 
-              return field?.ref ? "objectId" : undefined
-            },
-          })
+            return field?.ref ? "objectId" : undefined
+          },
+        })
         : undefined,
       ...(isCard
         ? {
-            offset: page * DEFAULT_LIMIT,
-            limit: DEFAULT_LIMIT,
-          }
+          offset: page * DEFAULT_LIMIT,
+          limit: DEFAULT_LIMIT,
+        }
         : {}),
       project: Object.keys(project).length ? project : undefined,
       sort: Object.keys(sort).length ? sort : undefined,
@@ -347,7 +347,7 @@ export function ListPage({ group, name }: IListPageProps) {
   const selectedRows = table.getFilteredSelectedRowModel().rows
 
   React.useEffect(() => {
-    ;(async () => {
+    ; (async () => {
       setFields(await columnFromModuleMetadata(metadata))
       setFields(await columnFromModuleMetadata(metadata, true))
     })()
@@ -500,7 +500,7 @@ export function ListPage({ group, name }: IListPageProps) {
                 />
               ) : null}
 
-              {isMobileLayout() && totalPages > 1 && (
+              {isMobileLayout() && totalPages > 1 && selectedRows.length > 0 && (
                 <div className="h-20"></div>
               )}
             </>
@@ -526,7 +526,7 @@ export function ListPage({ group, name }: IListPageProps) {
                 <DataTable table={table} />
               )}
 
-              {isMobileLayout() && <div className="h-20"></div>}
+              {isMobileLayout() && selectedRows.length > 0 && <div className="h-20"></div>}
             </Container>
           ) : null}
         </div>
@@ -534,7 +534,7 @@ export function ListPage({ group, name }: IListPageProps) {
         <ActionBar
           containerClassName={cn(
             "fixed inset-x-3 z-20 mx-auto max-w-md shadow-sm",
-            !isMobileLayout() ? "bottom-20" : ""
+            isMobileLayout() ? "bottom-21" : "bottom-4 sm:bottom-12"
           )}
           data-open={!!selectedRows.length}
         >
@@ -588,14 +588,8 @@ export function ListPage({ group, name }: IListPageProps) {
               <Button
                 size="icon-sm"
                 variant="outline"
-                onClick={() => {
-                  const row = selectedRows.map((row) => row.original)[0] as any
-                  const fallbackName = row.name || row.title || row.label || ""
-
-                  navigate(`form/${row._id}`, {
-                    state: { name: fallbackName },
-                  })
-                }}
+                onClick={() => table.resetRowSelection()}
+                aria-label="Clear selection"
               >
                 <IconX />
               </Button>
