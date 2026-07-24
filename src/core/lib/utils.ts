@@ -5,6 +5,9 @@ import type { TRouteObject } from "../router";
 import type { TNav } from "../layouts/shared/sub-nav";
 
 import { converter, formatHex } from "culori";
+import axios from "axios";
+import { toast } from "sonner";
+import { Capacitor } from "@capacitor/core";
 
 export function appName() {
   return Package.name
@@ -223,3 +226,78 @@ export function rgbToHex(oklch: string) {
 export function isMobileLayout() {
   return ["mobile"].includes(import.meta.env.VITE_APP_LAYOUT);
 }
+export const loadTailwindCSS = async () => {
+  try {
+    const baseUrl = import.meta.env.VITE_API_BASE_URL || "";
+
+    const url = baseUrl
+      ? `${baseUrl}app/tailwind.min.css`
+      : "/tailwind.min.css";
+
+    return (await axios.get(url)).data;
+  } catch (error) {
+    console.error("Error fetching Tailwind CSS:", error);
+  }
+};
+
+export const loadFontsCSS = async () => {
+  try {
+    // Fetch the latest Fonts
+    return (
+      await axios.get(
+        "https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;500;600;700;800;900&display=swap",
+      )
+    ).data;
+  } catch (error) {
+    console.error("Error fetching Font CSS:", error);
+  }
+};
+export const printWindow = (content: string) => {
+  const blob = new Blob([content], {
+    type: "text/html",
+  });
+
+  // Create a URL for the Blob
+  const url = URL.createObjectURL(blob);
+
+  // Open the URL in a new window
+  window.open(url, "_blank", "popup=yes");
+};
+type HTMLBuilder<T> = (data: T & { content: string }) => Promise<string>;
+
+export const printDocument = async <T>(
+  reference: React.RefObject<HTMLDivElement | null>,
+  builder: HTMLBuilder<T>,
+  data: T,
+) => {
+  if (!reference.current) {
+    toast.error("Nothing is available to print!");
+    return;
+  }
+
+  try {
+    const content = reference.current.innerHTML;
+
+    const fullData = { ...data, content };
+
+    const fullHTML = await builder(fullData);
+
+    if (Capacitor.getPlatform() === "web") {
+      printWindow(fullHTML);
+    } else {
+      const printer = cordova?.plugins?.printer;
+      if (!printer?.print) {
+        toast.error("Printing is not available on this device.");
+        return;
+      }
+      // Cordova printer is callback-based (returns void) — not a Promise, so
+      // never chain .then/.catch on it. The callback gets a boolean result.
+      printer.print(fullHTML, {}, (ok: boolean) => {
+        if (ok === false) console.info("Print dialog dismissed");
+      });
+    }
+  } catch (err) {
+    console.error("Print error:", err);
+    toast.error("Failed to open the print dialog.");
+  }
+};
