@@ -63,6 +63,7 @@ import { Refresher } from "@/components/refresher"
 import { useTranslation } from "react-i18next"
 import i18next from "i18next"
 import { Pagination } from "@/components/pagination"
+import { usePagination } from "@/hooks/use-pagination"
 
 const columnFromModuleMetadata = async (metadata: any, resolveRef = false) => {
   const fields = await fieldsFromModuleMetadata(metadata, {
@@ -175,8 +176,6 @@ export interface IListPageProps {
   name: string
 }
 
-const DEFAULT_LIMIT = import.meta.env.VITE_DEFAULT_PAGINATION_LIMIT ?? 100
-
 export function ListPage({ group, name }: IListPageProps) {
   const { t } = useTranslation()
   const navigate = useNavigate()
@@ -189,9 +188,9 @@ export function ListPage({ group, name }: IListPageProps) {
   const [subFilters, setSubFilters] = React.useState<TFilterValue>()
   const [project, setProject] = React.useState<Record<string, 1 | -1>>({})
   const [sort, setSort] = React.useState<Record<string, 1 | -1>>({})
+  const { page, pageSize, setPage } = usePagination()
 
   const [fields, setFields] = React.useState<TField[]>([])
-  const [page, setPage] = React.useState(0)
 
   const Cards = cards[name as keyof typeof cards]
   const [view, setView] = React.useState(Cards ? "cards" : "table")
@@ -203,18 +202,18 @@ export function ListPage({ group, name }: IListPageProps) {
       filters: filters,
       subFilters: subFilters
         ? filterToMongo(subFilters, {
-          typeResolver: (key) => {
-            const field = fields.find((v) => v.name === key)
+            typeResolver: (key) => {
+              const field = fields.find((v) => v.name === key)
 
-            return field?.ref ? "objectId" : undefined
-          },
-        })
+              return field?.ref ? "objectId" : undefined
+            },
+          })
         : undefined,
       ...(isCard
         ? {
-          offset: page * DEFAULT_LIMIT,
-          limit: DEFAULT_LIMIT,
-        }
+            offset: page * pageSize,
+            limit: pageSize,
+          }
         : {}),
       project: Object.keys(project).length ? project : undefined,
       sort: Object.keys(sort).length ? sort : undefined,
@@ -222,7 +221,10 @@ export function ListPage({ group, name }: IListPageProps) {
     [filters, subFilters, isCard, project, sort, page]
   )
 
-  const countQuery = React.useMemo(() => ({ filters: query.filters, subFilters: query.subFilters }), [query])
+  const countQuery = React.useMemo(
+    () => ({ filters: query.filters, subFilters: query.subFilters }),
+    [query]
+  )
 
   const countQueryHash = React.useMemo(() => hash(countQuery), [countQuery])
 
@@ -347,15 +349,15 @@ export function ListPage({ group, name }: IListPageProps) {
   const selectedRows = table.getFilteredSelectedRowModel().rows
 
   React.useEffect(() => {
-    ; (async () => {
+    ;(async () => {
       setFields(await columnFromModuleMetadata(metadata))
       setFields(await columnFromModuleMetadata(metadata, true))
     })()
   }, [metadata])
 
   const totalPages = React.useMemo(
-    () => Math.ceil((countData?.count ?? 0) / DEFAULT_LIMIT),
-    [countData]
+    () => Math.ceil((countData?.count ?? 0) / pageSize),
+    [countData, pageSize]
   )
 
   return (
@@ -378,7 +380,11 @@ export function ListPage({ group, name }: IListPageProps) {
             </Container>
           )}
           <Container className="flex flex-wrap-reverse items-center justify-between gap-3 lg:flex-nowrap">
-            <Filters fields={fields} filters={subFilters} onChange={setSubFilters} />
+            <Filters
+              fields={fields}
+              filters={subFilters}
+              onChange={setSubFilters}
+            />
 
             <div className="flex flex-1 shrink-0 grow items-center justify-end gap-3">
               {isLoading ? (
@@ -466,6 +472,7 @@ export function ListPage({ group, name }: IListPageProps) {
           {isCard ? (
             <>
               <Cards
+                name={name}
                 isLoading={isLoading}
                 isRefetching={isRefetching}
                 data={getData?.results ?? []}
@@ -492,7 +499,7 @@ export function ListPage({ group, name }: IListPageProps) {
               ) : countData?.count ? (
                 <Pagination
                   active={page}
-                  limit={DEFAULT_LIMIT}
+                  limit={pageSize}
                   total={countData.count ?? 0}
                   onChange={(page) => {
                     setPage(page)
@@ -500,9 +507,9 @@ export function ListPage({ group, name }: IListPageProps) {
                 />
               ) : null}
 
-              {isMobileLayout() && totalPages > 1 && selectedRows.length > 0 && (
-                <div className="h-20"></div>
-              )}
+              {isMobileLayout() &&
+                totalPages > 1 &&
+                selectedRows.length > 0 && <div className="h-20"></div>}
             </>
           ) : null}
 
@@ -526,7 +533,9 @@ export function ListPage({ group, name }: IListPageProps) {
                 <DataTable table={table} />
               )}
 
-              {isMobileLayout() && selectedRows.length > 0 && <div className="h-20"></div>}
+              {isMobileLayout() && selectedRows.length > 0 && (
+                <div className="h-20"></div>
+              )}
             </Container>
           ) : null}
         </div>

@@ -205,13 +205,13 @@ export function SelectTenant() {
                             {tenant.name}
                           </ItemTitle>
                         </ItemContent>
-                        
+
                         <ItemActions>
                           <Button
                             variant={"link"}
                             onClick={(e) => {
                               e.stopPropagation()
-                              const authUrl = getAuthUrl()
+                              const authUrl = getAuthUrl(`/?tab=members&tenant=${tenant._id}`)
 
                               window.location.href = authUrl.toString()
                             }}

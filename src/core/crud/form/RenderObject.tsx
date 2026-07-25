@@ -29,12 +29,6 @@ export default function RenderObject({ name, field }: TRenderObjectProp) {
     watch,
   } = useFormContext()
 
-  if (field.requirementKey) {
-    const value = watch(field.requirementKey)
-
-    if (value !== name) return
-  }
-
   const getError = React.useCallback(
     (name?: string) => {
       if (!name) return
@@ -51,6 +45,12 @@ export default function RenderObject({ name, field }: TRenderObjectProp) {
     },
     [errors]
   )
+
+  if (field.requirementKey) {
+    const value = watch(field.requirementKey)
+
+    if (value !== field.name) return
+  }
 
   return (
     <FieldGroup>

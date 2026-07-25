@@ -60,6 +60,7 @@ import { useTranslation } from "react-i18next"
 import { getWallets } from "@/core/endpoints/wallet.ts"
 import { Skeleton } from "@/components/ui/skeleton"
 import { ActionSwapText } from "@/core/pages/wallet/action-swap"
+import { NotificationPopover } from "@/components/notifications/notification-popover"
 
 
 function NavBalance({ visible, onToggle }: { visible: boolean; onToggle: () => void }) {
@@ -334,7 +335,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
                   {appName()}
                 </span>
               </div>
-
+              {/* Notifications */}
+                <NotificationPopover />        
               {/* Right Actions */}
               <div className="ms-auto flex items-center gap-3">
               {/* Balance Toggle */}

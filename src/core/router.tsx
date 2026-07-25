@@ -2,6 +2,7 @@ import { Navigate, Outlet } from "react-router"
 import { ThunderSDK } from "thunder-sdk"
 import {
   IconLayoutGrid,
+  IconNotification,
   IconWallet,
   type TablerIcon,
 } from "@tabler/icons-react"
@@ -17,6 +18,7 @@ import { Wallet } from "@/core/pages/wallet"
 import { lists } from "@/overrides/crud/lists"
 import { allowDisplayRoute } from "./lib/utils"
 import { routes as overrideRoutes } from "@/overrides/routes"
+import Notifications from "./pages/notifications"
 
 export type TRouteObject = {
   name?: string
@@ -171,5 +173,13 @@ coreRoutes.unshift(
     icon: IconWallet,
     priority: 50,
     Component: () => <Wallet />,
+  },
+  {
+    name: "Notifications",
+    path: "notifications",
+    icon: IconNotification,
+    display: false,
+    priority: 7,
+    Component: () => <Notifications />,
   }
 )
