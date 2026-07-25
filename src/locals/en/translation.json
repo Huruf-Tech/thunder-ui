@@ -68,5 +68,7 @@
   "Sent": "Sent",
   "Received": "Received",
   "Transfer to {{target}}": "Transfer to {{target}}",
-  "name": "Name"
+  "name": "Name",
+  "Credit": "Credit",
+  "Debit": "Debit"
 }
