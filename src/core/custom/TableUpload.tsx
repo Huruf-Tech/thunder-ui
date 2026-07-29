@@ -86,6 +86,35 @@ export const urlsFromFiles = (files: FileWithPreview[]): string[] => {
   })
 }
 
+function downloadFile(url: string, filename?: string) {
+  const link = document.createElement("a")
+
+  link.href = url
+  link.download = filename ?? url.split("/").pop() ?? "download"
+  link.target = "_blank"
+
+  document.body.appendChild(link)
+  link.click()
+  link.remove()
+}
+
+function shortenFilename(filename: string, maxLength = 13): string {
+  if (filename.length <= maxLength) return filename
+
+  const extensionIndex = filename.lastIndexOf(".")
+  const extension = extensionIndex > 0 ? filename.slice(extensionIndex) : ""
+  const name = extensionIndex > 0 ? filename.slice(0, extensionIndex) : filename
+
+  const visibleLength = maxLength - extension.length - 3 // 3 for "..."
+
+  if (visibleLength <= 0) return filename
+
+  const startLength = Math.ceil(visibleLength / 2)
+  const endLength = Math.floor(visibleLength / 2)
+
+  return `${name.slice(0, startLength)}...${name.slice(-endLength)}${extension}`
+}
+
 export function TableUpload({
   maxFiles = 10,
   maxSize = 2 * 1024 * 1024, // 2MB
@@ -336,8 +365,11 @@ export function TableUpload({
                             </div>
                           )}
                         </div>
-                        <p className="flex items-center gap-1 truncate text-sm font-medium">
-                          {fileItem.file.name}
+                        <p
+                          className="flex items-center gap-1 truncate text-sm font-medium"
+                          title={fileItem.file.name}
+                        >
+                          {shortenFilename(fileItem.file.name)}
                           {fileItem.status === "error" && (
                             <Badge variant="destructive">Error</Badge>
                           )}
@@ -359,6 +391,12 @@ export function TableUpload({
                             size="icon"
                             variant="ghost"
                             className="size-8"
+                            onClick={() =>
+                              downloadFile(
+                                fileItem.preview!,
+                                fileItem.file.name
+                              )
+                            }
                           >
                             <DownloadIcon className="size-3.5" />
                           </Button>

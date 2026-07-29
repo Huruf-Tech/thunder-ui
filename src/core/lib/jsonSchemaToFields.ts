@@ -309,7 +309,7 @@ export const FieldTypes = [
   "email",
   "url",
   "hidden",
-  "phone"
+  "phone",
 ] as const;
 
 export type TFieldType = (typeof FieldTypes)[number];
@@ -346,6 +346,8 @@ export type TField = {
   const?: unknown;
   canFilter?: boolean;
   requirementKey?: string;
+  fileType?: string;
+  fileSize?: number;
 };
 
 export class JSONSchemaToFields {

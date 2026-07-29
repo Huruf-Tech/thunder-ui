@@ -183,6 +183,9 @@ export const renderField = ({
         render={(def) => {
           return (
             <TableUpload
+              accept={field.fileType}
+              maxSize={field.fileSize}
+              maxFiles={field.maxItems}
               initialFiles={filesFromUrls(def.field.value)}
               onFilesChange={async (files) => {
                 const filesWithUrls = await Promise.all(
@@ -205,8 +208,6 @@ export const renderField = ({
 
                 const urls = urlsFromFiles(filesWithUrls)
                 def.field.onChange(field.multi ? urls : urls[0])
-
-                console.log(urls);
               }}
             />
           )
