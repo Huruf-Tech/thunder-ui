@@ -118,7 +118,7 @@ function shortenFilename(filename: string, maxLength = 13): string {
 export function TableUpload({
   maxFiles = 10,
   maxSize = 2 * 1024 * 1024, // 2MB
-  accept = "*",
+  accept = "image/*,application/pdf",
   className,
   initialFiles,
   onFilesChange,
