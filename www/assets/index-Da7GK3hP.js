@@ -78986,13 +78986,13 @@ const __vitePreload = function preload(baseModule, deps, importerUrl) {
   });
 };
 const App$1 = registerPlugin("App", {
-  web: () => __vitePreload(() => import("./web-CbzzkGhG.js"), true ? [] : void 0).then((m2) => new m2.AppWeb())
+  web: () => __vitePreload(() => import("./web-CukGJGW7.js"), true ? [] : void 0).then((m2) => new m2.AppWeb())
 });
 const Browser$1 = registerPlugin("Browser", {
-  web: () => __vitePreload(() => import("./web-Bf6Hoy8k.js"), true ? [] : void 0).then((m2) => new m2.BrowserWeb())
+  web: () => __vitePreload(() => import("./web-yw2L2UIX.js"), true ? [] : void 0).then((m2) => new m2.BrowserWeb())
 });
 const Preferences = registerPlugin("Preferences", {
-  web: () => __vitePreload(() => import("./web-DhfJLUff.js"), true ? [] : void 0).then((m2) => new m2.PreferencesWeb())
+  web: () => __vitePreload(() => import("./web-zeuF3zjI.js"), true ? [] : void 0).then((m2) => new m2.PreferencesWeb())
 });
 class InvalidTokenError extends Error {
 }
@@ -223697,7 +223697,7 @@ const Clipboard = registerPlugin("Clipboard", {
   web: () => new ClipboardWeb()
 });
 const Share = registerPlugin("Share", {
-  web: () => __vitePreload(() => import("./web-CDekZl_M.js"), true ? [] : void 0).then((m2) => new m2.ShareWeb())
+  web: () => __vitePreload(() => import("./web-CmHxxIEH.js"), true ? [] : void 0).then((m2) => new m2.ShareWeb())
 });
 var __defProp = Object.defineProperty;
 var __getOwnPropSymbols = Object.getOwnPropertySymbols;
@@ -225248,7 +225248,6 @@ function AccordionContent({
     }
   );
 }
-const PAGE_SIZE = 5;
 function NotificationCardSkeleton() {
   return /* @__PURE__ */ jsxRuntimeExports.jsx(Card, { className: "overflow-hidden border-l-[3px] border-l-muted-foreground/20 py-0 shadow-none", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(CardContent, { className: "flex w-full items-center gap-3 px-3 py-3", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "size-9 shrink-0 rounded-full sm:size-10" }),
@@ -225265,7 +225264,7 @@ function Notifications$2() {
   const [loading, setLoading] = React.useState(true);
   const [error2, setError] = React.useState(null);
   const [activeTab, setActiveTab] = React.useState("all");
-  const [page, setPage] = React.useState(1);
+  const { page, pageSize, setPage } = usePagination();
   const _me = React.useCallback(
     async ({ signal }) => {
       return await ThunderSDK.me.get({ signal });
@@ -225314,15 +225313,14 @@ function Notifications$2() {
       cancelled = true;
     };
   }, [tenant, userId, triggersBaseUrl2, activeTab, t3]);
-  const filtered = notifications;
+  const filteredNotifications = notifications;
   React.useEffect(() => {
-    setPage(1);
+    setPage(0);
   }, [activeTab]);
-  const totalCount = filtered.length;
-  const pageItemsCount = PAGE_SIZE * page;
+  const totalCount = filteredNotifications.length;
   const paginated = React.useMemo(
-    () => filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
-    [filtered, page]
+    () => filteredNotifications.slice(page * pageSize, page * pageSize + pageSize),
+    [filteredNotifications, page, pageSize]
   );
   const grouped = React.useMemo(() => {
     const groups = {};
@@ -225381,7 +225379,7 @@ function Notifications$2() {
       /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-base font-semibold text-foreground", children: t3("Something went wrong") }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-1 max-w-xs text-xs text-muted-foreground", children: error2 })
     ] }) }),
-    !loading && filtered.length === 0 && /* @__PURE__ */ jsxRuntimeExports.jsx(Card, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(CardContent, { className: "flex flex-col items-center justify-center py-16 text-center", children: [
+    !loading && filteredNotifications.length === 0 && /* @__PURE__ */ jsxRuntimeExports.jsx(Card, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(CardContent, { className: "flex flex-col items-center justify-center py-16 text-center", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted", children: /* @__PURE__ */ jsxRuntimeExports.jsx(IconBellOff, { className: "size-7 text-muted-foreground/50" }) }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-base font-semibold text-foreground", children: t3("No notifications") }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-1 max-w-xs text-xs text-muted-foreground", children: activeTab === "unread" ? t3("You have no unread notifications.") : t3("There are no notifications to display.") })
@@ -225441,40 +225439,15 @@ function Notifications$2() {
         );
       }) })
     ] }, date2)),
-    !loading && !error2 && totalCount > PAGE_SIZE && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap-reverse items-center justify-center gap-3 md:justify-between", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(Badge, { variant: "outline", children: [
-        t3("Current Page"),
-        " (",
-        page,
-        ")",
-        " ",
-        Math.min(pageItemsCount, totalCount),
-        " -",
-        " ",
-        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-muted-foreground", children: totalCount })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-3", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          Button$2,
-          {
-            variant: "outline",
-            size: "sm",
-            disabled: page <= 1,
-            onClick: () => setPage((p2) => p2 - 1),
-            children: t3("Previous")
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          Button$2,
-          {
-            size: "sm",
-            disabled: pageItemsCount >= totalCount,
-            onClick: () => setPage((p2) => p2 + 1),
-            children: t3("Next")
-          }
-        )
-      ] })
-    ] })
+    !loading && !error2 && totalCount > pageSize && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "py-2", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+      Pagination,
+      {
+        total: totalCount,
+        limit: pageSize,
+        active: page,
+        onChange: (newPage) => setPage(newPage)
+      }
+    ) })
   ] }) });
 }
 const moduleNames = Array.from(
