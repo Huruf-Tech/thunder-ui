@@ -7779,10 +7779,6 @@ form._multiFieldForm_f3hmk_1213 ._formField_f3hmk_1219 label {
       background-color: #0000 !important;
     }
 
-    .hover\:text-destructive:hover {
-      color: var(--destructive);
-    }
-
     .hover\:text-foreground:hover {
       color: var(--foreground);
     }
