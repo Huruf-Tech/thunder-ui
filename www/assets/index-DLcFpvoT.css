@@ -3650,6 +3650,10 @@ form._multiFieldForm_f3hmk_1213 ._formField_f3hmk_1219 label {
     margin-top: calc(var(--spacing) * 4);
   }
 
+  .mt-5 {
+    margin-top: calc(var(--spacing) * 5);
+  }
+
   .mt-6 {
     margin-top: calc(var(--spacing) * 6);
   }
@@ -4210,6 +4214,10 @@ form._multiFieldForm_f3hmk_1213 ._formField_f3hmk_1219 label {
     width: calc(var(--spacing) * 24);
   }
 
+  .w-25 {
+    width: calc(var(--spacing) * 25);
+  }
+
   .w-28 {
     width: calc(var(--spacing) * 28);
   }
@@ -4483,6 +4491,10 @@ form._multiFieldForm_f3hmk_1213 ._formField_f3hmk_1219 label {
 
   .scale-3d {
     scale: var(--tw-scale-x) var(--tw-scale-y) var(--tw-scale-z);
+  }
+
+  .-rotate-90 {
+    rotate: -90deg;
   }
 
   .rotate-45 {
@@ -4828,6 +4840,18 @@ form._multiFieldForm_f3hmk_1213 ._formField_f3hmk_1219 label {
 
   .gap-10 {
     gap: calc(var(--spacing) * 10);
+  }
+
+  :where(.space-y-2 > :not(:last-child)) {
+    --tw-space-y-reverse: 0;
+    margin-block-start: calc(calc(var(--spacing) * 2) * var(--tw-space-y-reverse));
+    margin-block-end: calc(calc(var(--spacing) * 2) * calc(1 - var(--tw-space-y-reverse)));
+  }
+
+  :where(.space-y-4 > :not(:last-child)) {
+    --tw-space-y-reverse: 0;
+    margin-block-start: calc(calc(var(--spacing) * 4) * var(--tw-space-y-reverse));
+    margin-block-end: calc(calc(var(--spacing) * 4) * calc(1 - var(--tw-space-y-reverse)));
   }
 
   :where(.space-y-reverse > :not(:last-child)) {
@@ -5242,8 +5266,22 @@ form._multiFieldForm_f3hmk_1213 ._formField_f3hmk_1219 label {
     border-color: var(--input);
   }
 
+  .border-muted-foreground\/25 {
+    border-color: var(--muted-foreground);
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .border-muted-foreground\/25 {
+      border-color: color-mix(in oklab, var(--muted-foreground) 25%, transparent);
+    }
+  }
+
   .border-popover {
     border-color: var(--popover);
+  }
+
+  .border-primary {
+    border-color: var(--primary);
   }
 
   .border-sidebar-border {
@@ -5435,6 +5473,16 @@ form._multiFieldForm_f3hmk_1213 ._formField_f3hmk_1219 label {
   @supports (color: color-mix(in lab, red, red)) {
     .bg-primary\/3 {
       background-color: color-mix(in oklab, var(--primary) 3%, transparent);
+    }
+  }
+
+  .bg-primary\/5 {
+    background-color: var(--primary);
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .bg-primary\/5 {
+      background-color: color-mix(in oklab, var(--primary) 5%, transparent);
     }
   }
 
@@ -5712,12 +5760,20 @@ form._multiFieldForm_f3hmk_1213 ._formField_f3hmk_1219 label {
     padding-block: calc(var(--spacing) * 16);
   }
 
+  .ps-1\.5 {
+    padding-inline-start: calc(var(--spacing) * 1.5);
+  }
+
   .ps-2\! {
     padding-inline-start: calc(var(--spacing) * 2) !important;
   }
 
   .ps-3 {
     padding-inline-start: calc(var(--spacing) * 3);
+  }
+
+  .ps-4 {
+    padding-inline-start: calc(var(--spacing) * 4);
   }
 
   .pe-2 {
@@ -6024,6 +6080,16 @@ form._multiFieldForm_f3hmk_1213 ._formField_f3hmk_1219 label {
     color: var(--destructive-foreground);
   }
 
+  .text-destructive\/80 {
+    color: var(--destructive);
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .text-destructive\/80 {
+      color: color-mix(in oklab, var(--destructive) 80%, transparent);
+    }
+  }
+
   .text-foreground, .text-foreground\/50 {
     color: var(--foreground);
   }
@@ -6074,7 +6140,17 @@ form._multiFieldForm_f3hmk_1213 ._formField_f3hmk_1219 label {
     color: var(--color-green-600);
   }
 
-  .text-muted-foreground, .text-muted-foreground\/30 {
+  .text-muted-foreground, .text-muted-foreground\/20 {
+    color: var(--muted-foreground);
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .text-muted-foreground\/20 {
+      color: color-mix(in oklab, var(--muted-foreground) 20%, transparent);
+    }
+  }
+
+  .text-muted-foreground\/30 {
     color: var(--muted-foreground);
   }
 
@@ -6111,6 +6187,16 @@ form._multiFieldForm_f3hmk_1213 ._formField_f3hmk_1219 label {
   @supports (color: color-mix(in lab, red, red)) {
     .text-muted-foreground\/70 {
       color: color-mix(in oklab, var(--muted-foreground) 70%, transparent);
+    }
+  }
+
+  .text-muted-foreground\/80 {
+    color: var(--muted-foreground);
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .text-muted-foreground\/80 {
+      color: color-mix(in oklab, var(--muted-foreground) 80%, transparent);
     }
   }
 
@@ -7640,6 +7726,10 @@ form._multiFieldForm_f3hmk_1213 ._formField_f3hmk_1219 label {
     margin-top: 0;
   }
 
+  .last\:mb-0:last-child {
+    margin-bottom: 0;
+  }
+
   .last\:rounded-t-lg:last-child {
     border-top-left-radius: var(--radius);
     border-top-right-radius: var(--radius);
@@ -7675,6 +7765,16 @@ form._multiFieldForm_f3hmk_1213 ._formField_f3hmk_1219 label {
   @media (hover: hover) {
     .hover\:border-border:hover {
       border-color: var(--border);
+    }
+
+    .hover\:border-muted-foreground\/50:hover {
+      border-color: var(--muted-foreground);
+    }
+
+    @supports (color: color-mix(in lab, red, red)) {
+      .hover\:border-muted-foreground\/50:hover {
+        border-color: color-mix(in oklab, var(--muted-foreground) 50%, transparent);
+      }
     }
 
     .hover\:bg-\[color-mix\(in_oklch\,var\(--secondary\)\,var\(--foreground\)_5\%\)\]:hover {
@@ -7777,6 +7877,10 @@ form._multiFieldForm_f3hmk_1213 ._formField_f3hmk_1219 label {
 
     .hover\:bg-transparent\!:hover {
       background-color: #0000 !important;
+    }
+
+    .hover\:text-destructive:hover {
+      color: var(--destructive);
     }
 
     .hover\:text-foreground:hover {

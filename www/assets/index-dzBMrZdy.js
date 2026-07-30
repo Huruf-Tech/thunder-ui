@@ -57969,156 +57969,156 @@ const createReactComponent = (type, iconName, iconNamePascal, iconNode) => {
   Component.displayName = `${iconNamePascal}`;
   return Component;
 };
-const __iconNode$1c = [["path", { "d": "M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0", "key": "svg-0" }], ["path", { "d": "M12 8v4", "key": "svg-1" }], ["path", { "d": "M12 16h.01", "key": "svg-2" }]];
-const IconAlertCircle = createReactComponent("outline", "alert-circle", "AlertCircle", __iconNode$1c);
-const __iconNode$1b = [["path", { "d": "M10 12l10 0", "key": "svg-0" }], ["path", { "d": "M10 12l4 4", "key": "svg-1" }], ["path", { "d": "M10 12l4 -4", "key": "svg-2" }], ["path", { "d": "M4 4l0 16", "key": "svg-3" }]];
-const IconArrowBarToLeft = createReactComponent("outline", "arrow-bar-to-left", "ArrowBarToLeft", __iconNode$1b);
-const __iconNode$1a = [["path", { "d": "M14 12l-10 0", "key": "svg-0" }], ["path", { "d": "M14 12l-4 4", "key": "svg-1" }], ["path", { "d": "M14 12l-4 -4", "key": "svg-2" }], ["path", { "d": "M20 4l0 16", "key": "svg-3" }]];
-const IconArrowBarToRight = createReactComponent("outline", "arrow-bar-to-right", "ArrowBarToRight", __iconNode$1a);
-const __iconNode$19 = [["path", { "d": "M12 5v.5m0 3v1.5m0 3v6", "key": "svg-0" }], ["path", { "d": "M18 13l-6 6", "key": "svg-1" }], ["path", { "d": "M6 13l6 6", "key": "svg-2" }]];
-const IconArrowDownDashed = createReactComponent("outline", "arrow-down-dashed", "ArrowDownDashed", __iconNode$19);
-const __iconNode$18 = [["path", { "d": "M5 12l14 0", "key": "svg-0" }], ["path", { "d": "M5 12l6 6", "key": "svg-1" }], ["path", { "d": "M5 12l6 -6", "key": "svg-2" }]];
-const IconArrowLeft = createReactComponent("outline", "arrow-left", "ArrowLeft", __iconNode$18);
-const __iconNode$17 = [["path", { "d": "M12 5l0 14", "key": "svg-0" }], ["path", { "d": "M16 9l-4 -4", "key": "svg-1" }], ["path", { "d": "M8 9l4 -4", "key": "svg-2" }]];
-const IconArrowNarrowUp = createReactComponent("outline", "arrow-narrow-up", "ArrowNarrowUp", __iconNode$17);
-const __iconNode$16 = [["path", { "d": "M5 12l14 0", "key": "svg-0" }], ["path", { "d": "M13 18l6 -6", "key": "svg-1" }], ["path", { "d": "M13 6l6 6", "key": "svg-2" }]];
-const IconArrowRight = createReactComponent("outline", "arrow-right", "ArrowRight", __iconNode$16);
-const __iconNode$15 = [["path", { "d": "M7 10h14l-4 -4", "key": "svg-0" }], ["path", { "d": "M17 14h-14l4 4", "key": "svg-1" }]];
-const IconArrowsExchange = createReactComponent("outline", "arrows-exchange", "ArrowsExchange", __iconNode$15);
-const __iconNode$14 = [["path", { "d": "M9.346 5.353c.21 -.129 .428 -.246 .654 -.353a2 2 0 1 1 4 0a7 7 0 0 1 4 6v3m-1 3h-13a4 4 0 0 0 2 -3v-3a6.996 6.996 0 0 1 1.273 -3.707", "key": "svg-0" }], ["path", { "d": "M9 17v1a3 3 0 0 0 6 0v-1", "key": "svg-1" }], ["path", { "d": "M3 3l18 18", "key": "svg-2" }]];
-const IconBellOff = createReactComponent("outline", "bell-off", "BellOff", __iconNode$14);
-const __iconNode$13 = [["path", { "d": "M10 5a2 2 0 1 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3h-16a4 4 0 0 0 2 -3v-3a7 7 0 0 1 4 -6", "key": "svg-0" }], ["path", { "d": "M9 17v1a3 3 0 0 0 6 0v-1", "key": "svg-1" }]];
-const IconBell = createReactComponent("outline", "bell", "Bell", __iconNode$13);
-const __iconNode$12 = [["path", { "d": "M19.072 21h-14.144a1.928 1.928 0 0 1 -1.928 -1.928v-6.857c0 -.512 .203 -1 .566 -1.365l7.07 -7.063a1.928 1.928 0 0 1 2.727 0l7.071 7.063c.363 .362 .566 .853 .566 1.365v6.857a1.928 1.928 0 0 1 -1.928 1.928", "key": "svg-0" }], ["path", { "d": "M7 13v4h10v-4l-5 -5", "key": "svg-1" }], ["path", { "d": "M14.8 5.2l-11.8 11.8", "key": "svg-2" }], ["path", { "d": "M7 17v4", "key": "svg-3" }], ["path", { "d": "M17 17v4", "key": "svg-4" }]];
-const IconBrandGoogleHome = createReactComponent("outline", "brand-google-home", "BrandGoogleHome", __iconNode$12);
-const __iconNode$11 = [["path", { "d": "M9 9v-1a3 3 0 0 1 6 0v1", "key": "svg-0" }], ["path", { "d": "M8 9h8a6 6 0 0 1 1 3v3a5 5 0 0 1 -10 0v-3a6 6 0 0 1 1 -3", "key": "svg-1" }], ["path", { "d": "M3 13l4 0", "key": "svg-2" }], ["path", { "d": "M17 13l4 0", "key": "svg-3" }], ["path", { "d": "M12 20l0 -6", "key": "svg-4" }], ["path", { "d": "M4 19l3.35 -2", "key": "svg-5" }], ["path", { "d": "M20 19l-3.35 -2", "key": "svg-6" }], ["path", { "d": "M4 7l3.75 2.4", "key": "svg-7" }], ["path", { "d": "M20 7l-3.75 2.4", "key": "svg-8" }]];
-const IconBug = createReactComponent("outline", "bug", "Bug", __iconNode$11);
-const __iconNode$10 = [["path", { "d": "M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12", "key": "svg-0" }], ["path", { "d": "M16 3v4", "key": "svg-1" }], ["path", { "d": "M8 3v4", "key": "svg-2" }], ["path", { "d": "M4 11h16", "key": "svg-3" }], ["path", { "d": "M11 15h1", "key": "svg-4" }], ["path", { "d": "M12 15v3", "key": "svg-5" }]];
-const IconCalendar = createReactComponent("outline", "calendar", "Calendar", __iconNode$10);
-const __iconNode$$ = [["path", { "d": "M5 12l5 5l10 -10", "key": "svg-0" }]];
-const IconCheck = createReactComponent("outline", "check", "Check", __iconNode$$);
-const __iconNode$_ = [["path", { "d": "M6 9l6 6l6 -6", "key": "svg-0" }]];
-const IconChevronDown = createReactComponent("outline", "chevron-down", "ChevronDown", __iconNode$_);
-const __iconNode$Z = [["path", { "d": "M15 6l-6 6l6 6", "key": "svg-0" }]];
-const IconChevronLeft = createReactComponent("outline", "chevron-left", "ChevronLeft", __iconNode$Z);
-const __iconNode$Y = [["path", { "d": "M9 6l6 6l-6 6", "key": "svg-0" }]];
-const IconChevronRight = createReactComponent("outline", "chevron-right", "ChevronRight", __iconNode$Y);
-const __iconNode$X = [["path", { "d": "M6 15l6 -6l6 6", "key": "svg-0" }]];
-const IconChevronUp = createReactComponent("outline", "chevron-up", "ChevronUp", __iconNode$X);
-const __iconNode$W = [["path", { "d": "M7 7l5 5l-5 5", "key": "svg-0" }], ["path", { "d": "M13 7l5 5l-5 5", "key": "svg-1" }]];
-const IconChevronsRight = createReactComponent("outline", "chevrons-right", "ChevronsRight", __iconNode$W);
-const __iconNode$V = [["path", { "d": "M8.56 3.69a9 9 0 0 0 -2.92 1.95", "key": "svg-0" }], ["path", { "d": "M3.69 8.56a9 9 0 0 0 -.69 3.44", "key": "svg-1" }], ["path", { "d": "M3.69 15.44a9 9 0 0 0 1.95 2.92", "key": "svg-2" }], ["path", { "d": "M8.56 20.31a9 9 0 0 0 3.44 .69", "key": "svg-3" }], ["path", { "d": "M15.44 20.31a9 9 0 0 0 2.92 -1.95", "key": "svg-4" }], ["path", { "d": "M20.31 15.44a9 9 0 0 0 .69 -3.44", "key": "svg-5" }], ["path", { "d": "M20.31 8.56a9 9 0 0 0 -1.95 -2.92", "key": "svg-6" }], ["path", { "d": "M15.44 3.69a9 9 0 0 0 -3.44 -.69", "key": "svg-7" }]];
-const IconCircleDashed = createReactComponent("outline", "circle-dashed", "CircleDashed", __iconNode$V);
-const __iconNode$U = [["path", { "d": "M7 9.667a2.667 2.667 0 0 1 2.667 -2.667h8.666a2.667 2.667 0 0 1 2.667 2.667v8.666a2.667 2.667 0 0 1 -2.667 2.667h-8.666a2.667 2.667 0 0 1 -2.667 -2.667l0 -8.666", "key": "svg-0" }], ["path", { "d": "M4.012 16.737a2.005 2.005 0 0 1 -1.012 -1.737v-10c0 -1.1 .9 -2 2 -2h10c.75 0 1.158 .385 1.5 1", "key": "svg-1" }]];
-const IconCopy = createReactComponent("outline", "copy", "Copy", __iconNode$U);
-const __iconNode$T = [["path", { "d": "M12 19h-6a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v4.5", "key": "svg-0" }], ["path", { "d": "M3 10h18", "key": "svg-1" }], ["path", { "d": "M16 19h6", "key": "svg-2" }], ["path", { "d": "M19 16l3 3l-3 3", "key": "svg-3" }], ["path", { "d": "M7.005 15h.005", "key": "svg-4" }], ["path", { "d": "M11 15h2", "key": "svg-5" }]];
-const IconCreditCardPay = createReactComponent("outline", "credit-card-pay", "CreditCardPay", __iconNode$T);
-const __iconNode$S = [["path", { "d": "M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0", "key": "svg-0" }], ["path", { "d": "M8 12l0 .01", "key": "svg-1" }], ["path", { "d": "M12 12l0 .01", "key": "svg-2" }], ["path", { "d": "M16 12l0 .01", "key": "svg-3" }]];
-const IconDotsCircleHorizontal = createReactComponent("outline", "dots-circle-horizontal", "DotsCircleHorizontal", __iconNode$S);
-const __iconNode$R = [["path", { "d": "M11 12a1 1 0 1 0 2 0a1 1 0 1 0 -2 0", "key": "svg-0" }], ["path", { "d": "M11 19a1 1 0 1 0 2 0a1 1 0 1 0 -2 0", "key": "svg-1" }], ["path", { "d": "M11 5a1 1 0 1 0 2 0a1 1 0 1 0 -2 0", "key": "svg-2" }]];
-const IconDotsVertical = createReactComponent("outline", "dots-vertical", "DotsVertical", __iconNode$R);
-const __iconNode$Q = [["path", { "d": "M4 12a1 1 0 1 0 2 0a1 1 0 1 0 -2 0", "key": "svg-0" }], ["path", { "d": "M11 12a1 1 0 1 0 2 0a1 1 0 1 0 -2 0", "key": "svg-1" }], ["path", { "d": "M18 12a1 1 0 1 0 2 0a1 1 0 1 0 -2 0", "key": "svg-2" }]];
-const IconDots = createReactComponent("outline", "dots", "Dots", __iconNode$Q);
-const __iconNode$P = [["path", { "d": "M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1", "key": "svg-0" }], ["path", { "d": "M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415", "key": "svg-1" }], ["path", { "d": "M16 5l3 3", "key": "svg-2" }]];
-const IconEdit = createReactComponent("outline", "edit", "Edit", __iconNode$P);
-const __iconNode$O = [["path", { "d": "M10.585 10.587a2 2 0 0 0 2.829 2.828", "key": "svg-0" }], ["path", { "d": "M16.681 16.673a8.717 8.717 0 0 1 -4.681 1.327c-3.6 0 -6.6 -2 -9 -6c1.272 -2.12 2.712 -3.678 4.32 -4.674m2.86 -1.146a9.055 9.055 0 0 1 1.82 -.18c3.6 0 6.6 2 9 6c-.666 1.11 -1.379 2.067 -2.138 2.87", "key": "svg-1" }], ["path", { "d": "M3 3l18 18", "key": "svg-2" }]];
-const IconEyeOff = createReactComponent("outline", "eye-off", "EyeOff", __iconNode$O);
-const __iconNode$N = [["path", { "d": "M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0", "key": "svg-0" }], ["path", { "d": "M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6", "key": "svg-1" }]];
-const IconEye = createReactComponent("outline", "eye", "Eye", __iconNode$N);
-const __iconNode$M = [["path", { "d": "M14 3v4a1 1 0 0 0 1 1h4", "key": "svg-0" }], ["path", { "d": "M5 12v-7a2 2 0 0 1 2 -2h7l5 5v4", "key": "svg-1" }], ["path", { "d": "M5 18h1.5a1.5 1.5 0 0 0 0 -3h-1.5v6", "key": "svg-2" }], ["path", { "d": "M17 18h2", "key": "svg-3" }], ["path", { "d": "M20 15h-3v6", "key": "svg-4" }], ["path", { "d": "M11 15v6h1a2 2 0 0 0 2 -2v-2a2 2 0 0 0 -2 -2h-1", "key": "svg-5" }]];
-const IconFileTypePdf = createReactComponent("outline", "file-type-pdf", "FileTypePdf", __iconNode$M);
-const __iconNode$L = [["path", { "d": "M13.758 19.414l-4.758 1.586v-8.5l-4.48 -4.928a2 2 0 0 1 -.52 -1.345v-2.227h16v2.172a2 2 0 0 1 -.586 1.414l-4.414 4.414v1.5", "key": "svg-0" }], ["path", { "d": "M22 22l-5 -5", "key": "svg-1" }], ["path", { "d": "M17 22l5 -5", "key": "svg-2" }]];
-const IconFilterX = createReactComponent("outline", "filter-x", "FilterX", __iconNode$L);
-const __iconNode$K = [["path", { "d": "M4 4h16v2.172a2 2 0 0 1 -.586 1.414l-4.414 4.414v7l-6 2v-8.5l-4.48 -4.928a2 2 0 0 1 -.52 -1.345v-2.227", "key": "svg-0" }]];
-const IconFilter = createReactComponent("outline", "filter", "Filter", __iconNode$K);
-const __iconNode$J = [["path", { "d": "M19 18v-8l-2 2", "key": "svg-0" }], ["path", { "d": "M4 6v12", "key": "svg-1" }], ["path", { "d": "M12 6v12", "key": "svg-2" }], ["path", { "d": "M11 18h2", "key": "svg-3" }], ["path", { "d": "M3 18h2", "key": "svg-4" }], ["path", { "d": "M4 12h8", "key": "svg-5" }], ["path", { "d": "M3 6h2", "key": "svg-6" }], ["path", { "d": "M11 6h2", "key": "svg-7" }]];
-const IconH1 = createReactComponent("outline", "h-1", "H1", __iconNode$J);
-const __iconNode$I = [["path", { "d": "M3 19h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4", "key": "svg-0" }], ["path", { "d": "M12.5 5.5l4 4", "key": "svg-1" }], ["path", { "d": "M4.5 13.5l4 4", "key": "svg-2" }], ["path", { "d": "M21 15v4h-8l4 -4l4 0", "key": "svg-3" }]];
-const IconHighlight = createReactComponent("outline", "highlight", "Highlight", __iconNode$I);
-const __iconNode$H = [["path", { "d": "M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0", "key": "svg-0" }], ["path", { "d": "M12 9h.01", "key": "svg-1" }], ["path", { "d": "M11 12h1v4h1", "key": "svg-2" }]];
-const IconInfoCircle = createReactComponent("outline", "info-circle", "InfoCircle", __iconNode$H);
-const __iconNode$G = [["path", { "d": "M9 6.371c0 4.418 -2.239 6.629 -5 6.629", "key": "svg-0" }], ["path", { "d": "M4 6.371h7", "key": "svg-1" }], ["path", { "d": "M5 9c0 2.144 2.252 3.908 6 4", "key": "svg-2" }], ["path", { "d": "M12 20l4 -9l4 9", "key": "svg-3" }], ["path", { "d": "M19.1 18h-6.2", "key": "svg-4" }], ["path", { "d": "M6.694 3l.793 .582", "key": "svg-5" }]];
-const IconLanguage = createReactComponent("outline", "language", "Language", __iconNode$G);
-const __iconNode$F = [["path", { "d": "M4 5a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -4", "key": "svg-0" }], ["path", { "d": "M14 5a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -4", "key": "svg-1" }], ["path", { "d": "M4 15a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -4", "key": "svg-2" }], ["path", { "d": "M14 15a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -4", "key": "svg-3" }]];
-const IconLayoutGrid = createReactComponent("outline", "layout-grid", "LayoutGrid", __iconNode$F);
-const __iconNode$E = [["path", { "d": "M4 6a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2l0 -12", "key": "svg-0" }], ["path", { "d": "M9 4l0 16", "key": "svg-1" }]];
-const IconLayoutSidebar = createReactComponent("outline", "layout-sidebar", "LayoutSidebar", __iconNode$E);
-const __iconNode$D = [["path", { "d": "M9 15l6 -6", "key": "svg-0" }], ["path", { "d": "M11 6l.463 -.536a5 5 0 0 1 7.071 7.072l-.534 .464", "key": "svg-1" }], ["path", { "d": "M13 18l-.397 .534a5.068 5.068 0 0 1 -7.127 0a4.972 4.972 0 0 1 0 -7.071l.524 -.463", "key": "svg-2" }]];
-const IconLink = createReactComponent("outline", "link", "Link", __iconNode$D);
-const __iconNode$C = [["path", { "d": "M12 6l0 -3", "key": "svg-0" }], ["path", { "d": "M16.25 7.75l2.15 -2.15", "key": "svg-1" }], ["path", { "d": "M18 12l3 0", "key": "svg-2" }], ["path", { "d": "M16.25 16.25l2.15 2.15", "key": "svg-3" }], ["path", { "d": "M12 18l0 3", "key": "svg-4" }], ["path", { "d": "M7.75 16.25l-2.15 2.15", "key": "svg-5" }], ["path", { "d": "M6 12l-3 0", "key": "svg-6" }], ["path", { "d": "M7.75 7.75l-2.15 -2.15", "key": "svg-7" }]];
-const IconLoader = createReactComponent("outline", "loader", "Loader", __iconNode$C);
-const __iconNode$B = [["path", { "d": "M15 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2", "key": "svg-0" }], ["path", { "d": "M21 12h-13l3 -3", "key": "svg-1" }], ["path", { "d": "M11 15l-3 -3", "key": "svg-2" }]];
-const IconLogin = createReactComponent("outline", "login", "Login", __iconNode$B);
-const __iconNode$A = [["path", { "d": "M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2", "key": "svg-0" }], ["path", { "d": "M9 12h12l-3 -3", "key": "svg-1" }], ["path", { "d": "M18 15l3 -3", "key": "svg-2" }]];
-const IconLogout = createReactComponent("outline", "logout", "Logout", __iconNode$A);
-const __iconNode$z = [["path", { "d": "M3 7a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-10", "key": "svg-0" }], ["path", { "d": "M3 7l9 6l9 -6", "key": "svg-1" }]];
-const IconMail = createReactComponent("outline", "mail", "Mail", __iconNode$z);
-const __iconNode$y = [["path", { "d": "M3 7a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-10", "key": "svg-0" }], ["path", { "d": "M7 15v-6l2 2l2 -2v6", "key": "svg-1" }], ["path", { "d": "M14 13l2 2l2 -2m-2 2v-6", "key": "svg-2" }]];
-const IconMarkdown = createReactComponent("outline", "markdown", "Markdown", __iconNode$y);
-const __iconNode$x = [["path", { "d": "M4 6l16 0", "key": "svg-0" }], ["path", { "d": "M4 12l16 0", "key": "svg-1" }], ["path", { "d": "M4 18l16 0", "key": "svg-2" }]];
-const IconMenu2 = createReactComponent("outline", "menu-2", "Menu2", __iconNode$x);
-const __iconNode$w = [["path", { "d": "M14.986 3.51a9 9 0 1 0 1.514 16.284c2.489 -1.437 4.181 -3.978 4.5 -6.794", "key": "svg-0" }], ["path", { "d": "M10 10h.01", "key": "svg-1" }], ["path", { "d": "M14 8h.01", "key": "svg-2" }], ["path", { "d": "M12 15c1 -1.333 2 -2 3 -2", "key": "svg-3" }], ["path", { "d": "M20 9v.01", "key": "svg-4" }], ["path", { "d": "M20 6a2.003 2.003 0 0 0 .914 -3.782a1.98 1.98 0 0 0 -2.414 .483", "key": "svg-5" }]];
-const IconMoodPuzzled = createReactComponent("outline", "mood-puzzled", "MoodPuzzled", __iconNode$w);
-const __iconNode$v = [["path", { "d": "M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454l0 .008", "key": "svg-0" }]];
-const IconMoon = createReactComponent("outline", "moon", "Moon", __iconNode$v);
-const __iconNode$u = [["path", { "d": "M10 6h-3a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-3", "key": "svg-0" }], ["path", { "d": "M14 7a3 3 0 1 0 6 0a3 3 0 1 0 -6 0", "key": "svg-1" }]];
-const IconNotification = createReactComponent("outline", "notification", "Notification", __iconNode$u);
-const __iconNode$t = [["path", { "d": "M4 17v-10l7 10v-10", "key": "svg-0" }], ["path", { "d": "M15 17h5", "key": "svg-1" }], ["path", { "d": "M15 10a2.5 3 0 1 0 5 0a2.5 3 0 1 0 -5 0", "key": "svg-2" }]];
-const IconNumber = createReactComponent("outline", "number", "Number", __iconNode$t);
-const __iconNode$s = [["path", { "d": "M15 8h.01", "key": "svg-0" }], ["path", { "d": "M12.5 21h-6.5a3 3 0 0 1 -3 -3v-12a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v6.5", "key": "svg-1" }], ["path", { "d": "M3 16l5 -5c.928 -.893 2.072 -.893 3 0l4 4", "key": "svg-2" }], ["path", { "d": "M14 14l1 -1c.67 -.644 1.45 -.824 2.182 -.54", "key": "svg-3" }], ["path", { "d": "M16 19h6", "key": "svg-4" }], ["path", { "d": "M19 16v6", "key": "svg-5" }]];
-const IconPhotoPlus = createReactComponent("outline", "photo-plus", "PhotoPlus", __iconNode$s);
-const __iconNode$r = [["path", { "d": "M15 8h.01", "key": "svg-0" }], ["path", { "d": "M3 6a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v12a3 3 0 0 1 -3 3h-12a3 3 0 0 1 -3 -3v-12", "key": "svg-1" }], ["path", { "d": "M3 16l5 -5c.928 -.893 2.072 -.893 3 0l5 5", "key": "svg-2" }], ["path", { "d": "M14 14l1 -1c.928 -.893 2.072 -.893 3 0l3 3", "key": "svg-3" }]];
-const IconPhoto = createReactComponent("outline", "photo", "Photo", __iconNode$r);
-const __iconNode$q = [["path", { "d": "M3 3l18 18", "key": "svg-0" }], ["path", { "d": "M15 4.5l-3.249 3.249m-2.57 1.433l-2.181 .818l-1.5 1.5l7 7l1.5 -1.5l.82 -2.186m1.43 -2.563l3.25 -3.251", "key": "svg-1" }], ["path", { "d": "M9 15l-4.5 4.5", "key": "svg-2" }], ["path", { "d": "M14.5 4l5.5 5.5", "key": "svg-3" }]];
-const IconPinnedOff = createReactComponent("outline", "pinned-off", "PinnedOff", __iconNode$q);
-const __iconNode$p = [["path", { "d": "M12 5l0 14", "key": "svg-0" }], ["path", { "d": "M5 12l14 0", "key": "svg-1" }]];
-const IconPlus = createReactComponent("outline", "plus", "Plus", __iconNode$p);
-const __iconNode$o = [["path", { "d": "M4 5a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -4", "key": "svg-0" }], ["path", { "d": "M7 17l0 .01", "key": "svg-1" }], ["path", { "d": "M14 5a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -4", "key": "svg-2" }], ["path", { "d": "M7 7l0 .01", "key": "svg-3" }], ["path", { "d": "M4 15a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -4", "key": "svg-4" }], ["path", { "d": "M17 7l0 .01", "key": "svg-5" }], ["path", { "d": "M14 14l3 0", "key": "svg-6" }], ["path", { "d": "M20 14l0 .01", "key": "svg-7" }], ["path", { "d": "M14 14l0 3", "key": "svg-8" }], ["path", { "d": "M14 20l3 0", "key": "svg-9" }], ["path", { "d": "M17 17l3 0", "key": "svg-10" }], ["path", { "d": "M20 17l0 3", "key": "svg-11" }]];
-const IconQrcode = createReactComponent("outline", "qrcode", "Qrcode", __iconNode$o);
-const __iconNode$n = [["path", { "d": "M3 10a7 7 0 1 0 14 0a7 7 0 1 0 -14 0", "key": "svg-0" }], ["path", { "d": "M21 21l-6 -6", "key": "svg-1" }]];
-const IconSearch = createReactComponent("outline", "search", "Search", __iconNode$n);
-const __iconNode$m = [["path", { "d": "M8 9l4 -4l4 4", "key": "svg-0" }], ["path", { "d": "M16 15l-4 4l-4 -4", "key": "svg-1" }]];
-const IconSelector = createReactComponent("outline", "selector", "Selector", __iconNode$m);
-const __iconNode$l = [["path", { "d": "M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065", "key": "svg-0" }], ["path", { "d": "M9 12a3 3 0 1 0 6 0a3 3 0 0 0 -6 0", "key": "svg-1" }]];
-const IconSettings = createReactComponent("outline", "settings", "Settings", __iconNode$l);
-const __iconNode$k = [["path", { "d": "M8 9h-1a2 2 0 0 0 -2 2v8a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-8a2 2 0 0 0 -2 -2h-1", "key": "svg-0" }], ["path", { "d": "M12 14v-11", "key": "svg-1" }], ["path", { "d": "M9 6l3 -3l3 3", "key": "svg-2" }]];
-const IconShare2 = createReactComponent("outline", "share-2", "Share2", __iconNode$k);
-const __iconNode$j = [["path", { "d": "M3 5a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-14", "key": "svg-0" }], ["path", { "d": "M9 12l2 2l4 -4", "key": "svg-1" }]];
-const IconSquareCheck = createReactComponent("outline", "square-check", "SquareCheck", __iconNode$j);
-const __iconNode$i = [["path", { "d": "M5 12l14 0", "key": "svg-0" }], ["path", { "d": "M16 6.5a4 2 0 0 0 -4 -1.5h-1a3.5 3.5 0 0 0 0 7h2a3.5 3.5 0 0 1 0 7h-1.5a4 2 0 0 1 -4 -1.5", "key": "svg-1" }]];
-const IconStrikethrough = createReactComponent("outline", "strikethrough", "Strikethrough", __iconNode$i);
-const __iconNode$h = [["path", { "d": "M5 7l8 10m-8 0l8 -10", "key": "svg-0" }], ["path", { "d": "M21 20h-4l3.5 -4a1.73 1.73 0 0 0 -3.5 -2", "key": "svg-1" }]];
-const IconSubscript = createReactComponent("outline", "subscript", "Subscript", __iconNode$h);
-const __iconNode$g = [["path", { "d": "M8 12a4 4 0 1 0 8 0a4 4 0 1 0 -8 0", "key": "svg-0" }], ["path", { "d": "M3 12h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7", "key": "svg-1" }]];
-const IconSun = createReactComponent("outline", "sun", "Sun", __iconNode$g);
-const __iconNode$f = [["path", { "d": "M5 7l8 10m-8 0l8 -10", "key": "svg-0" }], ["path", { "d": "M21 11h-4l3.5 -4a1.73 1.73 0 0 0 -3.5 -2", "key": "svg-1" }]];
-const IconSuperscript = createReactComponent("outline", "superscript", "Superscript", __iconNode$f);
-const __iconNode$e = [["path", { "d": "M3 5a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-14", "key": "svg-0" }], ["path", { "d": "M10 10h11", "key": "svg-1" }], ["path", { "d": "M10 3v18", "key": "svg-2" }], ["path", { "d": "M9 3l-6 6", "key": "svg-3" }], ["path", { "d": "M10 7l-7 7", "key": "svg-4" }], ["path", { "d": "M10 12l-7 7", "key": "svg-5" }], ["path", { "d": "M10 17l-4 4", "key": "svg-6" }]];
-const IconTableColumn = createReactComponent("outline", "table-column", "TableColumn", __iconNode$e);
-const __iconNode$d = [["path", { "d": "M3 5a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-14", "key": "svg-0" }], ["path", { "d": "M3 10h18", "key": "svg-1" }], ["path", { "d": "M10 3v18", "key": "svg-2" }]];
-const IconTable = createReactComponent("outline", "table", "Table", __iconNode$d);
-const __iconNode$c = [["path", { "d": "M4 7h16", "key": "svg-0" }], ["path", { "d": "M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12", "key": "svg-1" }], ["path", { "d": "M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3", "key": "svg-2" }], ["path", { "d": "M10 12l4 4m0 -4l-4 4", "key": "svg-3" }]];
-const IconTrashX = createReactComponent("outline", "trash-x", "TrashX", __iconNode$c);
-const __iconNode$b = [["path", { "d": "M4 7l16 0", "key": "svg-0" }], ["path", { "d": "M10 11l0 6", "key": "svg-1" }], ["path", { "d": "M14 11l0 6", "key": "svg-2" }], ["path", { "d": "M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12", "key": "svg-3" }], ["path", { "d": "M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3", "key": "svg-4" }]];
-const IconTrash = createReactComponent("outline", "trash", "Trash", __iconNode$b);
-const __iconNode$a = [["path", { "d": "M3 6h2.397a5 5 0 0 1 4.096 2.133l4.014 5.734a5 5 0 0 0 4.096 2.133h3.397", "key": "svg-0" }], ["path", { "d": "M18 19l3 -3l-3 -3", "key": "svg-1" }]];
-const IconTrendingDown3 = createReactComponent("outline", "trending-down-3", "TrendingDown3", __iconNode$a);
-const __iconNode$9 = [["path", { "d": "M18 5l3 3l-3 3", "key": "svg-0" }], ["path", { "d": "M3 18h2.397a5 5 0 0 0 4.096 -2.133l4.014 -5.734a5 5 0 0 1 4.096 -2.133h3.397", "key": "svg-1" }]];
-const IconTrendingUp3 = createReactComponent("outline", "trending-up-3", "TrendingUp3", __iconNode$9);
-const __iconNode$8 = [["path", { "d": "M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2", "key": "svg-0" }], ["path", { "d": "M7 9l5 -5l5 5", "key": "svg-1" }], ["path", { "d": "M12 4l0 12", "key": "svg-2" }]];
-const IconUpload = createReactComponent("outline", "upload", "Upload", __iconNode$8);
-const __iconNode$7 = [["path", { "d": "M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0", "key": "svg-0" }], ["path", { "d": "M9 10a3 3 0 1 0 6 0a3 3 0 1 0 -6 0", "key": "svg-1" }], ["path", { "d": "M6.168 18.849a4 4 0 0 1 3.832 -2.849h4a4 4 0 0 1 3.834 2.855", "key": "svg-2" }]];
-const IconUserCircle = createReactComponent("outline", "user-circle", "UserCircle", __iconNode$7);
-const __iconNode$6 = [["path", { "d": "M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0", "key": "svg-0" }], ["path", { "d": "M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2", "key": "svg-1" }]];
-const IconUser = createReactComponent("outline", "user", "User", __iconNode$6);
-const __iconNode$5 = [["path", { "d": "M17 8v-3a1 1 0 0 0 -1 -1h-10a2 2 0 0 0 0 4h12a1 1 0 0 1 1 1v3m0 4v3a1 1 0 0 1 -1 1h-12a2 2 0 0 1 -2 -2v-12", "key": "svg-0" }], ["path", { "d": "M20 12v4h-4a2 2 0 0 1 0 -4h4", "key": "svg-1" }]];
-const IconWallet = createReactComponent("outline", "wallet", "Wallet", __iconNode$5);
-const __iconNode$4 = [["path", { "d": "M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0", "key": "svg-0" }], ["path", { "d": "M3.6 9h16.8", "key": "svg-1" }], ["path", { "d": "M3.6 15h16.8", "key": "svg-2" }], ["path", { "d": "M11.5 3a17 17 0 0 0 0 18", "key": "svg-3" }], ["path", { "d": "M12.5 3a17 17 0 0 1 0 18", "key": "svg-4" }]];
-const IconWorld = createReactComponent("outline", "world", "World", __iconNode$4);
-const __iconNode$3 = [["path", { "d": "M12 16l3.644 3.644a1.21 1.21 0 0 0 1.712 0l2.288 -2.288a1.21 1.21 0 0 0 0 -1.712l-3.644 -3.644l3.644 -3.644a1.21 1.21 0 0 0 0 -1.712l-2.288 -2.288a1.21 1.21 0 0 0 -1.712 0l-3.644 3.644l-3.644 -3.644a1.21 1.21 0 0 0 -1.712 0l-2.288 2.288a1.21 1.21 0 0 0 0 1.712l3.644 3.644l-3.644 3.644a1.21 1.21 0 0 0 0 1.712l2.288 2.288a1.21 1.21 0 0 0 1.712 0l3.644 -3.644", "key": "svg-0" }]];
-const IconXMark = createReactComponent("outline", "x-mark", "XMark", __iconNode$3);
-const __iconNode$2 = [["path", { "d": "M18 6l-12 12", "key": "svg-0" }], ["path", { "d": "M6 6l12 12", "key": "svg-1" }]];
-const IconX = createReactComponent("outline", "x", "X", __iconNode$2);
+const __iconNode$1o = [["path", { "d": "M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0", "key": "svg-0" }], ["path", { "d": "M12 8v4", "key": "svg-1" }], ["path", { "d": "M12 16h.01", "key": "svg-2" }]];
+const IconAlertCircle = createReactComponent("outline", "alert-circle", "AlertCircle", __iconNode$1o);
+const __iconNode$1n = [["path", { "d": "M10 12l10 0", "key": "svg-0" }], ["path", { "d": "M10 12l4 4", "key": "svg-1" }], ["path", { "d": "M10 12l4 -4", "key": "svg-2" }], ["path", { "d": "M4 4l0 16", "key": "svg-3" }]];
+const IconArrowBarToLeft = createReactComponent("outline", "arrow-bar-to-left", "ArrowBarToLeft", __iconNode$1n);
+const __iconNode$1m = [["path", { "d": "M14 12l-10 0", "key": "svg-0" }], ["path", { "d": "M14 12l-4 4", "key": "svg-1" }], ["path", { "d": "M14 12l-4 -4", "key": "svg-2" }], ["path", { "d": "M20 4l0 16", "key": "svg-3" }]];
+const IconArrowBarToRight = createReactComponent("outline", "arrow-bar-to-right", "ArrowBarToRight", __iconNode$1m);
+const __iconNode$1l = [["path", { "d": "M12 5v.5m0 3v1.5m0 3v6", "key": "svg-0" }], ["path", { "d": "M18 13l-6 6", "key": "svg-1" }], ["path", { "d": "M6 13l6 6", "key": "svg-2" }]];
+const IconArrowDownDashed = createReactComponent("outline", "arrow-down-dashed", "ArrowDownDashed", __iconNode$1l);
+const __iconNode$1k = [["path", { "d": "M5 12l14 0", "key": "svg-0" }], ["path", { "d": "M5 12l6 6", "key": "svg-1" }], ["path", { "d": "M5 12l6 -6", "key": "svg-2" }]];
+const IconArrowLeft = createReactComponent("outline", "arrow-left", "ArrowLeft", __iconNode$1k);
+const __iconNode$1j = [["path", { "d": "M12 5l0 14", "key": "svg-0" }], ["path", { "d": "M16 9l-4 -4", "key": "svg-1" }], ["path", { "d": "M8 9l4 -4", "key": "svg-2" }]];
+const IconArrowNarrowUp = createReactComponent("outline", "arrow-narrow-up", "ArrowNarrowUp", __iconNode$1j);
+const __iconNode$1i = [["path", { "d": "M5 12l14 0", "key": "svg-0" }], ["path", { "d": "M13 18l6 -6", "key": "svg-1" }], ["path", { "d": "M13 6l6 6", "key": "svg-2" }]];
+const IconArrowRight = createReactComponent("outline", "arrow-right", "ArrowRight", __iconNode$1i);
+const __iconNode$1h = [["path", { "d": "M7 10h14l-4 -4", "key": "svg-0" }], ["path", { "d": "M17 14h-14l4 4", "key": "svg-1" }]];
+const IconArrowsExchange = createReactComponent("outline", "arrows-exchange", "ArrowsExchange", __iconNode$1h);
+const __iconNode$1g = [["path", { "d": "M9.346 5.353c.21 -.129 .428 -.246 .654 -.353a2 2 0 1 1 4 0a7 7 0 0 1 4 6v3m-1 3h-13a4 4 0 0 0 2 -3v-3a6.996 6.996 0 0 1 1.273 -3.707", "key": "svg-0" }], ["path", { "d": "M9 17v1a3 3 0 0 0 6 0v-1", "key": "svg-1" }], ["path", { "d": "M3 3l18 18", "key": "svg-2" }]];
+const IconBellOff = createReactComponent("outline", "bell-off", "BellOff", __iconNode$1g);
+const __iconNode$1f = [["path", { "d": "M10 5a2 2 0 1 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3h-16a4 4 0 0 0 2 -3v-3a7 7 0 0 1 4 -6", "key": "svg-0" }], ["path", { "d": "M9 17v1a3 3 0 0 0 6 0v-1", "key": "svg-1" }]];
+const IconBell = createReactComponent("outline", "bell", "Bell", __iconNode$1f);
+const __iconNode$1e = [["path", { "d": "M19.072 21h-14.144a1.928 1.928 0 0 1 -1.928 -1.928v-6.857c0 -.512 .203 -1 .566 -1.365l7.07 -7.063a1.928 1.928 0 0 1 2.727 0l7.071 7.063c.363 .362 .566 .853 .566 1.365v6.857a1.928 1.928 0 0 1 -1.928 1.928", "key": "svg-0" }], ["path", { "d": "M7 13v4h10v-4l-5 -5", "key": "svg-1" }], ["path", { "d": "M14.8 5.2l-11.8 11.8", "key": "svg-2" }], ["path", { "d": "M7 17v4", "key": "svg-3" }], ["path", { "d": "M17 17v4", "key": "svg-4" }]];
+const IconBrandGoogleHome = createReactComponent("outline", "brand-google-home", "BrandGoogleHome", __iconNode$1e);
+const __iconNode$1d = [["path", { "d": "M9 9v-1a3 3 0 0 1 6 0v1", "key": "svg-0" }], ["path", { "d": "M8 9h8a6 6 0 0 1 1 3v3a5 5 0 0 1 -10 0v-3a6 6 0 0 1 1 -3", "key": "svg-1" }], ["path", { "d": "M3 13l4 0", "key": "svg-2" }], ["path", { "d": "M17 13l4 0", "key": "svg-3" }], ["path", { "d": "M12 20l0 -6", "key": "svg-4" }], ["path", { "d": "M4 19l3.35 -2", "key": "svg-5" }], ["path", { "d": "M20 19l-3.35 -2", "key": "svg-6" }], ["path", { "d": "M4 7l3.75 2.4", "key": "svg-7" }], ["path", { "d": "M20 7l-3.75 2.4", "key": "svg-8" }]];
+const IconBug = createReactComponent("outline", "bug", "Bug", __iconNode$1d);
+const __iconNode$1c = [["path", { "d": "M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12", "key": "svg-0" }], ["path", { "d": "M16 3v4", "key": "svg-1" }], ["path", { "d": "M8 3v4", "key": "svg-2" }], ["path", { "d": "M4 11h16", "key": "svg-3" }], ["path", { "d": "M11 15h1", "key": "svg-4" }], ["path", { "d": "M12 15v3", "key": "svg-5" }]];
+const IconCalendar = createReactComponent("outline", "calendar", "Calendar", __iconNode$1c);
+const __iconNode$1b = [["path", { "d": "M5 12l5 5l10 -10", "key": "svg-0" }]];
+const IconCheck = createReactComponent("outline", "check", "Check", __iconNode$1b);
+const __iconNode$1a = [["path", { "d": "M6 9l6 6l6 -6", "key": "svg-0" }]];
+const IconChevronDown = createReactComponent("outline", "chevron-down", "ChevronDown", __iconNode$1a);
+const __iconNode$19 = [["path", { "d": "M15 6l-6 6l6 6", "key": "svg-0" }]];
+const IconChevronLeft = createReactComponent("outline", "chevron-left", "ChevronLeft", __iconNode$19);
+const __iconNode$18 = [["path", { "d": "M9 6l6 6l-6 6", "key": "svg-0" }]];
+const IconChevronRight = createReactComponent("outline", "chevron-right", "ChevronRight", __iconNode$18);
+const __iconNode$17 = [["path", { "d": "M6 15l6 -6l6 6", "key": "svg-0" }]];
+const IconChevronUp = createReactComponent("outline", "chevron-up", "ChevronUp", __iconNode$17);
+const __iconNode$16 = [["path", { "d": "M7 7l5 5l-5 5", "key": "svg-0" }], ["path", { "d": "M13 7l5 5l-5 5", "key": "svg-1" }]];
+const IconChevronsRight = createReactComponent("outline", "chevrons-right", "ChevronsRight", __iconNode$16);
+const __iconNode$15 = [["path", { "d": "M8.56 3.69a9 9 0 0 0 -2.92 1.95", "key": "svg-0" }], ["path", { "d": "M3.69 8.56a9 9 0 0 0 -.69 3.44", "key": "svg-1" }], ["path", { "d": "M3.69 15.44a9 9 0 0 0 1.95 2.92", "key": "svg-2" }], ["path", { "d": "M8.56 20.31a9 9 0 0 0 3.44 .69", "key": "svg-3" }], ["path", { "d": "M15.44 20.31a9 9 0 0 0 2.92 -1.95", "key": "svg-4" }], ["path", { "d": "M20.31 15.44a9 9 0 0 0 .69 -3.44", "key": "svg-5" }], ["path", { "d": "M20.31 8.56a9 9 0 0 0 -1.95 -2.92", "key": "svg-6" }], ["path", { "d": "M15.44 3.69a9 9 0 0 0 -3.44 -.69", "key": "svg-7" }]];
+const IconCircleDashed = createReactComponent("outline", "circle-dashed", "CircleDashed", __iconNode$15);
+const __iconNode$14 = [["path", { "d": "M7 9.667a2.667 2.667 0 0 1 2.667 -2.667h8.666a2.667 2.667 0 0 1 2.667 2.667v8.666a2.667 2.667 0 0 1 -2.667 2.667h-8.666a2.667 2.667 0 0 1 -2.667 -2.667l0 -8.666", "key": "svg-0" }], ["path", { "d": "M4.012 16.737a2.005 2.005 0 0 1 -1.012 -1.737v-10c0 -1.1 .9 -2 2 -2h10c.75 0 1.158 .385 1.5 1", "key": "svg-1" }]];
+const IconCopy = createReactComponent("outline", "copy", "Copy", __iconNode$14);
+const __iconNode$13 = [["path", { "d": "M12 19h-6a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v4.5", "key": "svg-0" }], ["path", { "d": "M3 10h18", "key": "svg-1" }], ["path", { "d": "M16 19h6", "key": "svg-2" }], ["path", { "d": "M19 16l3 3l-3 3", "key": "svg-3" }], ["path", { "d": "M7.005 15h.005", "key": "svg-4" }], ["path", { "d": "M11 15h2", "key": "svg-5" }]];
+const IconCreditCardPay = createReactComponent("outline", "credit-card-pay", "CreditCardPay", __iconNode$13);
+const __iconNode$12 = [["path", { "d": "M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0", "key": "svg-0" }], ["path", { "d": "M8 12l0 .01", "key": "svg-1" }], ["path", { "d": "M12 12l0 .01", "key": "svg-2" }], ["path", { "d": "M16 12l0 .01", "key": "svg-3" }]];
+const IconDotsCircleHorizontal = createReactComponent("outline", "dots-circle-horizontal", "DotsCircleHorizontal", __iconNode$12);
+const __iconNode$11 = [["path", { "d": "M11 12a1 1 0 1 0 2 0a1 1 0 1 0 -2 0", "key": "svg-0" }], ["path", { "d": "M11 19a1 1 0 1 0 2 0a1 1 0 1 0 -2 0", "key": "svg-1" }], ["path", { "d": "M11 5a1 1 0 1 0 2 0a1 1 0 1 0 -2 0", "key": "svg-2" }]];
+const IconDotsVertical = createReactComponent("outline", "dots-vertical", "DotsVertical", __iconNode$11);
+const __iconNode$10 = [["path", { "d": "M4 12a1 1 0 1 0 2 0a1 1 0 1 0 -2 0", "key": "svg-0" }], ["path", { "d": "M11 12a1 1 0 1 0 2 0a1 1 0 1 0 -2 0", "key": "svg-1" }], ["path", { "d": "M18 12a1 1 0 1 0 2 0a1 1 0 1 0 -2 0", "key": "svg-2" }]];
+const IconDots = createReactComponent("outline", "dots", "Dots", __iconNode$10);
+const __iconNode$$ = [["path", { "d": "M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1", "key": "svg-0" }], ["path", { "d": "M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415", "key": "svg-1" }], ["path", { "d": "M16 5l3 3", "key": "svg-2" }]];
+const IconEdit = createReactComponent("outline", "edit", "Edit", __iconNode$$);
+const __iconNode$_ = [["path", { "d": "M10.585 10.587a2 2 0 0 0 2.829 2.828", "key": "svg-0" }], ["path", { "d": "M16.681 16.673a8.717 8.717 0 0 1 -4.681 1.327c-3.6 0 -6.6 -2 -9 -6c1.272 -2.12 2.712 -3.678 4.32 -4.674m2.86 -1.146a9.055 9.055 0 0 1 1.82 -.18c3.6 0 6.6 2 9 6c-.666 1.11 -1.379 2.067 -2.138 2.87", "key": "svg-1" }], ["path", { "d": "M3 3l18 18", "key": "svg-2" }]];
+const IconEyeOff = createReactComponent("outline", "eye-off", "EyeOff", __iconNode$_);
+const __iconNode$Z = [["path", { "d": "M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0", "key": "svg-0" }], ["path", { "d": "M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6", "key": "svg-1" }]];
+const IconEye = createReactComponent("outline", "eye", "Eye", __iconNode$Z);
+const __iconNode$Y = [["path", { "d": "M14 3v4a1 1 0 0 0 1 1h4", "key": "svg-0" }], ["path", { "d": "M5 12v-7a2 2 0 0 1 2 -2h7l5 5v4", "key": "svg-1" }], ["path", { "d": "M5 18h1.5a1.5 1.5 0 0 0 0 -3h-1.5v6", "key": "svg-2" }], ["path", { "d": "M17 18h2", "key": "svg-3" }], ["path", { "d": "M20 15h-3v6", "key": "svg-4" }], ["path", { "d": "M11 15v6h1a2 2 0 0 0 2 -2v-2a2 2 0 0 0 -2 -2h-1", "key": "svg-5" }]];
+const IconFileTypePdf = createReactComponent("outline", "file-type-pdf", "FileTypePdf", __iconNode$Y);
+const __iconNode$X = [["path", { "d": "M13.758 19.414l-4.758 1.586v-8.5l-4.48 -4.928a2 2 0 0 1 -.52 -1.345v-2.227h16v2.172a2 2 0 0 1 -.586 1.414l-4.414 4.414v1.5", "key": "svg-0" }], ["path", { "d": "M22 22l-5 -5", "key": "svg-1" }], ["path", { "d": "M17 22l5 -5", "key": "svg-2" }]];
+const IconFilterX = createReactComponent("outline", "filter-x", "FilterX", __iconNode$X);
+const __iconNode$W = [["path", { "d": "M4 4h16v2.172a2 2 0 0 1 -.586 1.414l-4.414 4.414v7l-6 2v-8.5l-4.48 -4.928a2 2 0 0 1 -.52 -1.345v-2.227", "key": "svg-0" }]];
+const IconFilter = createReactComponent("outline", "filter", "Filter", __iconNode$W);
+const __iconNode$V = [["path", { "d": "M19 18v-8l-2 2", "key": "svg-0" }], ["path", { "d": "M4 6v12", "key": "svg-1" }], ["path", { "d": "M12 6v12", "key": "svg-2" }], ["path", { "d": "M11 18h2", "key": "svg-3" }], ["path", { "d": "M3 18h2", "key": "svg-4" }], ["path", { "d": "M4 12h8", "key": "svg-5" }], ["path", { "d": "M3 6h2", "key": "svg-6" }], ["path", { "d": "M11 6h2", "key": "svg-7" }]];
+const IconH1 = createReactComponent("outline", "h-1", "H1", __iconNode$V);
+const __iconNode$U = [["path", { "d": "M3 19h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4", "key": "svg-0" }], ["path", { "d": "M12.5 5.5l4 4", "key": "svg-1" }], ["path", { "d": "M4.5 13.5l4 4", "key": "svg-2" }], ["path", { "d": "M21 15v4h-8l4 -4l4 0", "key": "svg-3" }]];
+const IconHighlight = createReactComponent("outline", "highlight", "Highlight", __iconNode$U);
+const __iconNode$T = [["path", { "d": "M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0", "key": "svg-0" }], ["path", { "d": "M12 9h.01", "key": "svg-1" }], ["path", { "d": "M11 12h1v4h1", "key": "svg-2" }]];
+const IconInfoCircle = createReactComponent("outline", "info-circle", "InfoCircle", __iconNode$T);
+const __iconNode$S = [["path", { "d": "M9 6.371c0 4.418 -2.239 6.629 -5 6.629", "key": "svg-0" }], ["path", { "d": "M4 6.371h7", "key": "svg-1" }], ["path", { "d": "M5 9c0 2.144 2.252 3.908 6 4", "key": "svg-2" }], ["path", { "d": "M12 20l4 -9l4 9", "key": "svg-3" }], ["path", { "d": "M19.1 18h-6.2", "key": "svg-4" }], ["path", { "d": "M6.694 3l.793 .582", "key": "svg-5" }]];
+const IconLanguage = createReactComponent("outline", "language", "Language", __iconNode$S);
+const __iconNode$R = [["path", { "d": "M4 5a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -4", "key": "svg-0" }], ["path", { "d": "M14 5a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -4", "key": "svg-1" }], ["path", { "d": "M4 15a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -4", "key": "svg-2" }], ["path", { "d": "M14 15a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -4", "key": "svg-3" }]];
+const IconLayoutGrid = createReactComponent("outline", "layout-grid", "LayoutGrid", __iconNode$R);
+const __iconNode$Q = [["path", { "d": "M4 6a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2l0 -12", "key": "svg-0" }], ["path", { "d": "M9 4l0 16", "key": "svg-1" }]];
+const IconLayoutSidebar = createReactComponent("outline", "layout-sidebar", "LayoutSidebar", __iconNode$Q);
+const __iconNode$P = [["path", { "d": "M9 15l6 -6", "key": "svg-0" }], ["path", { "d": "M11 6l.463 -.536a5 5 0 0 1 7.071 7.072l-.534 .464", "key": "svg-1" }], ["path", { "d": "M13 18l-.397 .534a5.068 5.068 0 0 1 -7.127 0a4.972 4.972 0 0 1 0 -7.071l.524 -.463", "key": "svg-2" }]];
+const IconLink = createReactComponent("outline", "link", "Link", __iconNode$P);
+const __iconNode$O = [["path", { "d": "M12 6l0 -3", "key": "svg-0" }], ["path", { "d": "M16.25 7.75l2.15 -2.15", "key": "svg-1" }], ["path", { "d": "M18 12l3 0", "key": "svg-2" }], ["path", { "d": "M16.25 16.25l2.15 2.15", "key": "svg-3" }], ["path", { "d": "M12 18l0 3", "key": "svg-4" }], ["path", { "d": "M7.75 16.25l-2.15 2.15", "key": "svg-5" }], ["path", { "d": "M6 12l-3 0", "key": "svg-6" }], ["path", { "d": "M7.75 7.75l-2.15 -2.15", "key": "svg-7" }]];
+const IconLoader = createReactComponent("outline", "loader", "Loader", __iconNode$O);
+const __iconNode$N = [["path", { "d": "M15 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2", "key": "svg-0" }], ["path", { "d": "M21 12h-13l3 -3", "key": "svg-1" }], ["path", { "d": "M11 15l-3 -3", "key": "svg-2" }]];
+const IconLogin = createReactComponent("outline", "login", "Login", __iconNode$N);
+const __iconNode$M = [["path", { "d": "M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2", "key": "svg-0" }], ["path", { "d": "M9 12h12l-3 -3", "key": "svg-1" }], ["path", { "d": "M18 15l3 -3", "key": "svg-2" }]];
+const IconLogout = createReactComponent("outline", "logout", "Logout", __iconNode$M);
+const __iconNode$L = [["path", { "d": "M3 7a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-10", "key": "svg-0" }], ["path", { "d": "M3 7l9 6l9 -6", "key": "svg-1" }]];
+const IconMail = createReactComponent("outline", "mail", "Mail", __iconNode$L);
+const __iconNode$K = [["path", { "d": "M3 7a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-10", "key": "svg-0" }], ["path", { "d": "M7 15v-6l2 2l2 -2v6", "key": "svg-1" }], ["path", { "d": "M14 13l2 2l2 -2m-2 2v-6", "key": "svg-2" }]];
+const IconMarkdown = createReactComponent("outline", "markdown", "Markdown", __iconNode$K);
+const __iconNode$J = [["path", { "d": "M4 6l16 0", "key": "svg-0" }], ["path", { "d": "M4 12l16 0", "key": "svg-1" }], ["path", { "d": "M4 18l16 0", "key": "svg-2" }]];
+const IconMenu2 = createReactComponent("outline", "menu-2", "Menu2", __iconNode$J);
+const __iconNode$I = [["path", { "d": "M14.986 3.51a9 9 0 1 0 1.514 16.284c2.489 -1.437 4.181 -3.978 4.5 -6.794", "key": "svg-0" }], ["path", { "d": "M10 10h.01", "key": "svg-1" }], ["path", { "d": "M14 8h.01", "key": "svg-2" }], ["path", { "d": "M12 15c1 -1.333 2 -2 3 -2", "key": "svg-3" }], ["path", { "d": "M20 9v.01", "key": "svg-4" }], ["path", { "d": "M20 6a2.003 2.003 0 0 0 .914 -3.782a1.98 1.98 0 0 0 -2.414 .483", "key": "svg-5" }]];
+const IconMoodPuzzled = createReactComponent("outline", "mood-puzzled", "MoodPuzzled", __iconNode$I);
+const __iconNode$H = [["path", { "d": "M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454l0 .008", "key": "svg-0" }]];
+const IconMoon = createReactComponent("outline", "moon", "Moon", __iconNode$H);
+const __iconNode$G = [["path", { "d": "M10 6h-3a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-3", "key": "svg-0" }], ["path", { "d": "M14 7a3 3 0 1 0 6 0a3 3 0 1 0 -6 0", "key": "svg-1" }]];
+const IconNotification = createReactComponent("outline", "notification", "Notification", __iconNode$G);
+const __iconNode$F = [["path", { "d": "M4 17v-10l7 10v-10", "key": "svg-0" }], ["path", { "d": "M15 17h5", "key": "svg-1" }], ["path", { "d": "M15 10a2.5 3 0 1 0 5 0a2.5 3 0 1 0 -5 0", "key": "svg-2" }]];
+const IconNumber = createReactComponent("outline", "number", "Number", __iconNode$F);
+const __iconNode$E = [["path", { "d": "M15 8h.01", "key": "svg-0" }], ["path", { "d": "M12.5 21h-6.5a3 3 0 0 1 -3 -3v-12a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v6.5", "key": "svg-1" }], ["path", { "d": "M3 16l5 -5c.928 -.893 2.072 -.893 3 0l4 4", "key": "svg-2" }], ["path", { "d": "M14 14l1 -1c.67 -.644 1.45 -.824 2.182 -.54", "key": "svg-3" }], ["path", { "d": "M16 19h6", "key": "svg-4" }], ["path", { "d": "M19 16v6", "key": "svg-5" }]];
+const IconPhotoPlus = createReactComponent("outline", "photo-plus", "PhotoPlus", __iconNode$E);
+const __iconNode$D = [["path", { "d": "M15 8h.01", "key": "svg-0" }], ["path", { "d": "M3 6a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v12a3 3 0 0 1 -3 3h-12a3 3 0 0 1 -3 -3v-12", "key": "svg-1" }], ["path", { "d": "M3 16l5 -5c.928 -.893 2.072 -.893 3 0l5 5", "key": "svg-2" }], ["path", { "d": "M14 14l1 -1c.928 -.893 2.072 -.893 3 0l3 3", "key": "svg-3" }]];
+const IconPhoto = createReactComponent("outline", "photo", "Photo", __iconNode$D);
+const __iconNode$C = [["path", { "d": "M3 3l18 18", "key": "svg-0" }], ["path", { "d": "M15 4.5l-3.249 3.249m-2.57 1.433l-2.181 .818l-1.5 1.5l7 7l1.5 -1.5l.82 -2.186m1.43 -2.563l3.25 -3.251", "key": "svg-1" }], ["path", { "d": "M9 15l-4.5 4.5", "key": "svg-2" }], ["path", { "d": "M14.5 4l5.5 5.5", "key": "svg-3" }]];
+const IconPinnedOff = createReactComponent("outline", "pinned-off", "PinnedOff", __iconNode$C);
+const __iconNode$B = [["path", { "d": "M12 5l0 14", "key": "svg-0" }], ["path", { "d": "M5 12l14 0", "key": "svg-1" }]];
+const IconPlus = createReactComponent("outline", "plus", "Plus", __iconNode$B);
+const __iconNode$A = [["path", { "d": "M4 5a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -4", "key": "svg-0" }], ["path", { "d": "M7 17l0 .01", "key": "svg-1" }], ["path", { "d": "M14 5a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -4", "key": "svg-2" }], ["path", { "d": "M7 7l0 .01", "key": "svg-3" }], ["path", { "d": "M4 15a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -4", "key": "svg-4" }], ["path", { "d": "M17 7l0 .01", "key": "svg-5" }], ["path", { "d": "M14 14l3 0", "key": "svg-6" }], ["path", { "d": "M20 14l0 .01", "key": "svg-7" }], ["path", { "d": "M14 14l0 3", "key": "svg-8" }], ["path", { "d": "M14 20l3 0", "key": "svg-9" }], ["path", { "d": "M17 17l3 0", "key": "svg-10" }], ["path", { "d": "M20 17l0 3", "key": "svg-11" }]];
+const IconQrcode = createReactComponent("outline", "qrcode", "Qrcode", __iconNode$A);
+const __iconNode$z = [["path", { "d": "M3 10a7 7 0 1 0 14 0a7 7 0 1 0 -14 0", "key": "svg-0" }], ["path", { "d": "M21 21l-6 -6", "key": "svg-1" }]];
+const IconSearch = createReactComponent("outline", "search", "Search", __iconNode$z);
+const __iconNode$y = [["path", { "d": "M8 9l4 -4l4 4", "key": "svg-0" }], ["path", { "d": "M16 15l-4 4l-4 -4", "key": "svg-1" }]];
+const IconSelector = createReactComponent("outline", "selector", "Selector", __iconNode$y);
+const __iconNode$x = [["path", { "d": "M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065", "key": "svg-0" }], ["path", { "d": "M9 12a3 3 0 1 0 6 0a3 3 0 0 0 -6 0", "key": "svg-1" }]];
+const IconSettings = createReactComponent("outline", "settings", "Settings", __iconNode$x);
+const __iconNode$w = [["path", { "d": "M8 9h-1a2 2 0 0 0 -2 2v8a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-8a2 2 0 0 0 -2 -2h-1", "key": "svg-0" }], ["path", { "d": "M12 14v-11", "key": "svg-1" }], ["path", { "d": "M9 6l3 -3l3 3", "key": "svg-2" }]];
+const IconShare2 = createReactComponent("outline", "share-2", "Share2", __iconNode$w);
+const __iconNode$v = [["path", { "d": "M3 5a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-14", "key": "svg-0" }], ["path", { "d": "M9 12l2 2l4 -4", "key": "svg-1" }]];
+const IconSquareCheck = createReactComponent("outline", "square-check", "SquareCheck", __iconNode$v);
+const __iconNode$u = [["path", { "d": "M5 12l14 0", "key": "svg-0" }], ["path", { "d": "M16 6.5a4 2 0 0 0 -4 -1.5h-1a3.5 3.5 0 0 0 0 7h2a3.5 3.5 0 0 1 0 7h-1.5a4 2 0 0 1 -4 -1.5", "key": "svg-1" }]];
+const IconStrikethrough = createReactComponent("outline", "strikethrough", "Strikethrough", __iconNode$u);
+const __iconNode$t = [["path", { "d": "M5 7l8 10m-8 0l8 -10", "key": "svg-0" }], ["path", { "d": "M21 20h-4l3.5 -4a1.73 1.73 0 0 0 -3.5 -2", "key": "svg-1" }]];
+const IconSubscript = createReactComponent("outline", "subscript", "Subscript", __iconNode$t);
+const __iconNode$s = [["path", { "d": "M8 12a4 4 0 1 0 8 0a4 4 0 1 0 -8 0", "key": "svg-0" }], ["path", { "d": "M3 12h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7", "key": "svg-1" }]];
+const IconSun = createReactComponent("outline", "sun", "Sun", __iconNode$s);
+const __iconNode$r = [["path", { "d": "M5 7l8 10m-8 0l8 -10", "key": "svg-0" }], ["path", { "d": "M21 11h-4l3.5 -4a1.73 1.73 0 0 0 -3.5 -2", "key": "svg-1" }]];
+const IconSuperscript = createReactComponent("outline", "superscript", "Superscript", __iconNode$r);
+const __iconNode$q = [["path", { "d": "M3 5a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-14", "key": "svg-0" }], ["path", { "d": "M10 10h11", "key": "svg-1" }], ["path", { "d": "M10 3v18", "key": "svg-2" }], ["path", { "d": "M9 3l-6 6", "key": "svg-3" }], ["path", { "d": "M10 7l-7 7", "key": "svg-4" }], ["path", { "d": "M10 12l-7 7", "key": "svg-5" }], ["path", { "d": "M10 17l-4 4", "key": "svg-6" }]];
+const IconTableColumn = createReactComponent("outline", "table-column", "TableColumn", __iconNode$q);
+const __iconNode$p = [["path", { "d": "M3 5a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-14", "key": "svg-0" }], ["path", { "d": "M3 10h18", "key": "svg-1" }], ["path", { "d": "M10 3v18", "key": "svg-2" }]];
+const IconTable = createReactComponent("outline", "table", "Table", __iconNode$p);
+const __iconNode$o = [["path", { "d": "M4 7h16", "key": "svg-0" }], ["path", { "d": "M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12", "key": "svg-1" }], ["path", { "d": "M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3", "key": "svg-2" }], ["path", { "d": "M10 12l4 4m0 -4l-4 4", "key": "svg-3" }]];
+const IconTrashX = createReactComponent("outline", "trash-x", "TrashX", __iconNode$o);
+const __iconNode$n = [["path", { "d": "M4 7l16 0", "key": "svg-0" }], ["path", { "d": "M10 11l0 6", "key": "svg-1" }], ["path", { "d": "M14 11l0 6", "key": "svg-2" }], ["path", { "d": "M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12", "key": "svg-3" }], ["path", { "d": "M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3", "key": "svg-4" }]];
+const IconTrash = createReactComponent("outline", "trash", "Trash", __iconNode$n);
+const __iconNode$m = [["path", { "d": "M3 6h2.397a5 5 0 0 1 4.096 2.133l4.014 5.734a5 5 0 0 0 4.096 2.133h3.397", "key": "svg-0" }], ["path", { "d": "M18 19l3 -3l-3 -3", "key": "svg-1" }]];
+const IconTrendingDown3 = createReactComponent("outline", "trending-down-3", "TrendingDown3", __iconNode$m);
+const __iconNode$l = [["path", { "d": "M18 5l3 3l-3 3", "key": "svg-0" }], ["path", { "d": "M3 18h2.397a5 5 0 0 0 4.096 -2.133l4.014 -5.734a5 5 0 0 1 4.096 -2.133h3.397", "key": "svg-1" }]];
+const IconTrendingUp3 = createReactComponent("outline", "trending-up-3", "TrendingUp3", __iconNode$l);
+const __iconNode$k = [["path", { "d": "M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2", "key": "svg-0" }], ["path", { "d": "M7 9l5 -5l5 5", "key": "svg-1" }], ["path", { "d": "M12 4l0 12", "key": "svg-2" }]];
+const IconUpload = createReactComponent("outline", "upload", "Upload", __iconNode$k);
+const __iconNode$j = [["path", { "d": "M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0", "key": "svg-0" }], ["path", { "d": "M9 10a3 3 0 1 0 6 0a3 3 0 1 0 -6 0", "key": "svg-1" }], ["path", { "d": "M6.168 18.849a4 4 0 0 1 3.832 -2.849h4a4 4 0 0 1 3.834 2.855", "key": "svg-2" }]];
+const IconUserCircle = createReactComponent("outline", "user-circle", "UserCircle", __iconNode$j);
+const __iconNode$i = [["path", { "d": "M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0", "key": "svg-0" }], ["path", { "d": "M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2", "key": "svg-1" }]];
+const IconUser = createReactComponent("outline", "user", "User", __iconNode$i);
+const __iconNode$h = [["path", { "d": "M17 8v-3a1 1 0 0 0 -1 -1h-10a2 2 0 0 0 0 4h12a1 1 0 0 1 1 1v3m0 4v3a1 1 0 0 1 -1 1h-12a2 2 0 0 1 -2 -2v-12", "key": "svg-0" }], ["path", { "d": "M20 12v4h-4a2 2 0 0 1 0 -4h4", "key": "svg-1" }]];
+const IconWallet = createReactComponent("outline", "wallet", "Wallet", __iconNode$h);
+const __iconNode$g = [["path", { "d": "M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0", "key": "svg-0" }], ["path", { "d": "M3.6 9h16.8", "key": "svg-1" }], ["path", { "d": "M3.6 15h16.8", "key": "svg-2" }], ["path", { "d": "M11.5 3a17 17 0 0 0 0 18", "key": "svg-3" }], ["path", { "d": "M12.5 3a17 17 0 0 1 0 18", "key": "svg-4" }]];
+const IconWorld = createReactComponent("outline", "world", "World", __iconNode$g);
+const __iconNode$f = [["path", { "d": "M12 16l3.644 3.644a1.21 1.21 0 0 0 1.712 0l2.288 -2.288a1.21 1.21 0 0 0 0 -1.712l-3.644 -3.644l3.644 -3.644a1.21 1.21 0 0 0 0 -1.712l-2.288 -2.288a1.21 1.21 0 0 0 -1.712 0l-3.644 3.644l-3.644 -3.644a1.21 1.21 0 0 0 -1.712 0l-2.288 2.288a1.21 1.21 0 0 0 0 1.712l3.644 3.644l-3.644 3.644a1.21 1.21 0 0 0 0 1.712l2.288 2.288a1.21 1.21 0 0 0 1.712 0l3.644 -3.644", "key": "svg-0" }]];
+const IconXMark = createReactComponent("outline", "x-mark", "XMark", __iconNode$f);
+const __iconNode$e = [["path", { "d": "M18 6l-12 12", "key": "svg-0" }], ["path", { "d": "M6 6l12 12", "key": "svg-1" }]];
+const IconX = createReactComponent("outline", "x", "X", __iconNode$e);
 function Breadcrumb$1({ className, ...props }) {
   return /* @__PURE__ */ jsxRuntimeExports.jsx(
     "nav",
@@ -78987,13 +78987,13 @@ const __vitePreload = function preload(baseModule, deps, importerUrl) {
   });
 };
 const App$1 = registerPlugin("App", {
-  web: () => __vitePreload(() => import("./web-DoE4oMcw.js"), true ? [] : void 0).then((m2) => new m2.AppWeb())
+  web: () => __vitePreload(() => import("./web-sDRJ1xXV.js"), true ? [] : void 0).then((m2) => new m2.AppWeb())
 });
 const Browser$1 = registerPlugin("Browser", {
-  web: () => __vitePreload(() => import("./web-DmZVMIgR.js"), true ? [] : void 0).then((m2) => new m2.BrowserWeb())
+  web: () => __vitePreload(() => import("./web-DdtwSbjH.js"), true ? [] : void 0).then((m2) => new m2.BrowserWeb())
 });
 const Preferences = registerPlugin("Preferences", {
-  web: () => __vitePreload(() => import("./web-3Vyk7Ylr.js"), true ? [] : void 0).then((m2) => new m2.PreferencesWeb())
+  web: () => __vitePreload(() => import("./web-BdwnnldK.js"), true ? [] : void 0).then((m2) => new m2.PreferencesWeb())
 });
 class InvalidTokenError extends Error {
 }
@@ -210093,7 +210093,7 @@ function ImageUpload({
                   type: "button",
                   "aria-label": "Remove image",
                   size: "icon-xs",
-                  className: "absolute -top-1 -end-1 opacity-0 transition-opacity group-hover:opacity-100",
+                  className: "absolute -end-1 -top-1 opacity-0 transition-opacity group-hover:opacity-100",
                   onClick: () => {
                     removeFile(f2.id);
                     onRemove?.(f2.id);
@@ -211250,6 +211250,540 @@ function RenderObject({ name: name2, field }) {
     ) })
   ] });
 }
+const mergeClasses = (...classes) => classes.filter((className, index2, array2) => {
+  return Boolean(className) && className.trim() !== "" && array2.indexOf(className) === index2;
+}).join(" ").trim();
+const toKebabCase = (string2) => string2.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase();
+const toCamelCase = (string2) => string2.replace(
+  /^([A-Z])|[\s-_]+(\w)/g,
+  (match2, p1, p2) => p2 ? p2.toUpperCase() : p1.toLowerCase()
+);
+const toPascalCase = (string2) => {
+  const camelCase = toCamelCase(string2);
+  return camelCase.charAt(0).toUpperCase() + camelCase.slice(1);
+};
+var defaultAttributes = {
+  xmlns: "http://www.w3.org/2000/svg",
+  width: 24,
+  height: 24,
+  viewBox: "0 0 24 24",
+  fill: "none",
+  stroke: "currentColor",
+  strokeWidth: 2,
+  strokeLinecap: "round",
+  strokeLinejoin: "round"
+};
+const hasA11yProp = (props) => {
+  for (const prop in props) {
+    if (prop.startsWith("aria-") || prop === "role" || prop === "title") {
+      return true;
+    }
+  }
+  return false;
+};
+const LucideContext = reactExports.createContext({});
+const useLucideContext = () => reactExports.useContext(LucideContext);
+const Icon = reactExports.forwardRef(
+  ({ color: color2, size: size2, strokeWidth, absoluteStrokeWidth, className = "", children, iconNode, ...rest }, ref) => {
+    const {
+      size: contextSize = 24,
+      strokeWidth: contextStrokeWidth = 2,
+      absoluteStrokeWidth: contextAbsoluteStrokeWidth = false,
+      color: contextColor = "currentColor",
+      className: contextClass = ""
+    } = useLucideContext() ?? {};
+    const calculatedStrokeWidth = absoluteStrokeWidth ?? contextAbsoluteStrokeWidth ? Number(strokeWidth ?? contextStrokeWidth) * 24 / Number(size2 ?? contextSize) : strokeWidth ?? contextStrokeWidth;
+    return reactExports.createElement(
+      "svg",
+      {
+        ref,
+        ...defaultAttributes,
+        width: size2 ?? contextSize ?? defaultAttributes.width,
+        height: size2 ?? contextSize ?? defaultAttributes.height,
+        stroke: color2 ?? contextColor,
+        strokeWidth: calculatedStrokeWidth,
+        className: mergeClasses("lucide", contextClass, className),
+        ...!children && !hasA11yProp(rest) && { "aria-hidden": "true" },
+        ...rest
+      },
+      [
+        ...iconNode.map(([tag, attrs]) => reactExports.createElement(tag, attrs)),
+        ...Array.isArray(children) ? children : [children]
+      ]
+    );
+  }
+);
+const createLucideIcon = (iconName, iconNode) => {
+  const Component = reactExports.forwardRef(
+    ({ className, ...props }, ref) => reactExports.createElement(Icon, {
+      ref,
+      iconNode,
+      className: mergeClasses(
+        `lucide-${toKebabCase(toPascalCase(iconName))}`,
+        `lucide-${iconName}`,
+        className
+      ),
+      ...props
+    })
+  );
+  Component.displayName = toPascalCase(iconName);
+  return Component;
+};
+const __iconNode$d = [["path", { d: "m6 9 6 6 6-6", key: "qrunsl" }]];
+const ChevronDown = createLucideIcon("chevron-down", __iconNode$d);
+const __iconNode$c = [["path", { d: "m18 15-6-6-6 6", key: "153udz" }]];
+const ChevronUp = createLucideIcon("chevron-up", __iconNode$c);
+const __iconNode$b = [
+  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
+  ["line", { x1: "12", x2: "12", y1: "8", y2: "12", key: "1pkeuh" }],
+  ["line", { x1: "12", x2: "12.01", y1: "16", y2: "16", key: "4dfq90" }]
+];
+const CircleAlert = createLucideIcon("circle-alert", __iconNode$b);
+const __iconNode$a = [
+  ["path", { d: "M12 13v8", key: "1l5pq0" }],
+  ["path", { d: "M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242", key: "1pljnt" }],
+  ["path", { d: "m8 17 4-4 4 4", key: "1quai1" }]
+];
+const CloudUpload = createLucideIcon("cloud-upload", __iconNode$a);
+const __iconNode$9 = [
+  ["path", { d: "M12 15V3", key: "m9g1x1" }],
+  ["path", { d: "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4", key: "ih7n3h" }],
+  ["path", { d: "m7 10 5 5 5-5", key: "brsn70" }]
+];
+const Download = createLucideIcon("download", __iconNode$9);
+const __iconNode$8 = [
+  [
+    "path",
+    {
+      d: "M13.659 22H18a2 2 0 0 0 2-2V8a2.4 2.4 0 0 0-.706-1.706l-3.588-3.588A2.4 2.4 0 0 0 14 2H6a2 2 0 0 0-2 2v11.5",
+      key: "4pqfef"
+    }
+  ],
+  ["path", { d: "M14 2v5a1 1 0 0 0 1 1h5", key: "wfsgrz" }],
+  ["path", { d: "M8 12v-1", key: "1ej8lb" }],
+  ["path", { d: "M8 18v-2", key: "qcmpov" }],
+  ["path", { d: "M8 7V6", key: "1nbb54" }],
+  ["circle", { cx: "8", cy: "20", r: "2", key: "ckkr5m" }]
+];
+const FileArchive = createLucideIcon("file-archive", __iconNode$8);
+const __iconNode$7 = [
+  [
+    "path",
+    {
+      d: "M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z",
+      key: "1oefj6"
+    }
+  ],
+  ["path", { d: "M14 2v5a1 1 0 0 0 1 1h5", key: "wfsgrz" }],
+  ["path", { d: "M8 13h2", key: "yr2amv" }],
+  ["path", { d: "M14 13h2", key: "un5t4a" }],
+  ["path", { d: "M8 17h2", key: "2yhykz" }],
+  ["path", { d: "M14 17h2", key: "10kma7" }]
+];
+const FileSpreadsheet = createLucideIcon("file-spreadsheet", __iconNode$7);
+const __iconNode$6 = [
+  [
+    "path",
+    {
+      d: "M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z",
+      key: "1oefj6"
+    }
+  ],
+  ["path", { d: "M14 2v5a1 1 0 0 0 1 1h5", key: "wfsgrz" }],
+  ["path", { d: "M10 9H8", key: "b1mrlr" }],
+  ["path", { d: "M16 13H8", key: "t4e002" }],
+  ["path", { d: "M16 17H8", key: "z1uh3a" }]
+];
+const FileText = createLucideIcon("file-text", __iconNode$6);
+const __iconNode$5 = [
+  [
+    "path",
+    {
+      d: "M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3",
+      key: "1xhozi"
+    }
+  ]
+];
+const Headphones = createLucideIcon("headphones", __iconNode$5);
+const __iconNode$4 = [
+  ["rect", { width: "18", height: "18", x: "3", y: "3", rx: "2", ry: "2", key: "1m3agn" }],
+  ["circle", { cx: "9", cy: "9", r: "2", key: "af1f0g" }],
+  ["path", { d: "m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21", key: "1xmnt7" }]
+];
+const Image$1 = createLucideIcon("image", __iconNode$4);
+const __iconNode$3 = [
+  ["path", { d: "M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8", key: "v9h5vc" }],
+  ["path", { d: "M21 3v5h-5", key: "1q7to0" }],
+  ["path", { d: "M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16", key: "3uifl3" }],
+  ["path", { d: "M8 16H3v5", key: "1cv678" }]
+];
+const RefreshCw = createLucideIcon("refresh-cw", __iconNode$3);
+const __iconNode$2 = [
+  ["path", { d: "M10 11v6", key: "nco0om" }],
+  ["path", { d: "M14 11v6", key: "outv1u" }],
+  ["path", { d: "M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6", key: "miytrc" }],
+  ["path", { d: "M3 6h18", key: "d0wm0j" }],
+  ["path", { d: "M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2", key: "e791ji" }]
+];
+const Trash2 = createLucideIcon("trash-2", __iconNode$2);
+const __iconNode$1 = [
+  ["path", { d: "M12 3v12", key: "1x0j5s" }],
+  ["path", { d: "m17 8-5-5-5 5", key: "7q97r8" }],
+  ["path", { d: "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4", key: "ih7n3h" }]
+];
+const Upload = createLucideIcon("upload", __iconNode$1);
+const __iconNode = [
+  [
+    "path",
+    {
+      d: "m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5",
+      key: "ftymec"
+    }
+  ],
+  ["rect", { x: "2", y: "6", width: "14", height: "12", rx: "2", key: "158x01" }]
+];
+const Video = createLucideIcon("video", __iconNode);
+const filesFromUrls = (urls) => {
+  if (!urls) return [];
+  return (urls instanceof Array ? urls : [urls]).map((rawUrl) => {
+    const url2 = new URL(rawUrl);
+    const name2 = url2.pathname.split("/").pop() ?? "unnamed";
+    const id2 = url2.searchParams.get("fileId") ?? rawUrl;
+    const size2 = parseInt(url2.searchParams.get("fileSize") ?? "0");
+    const type = url2.searchParams.get("fileType") ?? "*";
+    url2.searchParams.delete("fileId");
+    url2.searchParams.delete("fileSize");
+    url2.searchParams.delete("fileType");
+    return {
+      id: id2,
+      name: name2,
+      size: size2,
+      type,
+      url: url2.toString()
+    };
+  });
+};
+const urlsFromFiles = (files) => {
+  return files.map((file2) => {
+    if (!file2.preview)
+      throw new Error("A file without preview cannot be converted to url!");
+    const url2 = new URL(file2.preview);
+    url2.searchParams.set("fileId", file2.id);
+    url2.searchParams.set("fileSize", file2.file.size.toString());
+    url2.searchParams.set("fileType", file2.file.type);
+    return url2.toString();
+  });
+};
+function downloadFile(url2, filename) {
+  const link2 = document.createElement("a");
+  link2.href = url2;
+  link2.download = filename ?? url2.split("/").pop() ?? "download";
+  link2.target = "_blank";
+  document.body.appendChild(link2);
+  link2.click();
+  link2.remove();
+}
+function shortenFilename(filename, maxLength = 13) {
+  if (filename.length <= maxLength) return filename;
+  const extensionIndex = filename.lastIndexOf(".");
+  const extension2 = extensionIndex > 0 ? filename.slice(extensionIndex) : "";
+  const name2 = extensionIndex > 0 ? filename.slice(0, extensionIndex) : filename;
+  const visibleLength = maxLength - extension2.length - 3;
+  if (visibleLength <= 0) return filename;
+  const startLength = Math.ceil(visibleLength / 2);
+  const endLength = Math.floor(visibleLength / 2);
+  return `${name2.slice(0, startLength)}...${name2.slice(-endLength)}${extension2}`;
+}
+function TableUpload({
+  maxFiles = 10,
+  maxSize = 2 * 1024 * 1024,
+  // 2MB
+  accept = "image/*,application/pdf",
+  className,
+  initialFiles,
+  onFilesChange
+}) {
+  const defaultUploadFiles = (initialFiles ?? []).map(
+    (file2) => ({
+      id: file2.id,
+      file: {
+        name: file2.name,
+        size: file2.size,
+        type: file2.type
+      },
+      preview: file2.url,
+      progress: 100,
+      status: "completed"
+    })
+  );
+  const [uploadFiles, setUploadFiles] = reactExports.useState(defaultUploadFiles);
+  const [
+    { isDragging: isDragging2, errors },
+    {
+      removeFile,
+      clearFiles,
+      handleDragEnter,
+      handleDragLeave,
+      handleDragOver,
+      handleDrop,
+      openFileDialog,
+      getInputProps
+    }
+  ] = useFileUpload({
+    maxFiles,
+    maxSize,
+    accept,
+    multiple: maxFiles > 1,
+    initialFiles,
+    onFilesChange: (newFiles) => {
+      const newUploadFiles = newFiles.map((file2) => {
+        const existingFile = uploadFiles.find(
+          (existing) => existing.id === file2.id
+        );
+        if (existingFile) {
+          return {
+            ...existingFile,
+            ...file2
+            // Update any changed properties from the file
+          };
+        } else {
+          return {
+            ...file2,
+            progress: 0,
+            status: "uploading"
+          };
+        }
+      });
+      setUploadFiles(newUploadFiles);
+      onFilesChange?.(newUploadFiles);
+    }
+  });
+  const removeUploadFile = (fileId) => {
+    setUploadFiles((prev) => prev.filter((file2) => file2.id !== fileId));
+    removeFile(fileId);
+  };
+  const retryUpload = (fileId) => {
+    setUploadFiles(
+      (prev) => prev.map(
+        (file2) => file2.id === fileId ? {
+          ...file2,
+          progress: 0,
+          status: "uploading",
+          error: void 0
+        } : file2
+      )
+    );
+  };
+  const getFileIcon = (file2) => {
+    const type = file2 instanceof File ? file2.type : file2.type;
+    if (type.startsWith("image/")) return /* @__PURE__ */ jsxRuntimeExports.jsx(Image$1, { className: "size-4" });
+    if (type.startsWith("video/")) return /* @__PURE__ */ jsxRuntimeExports.jsx(Video, { className: "size-4" });
+    if (type.startsWith("audio/")) return /* @__PURE__ */ jsxRuntimeExports.jsx(Headphones, { className: "size-4" });
+    if (type.includes("pdf")) return /* @__PURE__ */ jsxRuntimeExports.jsx(FileText, { className: "size-4" });
+    if (type.includes("word") || type.includes("doc"))
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(FileText, { className: "size-4" });
+    if (type.includes("excel") || type.includes("sheet"))
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(FileSpreadsheet, { className: "size-4" });
+    if (type.includes("zip") || type.includes("rar"))
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(FileArchive, { className: "size-4" });
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(FileText, { className: "size-4" });
+  };
+  const getFileTypeLabel = (file2) => {
+    const type = file2 instanceof File ? file2.type : file2.type;
+    if (type.startsWith("image/")) return "Image";
+    if (type.startsWith("video/")) return "Video";
+    if (type.startsWith("audio/")) return "Audio";
+    if (type.includes("pdf")) return "PDF";
+    if (type.includes("word") || type.includes("doc")) return "Word";
+    if (type.includes("excel") || type.includes("sheet")) return "Excel";
+    if (type.includes("zip") || type.includes("rar")) return "Archive";
+    if (type.includes("json")) return "JSON";
+    if (type.includes("text")) return "Text";
+    return "File";
+  };
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: cn$1("w-full space-y-4", className), children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      "div",
+      {
+        className: cn$1(
+          "relative rounded-lg border border-dashed p-6 text-center transition-colors",
+          isDragging2 ? "border-primary bg-primary/5" : "border-muted-foreground/25 hover:border-muted-foreground/50"
+        ),
+        onDragEnter: handleDragEnter,
+        onDragLeave: handleDragLeave,
+        onDragOver: handleDragOver,
+        onDrop: handleDrop,
+        children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("input", { ...getInputProps(), className: "sr-only" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col items-center gap-4", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "div",
+              {
+                className: cn$1(
+                  "flex h-12 w-12 items-center justify-center rounded-full bg-muted transition-colors",
+                  isDragging2 ? "border-primary bg-primary/10" : "border-muted-foreground/25"
+                ),
+                children: /* @__PURE__ */ jsxRuntimeExports.jsx(Upload, { className: "h-5 w-5 text-muted-foreground" })
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-sm font-medium", children: [
+                "Drop files here or",
+                " ",
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "button",
+                  {
+                    type: "button",
+                    onClick: openFileDialog,
+                    className: "cursor-pointer text-primary underline-offset-4 hover:underline",
+                    children: "browse files"
+                  }
+                )
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-xs text-muted-foreground", children: [
+                "Maximum file size: ",
+                formatBytes(maxSize),
+                " • Maximum files:",
+                " ",
+                maxFiles
+              ] })
+            ] })
+          ] })
+        ]
+      }
+    ),
+    uploadFiles.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { className: "text-sm font-medium", children: [
+          "Files (",
+          uploadFiles.length,
+          ")"
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-2", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(Button$2, { onClick: openFileDialog, variant: "outline", size: "sm", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(CloudUpload, { className: "h-4 w-4" }),
+            "Add files"
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(Button$2, { onClick: clearFiles, variant: "outline", size: "sm", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, { className: "h-4 w-4" }),
+            "Remove all"
+          ] })
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "rounded-lg border", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Table$1, { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHeader, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(TableRow, { className: "text-xs", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "h-9 ps-4", children: "Name" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "h-9", children: "Type" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "h-9", children: "Size" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "h-9 w-25 ps-4", children: "Actions" })
+        ] }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(TableBody, { children: uploadFiles.map((fileItem) => /* @__PURE__ */ jsxRuntimeExports.jsxs(TableRow, { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(TableCell, { className: "py-2 ps-1.5", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "div",
+              {
+                className: cn$1(
+                  "relative flex size-8 shrink-0 items-center justify-center text-muted-foreground/80"
+                ),
+                children: fileItem.status === "uploading" ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                    "svg",
+                    {
+                      className: "size-8 -rotate-90",
+                      viewBox: "0 0 32 32",
+                      children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(
+                          "circle",
+                          {
+                            cx: "16",
+                            cy: "16",
+                            r: "14",
+                            fill: "none",
+                            stroke: "currentColor",
+                            strokeWidth: "2",
+                            className: "text-muted-foreground/20"
+                          }
+                        ),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(
+                          "circle",
+                          {
+                            cx: "16",
+                            cy: "16",
+                            r: "14",
+                            fill: "none",
+                            stroke: "currentColor",
+                            strokeWidth: "2",
+                            strokeDasharray: `${2 * Math.PI * 14}`,
+                            strokeDashoffset: `${2 * Math.PI * 14 * (1 - fileItem.progress / 100)}`,
+                            className: "text-primary transition-all duration-300",
+                            strokeLinecap: "round"
+                          }
+                        )
+                      ]
+                    }
+                  ),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 flex items-center justify-center", children: getFileIcon(fileItem.file) })
+                ] }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "not-[]:size-8 flex items-center justify-center", children: getFileIcon(fileItem.file) })
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "p",
+              {
+                className: "flex items-center gap-1 truncate text-sm font-medium",
+                title: fileItem.file.name,
+                children: [
+                  shortenFilename(fileItem.file.name),
+                  fileItem.status === "error" && /* @__PURE__ */ jsxRuntimeExports.jsx(Badge, { variant: "destructive", children: "Error" })
+                ]
+              }
+            )
+          ] }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(TableCell, { className: "py-2", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Badge, { variant: "secondary", className: "text-xs", children: getFileTypeLabel(fileItem.file) }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(TableCell, { className: "py-2 text-sm text-muted-foreground", children: formatBytes(fileItem.file.size) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(TableCell, { className: "py-2", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1", children: [
+            fileItem.preview && /* @__PURE__ */ jsxRuntimeExports.jsx(
+              Button$2,
+              {
+                size: "icon",
+                variant: "ghost",
+                className: "size-8",
+                onClick: () => downloadFile(
+                  fileItem.preview,
+                  fileItem.file.name
+                ),
+                children: /* @__PURE__ */ jsxRuntimeExports.jsx(Download, { className: "size-3.5" })
+              }
+            ),
+            fileItem.status === "error" ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+              Button$2,
+              {
+                onClick: () => retryUpload(fileItem.id),
+                variant: "ghost",
+                size: "icon",
+                className: "size-8 text-destructive/80 hover:text-destructive",
+                children: /* @__PURE__ */ jsxRuntimeExports.jsx(RefreshCw, { className: "size-3.5" })
+              }
+            ) : /* @__PURE__ */ jsxRuntimeExports.jsx(
+              Button$2,
+              {
+                onClick: () => removeUploadFile(fileItem.id),
+                variant: "ghost",
+                size: "icon",
+                className: "size-8",
+                children: /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, { className: "size-3.5" })
+              }
+            )
+          ] }) })
+        ] }, fileItem.id)) })
+      ] }) })
+    ] }),
+    errors.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs(Alert, { variant: "destructive", className: "mt-5", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(CircleAlert, {}),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(AlertTitle, { children: "File upload error(s)" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(AlertDescription, { children: errors.map((error2, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "last:mb-0", children: error2 }, index2)) })
+    ] })
+  ] });
+}
 function RenderInput({ name: name2, field }) {
   if (field.type === "array") return /* @__PURE__ */ jsxRuntimeExports.jsx(RenderArray, { name: name2, field });
   if (field.type === "object") return /* @__PURE__ */ jsxRuntimeExports.jsx(RenderObject, { name: name2, field });
@@ -211367,48 +211901,28 @@ const renderField = ({
           pattern
         },
         render: (def) => {
-          const currentValue = def.field.value;
-          const initialFile = !field.multi && typeof currentValue === "string" && currentValue ? {
-            id: currentValue,
-            type: "image",
-            name: currentValue,
-            url: currentValue,
-            size: 0
-          } : void 0;
-          const initialFiles = field.multi && Array.isArray(currentValue) ? currentValue.filter((v2) => typeof v2 === "string" && v2).map((v2) => ({
-            id: v2,
-            type: "image",
-            name: v2,
-            url: v2,
-            size: 0
-          })) : void 0;
           return /* @__PURE__ */ jsxRuntimeExports.jsx(
-            ImageUpload,
+            TableUpload,
             {
-              id: id2,
-              multi: field.multi,
-              initialFile,
-              initialFiles,
-              onUpload: async ({ file: file2 }, signal) => {
-                if (file2 instanceof File) {
-                  const res = await handleUpload(file2, { signal });
-                  if (field.multi) {
-                    const prev = Array.isArray(def.field.value) ? def.field.value : [];
-                    def.field.onChange([...prev, res.url]);
-                  } else {
-                    def.field.onChange(res.url);
-                  }
-                }
-              },
-              onRemove: (removedId) => {
-                if (field.multi) {
-                  const prev = Array.isArray(def.field.value) ? def.field.value : [];
-                  def.field.onChange(
-                    prev.filter((url2) => url2 !== removedId)
-                  );
-                } else {
-                  def.field.onChange(null);
-                }
+              accept: field.fileType,
+              maxSize: field.fileSize,
+              maxFiles: field.maxItems,
+              initialFiles: filesFromUrls(def.field.value),
+              onFilesChange: async (files) => {
+                const filesWithUrls = await Promise.all(
+                  files.map(async (file2) => {
+                    if (file2.file instanceof File && file2.status === "uploading") {
+                      const res = await handleUpload(file2.file);
+                      return {
+                        ...file2,
+                        preview: res.url
+                      };
+                    }
+                    return file2;
+                  })
+                );
+                const urls = urlsFromFiles(filesWithUrls);
+                def.field.onChange(field.multi ? urls : urls[0]);
               }
             }
           );
@@ -223695,7 +224209,7 @@ const Clipboard = registerPlugin("Clipboard", {
   web: () => new ClipboardWeb()
 });
 const Share = registerPlugin("Share", {
-  web: () => __vitePreload(() => import("./web-DdqnrrW8.js"), true ? [] : void 0).then((m2) => new m2.ShareWeb())
+  web: () => __vitePreload(() => import("./web-CBz3EgfI.js"), true ? [] : void 0).then((m2) => new m2.ShareWeb())
 });
 var __defProp = Object.defineProperty;
 var __getOwnPropSymbols = Object.getOwnPropertySymbols;
@@ -225085,89 +225599,6 @@ const routes = {
   // Add your custom route objects here
   // E.g: posts: { name: "Posts", icon: icons.posts, Component: PostsPage },
 };
-const mergeClasses = (...classes) => classes.filter((className, index2, array2) => {
-  return Boolean(className) && className.trim() !== "" && array2.indexOf(className) === index2;
-}).join(" ").trim();
-const toKebabCase = (string2) => string2.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase();
-const toCamelCase = (string2) => string2.replace(
-  /^([A-Z])|[\s-_]+(\w)/g,
-  (match2, p1, p2) => p2 ? p2.toUpperCase() : p1.toLowerCase()
-);
-const toPascalCase = (string2) => {
-  const camelCase = toCamelCase(string2);
-  return camelCase.charAt(0).toUpperCase() + camelCase.slice(1);
-};
-var defaultAttributes = {
-  xmlns: "http://www.w3.org/2000/svg",
-  width: 24,
-  height: 24,
-  viewBox: "0 0 24 24",
-  fill: "none",
-  stroke: "currentColor",
-  strokeWidth: 2,
-  strokeLinecap: "round",
-  strokeLinejoin: "round"
-};
-const hasA11yProp = (props) => {
-  for (const prop in props) {
-    if (prop.startsWith("aria-") || prop === "role" || prop === "title") {
-      return true;
-    }
-  }
-  return false;
-};
-const LucideContext = reactExports.createContext({});
-const useLucideContext = () => reactExports.useContext(LucideContext);
-const Icon = reactExports.forwardRef(
-  ({ color: color2, size: size2, strokeWidth, absoluteStrokeWidth, className = "", children, iconNode, ...rest }, ref) => {
-    const {
-      size: contextSize = 24,
-      strokeWidth: contextStrokeWidth = 2,
-      absoluteStrokeWidth: contextAbsoluteStrokeWidth = false,
-      color: contextColor = "currentColor",
-      className: contextClass = ""
-    } = useLucideContext() ?? {};
-    const calculatedStrokeWidth = absoluteStrokeWidth ?? contextAbsoluteStrokeWidth ? Number(strokeWidth ?? contextStrokeWidth) * 24 / Number(size2 ?? contextSize) : strokeWidth ?? contextStrokeWidth;
-    return reactExports.createElement(
-      "svg",
-      {
-        ref,
-        ...defaultAttributes,
-        width: size2 ?? contextSize ?? defaultAttributes.width,
-        height: size2 ?? contextSize ?? defaultAttributes.height,
-        stroke: color2 ?? contextColor,
-        strokeWidth: calculatedStrokeWidth,
-        className: mergeClasses("lucide", contextClass, className),
-        ...!children && !hasA11yProp(rest) && { "aria-hidden": "true" },
-        ...rest
-      },
-      [
-        ...iconNode.map(([tag, attrs]) => reactExports.createElement(tag, attrs)),
-        ...Array.isArray(children) ? children : [children]
-      ]
-    );
-  }
-);
-const createLucideIcon = (iconName, iconNode) => {
-  const Component = reactExports.forwardRef(
-    ({ className, ...props }, ref) => reactExports.createElement(Icon, {
-      ref,
-      iconNode,
-      className: mergeClasses(
-        `lucide-${toKebabCase(toPascalCase(iconName))}`,
-        `lucide-${iconName}`,
-        className
-      ),
-      ...props
-    })
-  );
-  Component.displayName = toPascalCase(iconName);
-  return Component;
-};
-const __iconNode$1 = [["path", { d: "m6 9 6 6 6-6", key: "qrunsl" }]];
-const ChevronDown = createLucideIcon("chevron-down", __iconNode$1);
-const __iconNode = [["path", { d: "m18 15-6-6-6 6", key: "153udz" }]];
-const ChevronUp = createLucideIcon("chevron-up", __iconNode);
 function Accordion({ className, ...props }) {
   return /* @__PURE__ */ jsxRuntimeExports.jsx(
     AccordionRoot,
