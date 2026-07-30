@@ -34,8 +34,7 @@ import {
 } from "@/components/ui/sidebar"
 import { NavMenu } from "./nav-menu"
 import {
-  appName, getNavRoutes, triggersBaseUrl,
-  triggersTenantId
+  appName, getNavRoutes
 } from "@/core/lib/utils"
 import {
   DropdownMenu,
@@ -64,8 +63,6 @@ import { getWallets } from "@/core/endpoints/wallet.ts"
 import { Skeleton } from "@/components/ui/skeleton"
 import { ActionSwapText } from "@/core/pages/wallet/action-swap"
 import { NotificationPopover } from "@/core/pages/notifications/notification-popover"
-import { fetchUnreadCount } from "@/core/endpoints/notification"
-
 
 function NavBalance({ visible, onToggle }: { visible: boolean; onToggle: () => void }) {
   const walletRequest = React.useMemo(() => getWallets(), [])
@@ -138,7 +135,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const isMobile = useIsMobile()
   const logout = useLogout()
   const { t, i18n } = useTranslation()
-  const unreadCountInterval = import.meta.env.VITE_UNREAD_COUNT_INTERVAL
 
   const isRtl = i18n.language === "ar"
   const [balanceVisible, setBalanceVisible] = React.useState(false)
@@ -151,26 +147,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
   )
 
   const { data: me } = use(_me)
-
-  const [unreadCount, setUnreadCount] = React.useState(0)
-
-  const refreshUnreadCount = React.useCallback(() => {
-    if (!me?._id || !triggersTenantId || !triggersBaseUrl) return
-
-    fetchUnreadCount(triggersBaseUrl, triggersTenantId, me._id)
-      .then((count) => setUnreadCount(count))
-      .catch((err) => console.log("Failed to fetch unread count", err))
-  }, [me?._id, triggersTenantId, triggersBaseUrl])
-
-  React.useEffect(() => {
-    refreshUnreadCount()
-
-    const intervalId = setInterval(() => {
-      refreshUnreadCount()
-    }, unreadCountInterval)
-
-    return () => clearInterval(intervalId)
-  }, [refreshUnreadCount, unreadCountInterval])
 
   const { routes, subRoutes } = React.useMemo(
     () => getNavRoutes(router.routes),
@@ -365,8 +341,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 {/* Notifications */}
                 <NotificationPopover
                   userId={me?._id}
-                  unreadCount={unreadCount}
-                  onRefreshUnread={refreshUnreadCount}
                 />
 
                 {/* Balance Toggle */}

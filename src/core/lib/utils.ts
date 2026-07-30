@@ -323,3 +323,4 @@ export const getDateGroup = (dateStr: string) => {
 
 export const triggersTenantId = import.meta.env.VITE_TRIGGERS_TENANT_ID;
 export const triggersBaseUrl = import.meta.env.VITE_TRIGGERS_BASE_URL;
+export const unreadCountInterval = import.meta.env.VITE_UNREAD_COUNT_INTERVAL
