@@ -348,6 +348,7 @@ export type TField = {
   requirementKey?: string;
   fileType?: string;
   fileSize?: number;
+  filterSchema?: string;
 };
 
 export class JSONSchemaToFields {
