@@ -15,7 +15,6 @@ import {
   IconSquareCheck,
   type TablerIcon,
 } from "@tabler/icons-react"
-import { cn } from "@/lib/utils"
 
 export type TValue = { value: any; operator: string }
 export type TFilterValue = Record<string, TValue>
