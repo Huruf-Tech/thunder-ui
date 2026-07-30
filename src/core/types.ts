@@ -49,6 +49,8 @@ export type TNotification = {
     title: string;
     body?: string;
     html?: string;
+    type?: string;
+    message?: string;
   };
   tenant: string;
   read: boolean;

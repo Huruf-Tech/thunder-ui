@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/sheet"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { useTheme } from "@/components/theme-provider"
 import { use } from "@/core/hooks/use"
@@ -32,13 +33,17 @@ import type { TNav } from "./bottom-tabs"
 import { useTranslation } from "react-i18next"
 import i18next from "i18next"
 
+type MoreSheetProps = {
+  overflowItems: TNav[]
+  activeParent?: string
+  unreadCount?: number
+}
+
 export function MoreSheet({
   overflowItems,
   activeParent,
-}: {
-  overflowItems: TNav[]
-  activeParent?: string
-}) {
+  unreadCount = 0,
+}: MoreSheetProps) {
   const navigate = useNavigate()
   const [open, setOpen] = React.useState(false)
   const { resolvedTheme, setTheme } = useTheme()
@@ -160,9 +165,23 @@ export function MoreSheet({
             <span>{t("Change tenant")}</span>
           </Button>
 
-          <Button variant="ghost" className="justify-start">
-            <IconNotification className="size-5 shrink-0" />
-            <span>{t("Notifications")}</span>
+          <Button
+            variant="ghost"
+            className="justify-between"
+            onClick={() => handleNavigate("./notifications")}
+          >
+            <div className="flex items-center gap-3">
+              <IconNotification className="size-5 shrink-0" />
+              <span>{t("Notifications")}</span>
+            </div>
+            {unreadCount > 0 && (
+              <Badge
+                variant="default"
+                className="h-5 rounded-full px-1.5 text-[10px] font-bold"
+              >
+                {unreadCount > 99 ? "99+" : unreadCount}
+              </Badge>
+            )}
           </Button>
 
           {/* change language */}
@@ -180,7 +199,6 @@ export function MoreSheet({
 
             <IconArrowsExchange className="size-4 text-muted-foreground" />
           </Button>
-
 
           <Button
             variant="ghost"

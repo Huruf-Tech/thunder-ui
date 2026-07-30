@@ -88,42 +88,14 @@ function TabLink({ item, active }: { item: TNav; active: boolean }) {
   );
 }
 
-// function CartTab() {
-//   const { t } = useTranslation()
-//   const count = useCartCount()
-
-//   const openCart = () =>
-//     SheetRef.current?.onTrigger({
-//       open: true,
-//       content: <CartSheet />,
-//       side: "right",
-//     })
-
-//   return (
-//     <button
-//       type="button"
-//       onClick={openCart}
-//       aria-label={t("Cart")}
-//       className="flex h-full min-w-0 flex-1 flex-col items-center justify-center gap-1 px-1 text-muted-foreground transition-colors hover:text-foreground"
-//     >
-//       <span className="relative">
-//         <IconShoppingCart className="size-5 shrink-0" />
-//         {count > 0 && (
-//           <span className="absolute -end-2 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-semibold text-primary-foreground tabular-nums">
-//             {count}
-//           </span>
-//         )}
-//       </span>
-//       <span className="max-w-full truncate text-[11px] leading-none font-medium">
-//         {t("Cart")}
-//       </span>
-//     </button>
-//   )
-// }
+interface BottomTabsProps extends VariantProps<typeof bottomTabsVariants> {
+  unreadCount?: number;
+}
 
 export function BottomTabs({
   variant,
-}: VariantProps<typeof bottomTabsVariants>) {
+  unreadCount = 0,
+}: BottomTabsProps) {
   const location = useLocation();
   const navItems = useNavItems();
 
@@ -150,10 +122,10 @@ export function BottomTabs({
             active={!!item.path && activeParent === item.path}
           />
         ))}
-        {/* <CartTab /> */}
         <MoreSheet
           overflowItems={overflow}
           activeParent={activeParent}
+          unreadCount={unreadCount}
         />
       </div>
     </nav>
