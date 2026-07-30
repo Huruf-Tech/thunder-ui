@@ -76341,6 +76341,7 @@ const getDateGroup = (dateStr) => {
 };
 const triggersTenantId = "6a0f0dc1216c36e813000c98";
 const triggersBaseUrl = "https://triggers.huruftech.com";
+const unreadCountInterval = "30000";
 const MenuPositionerContext = /* @__PURE__ */ reactExports.createContext(void 0);
 function useMenuPositionerContext(optional2) {
   const context = reactExports.useContext(MenuPositionerContext);
@@ -78986,13 +78987,13 @@ const __vitePreload = function preload(baseModule, deps, importerUrl) {
   });
 };
 const App$1 = registerPlugin("App", {
-  web: () => __vitePreload(() => import("./web-CukGJGW7.js"), true ? [] : void 0).then((m2) => new m2.AppWeb())
+  web: () => __vitePreload(() => import("./web-DoE4oMcw.js"), true ? [] : void 0).then((m2) => new m2.AppWeb())
 });
 const Browser$1 = registerPlugin("Browser", {
-  web: () => __vitePreload(() => import("./web-yw2L2UIX.js"), true ? [] : void 0).then((m2) => new m2.BrowserWeb())
+  web: () => __vitePreload(() => import("./web-DmZVMIgR.js"), true ? [] : void 0).then((m2) => new m2.BrowserWeb())
 });
 const Preferences = registerPlugin("Preferences", {
-  web: () => __vitePreload(() => import("./web-zeuF3zjI.js"), true ? [] : void 0).then((m2) => new m2.PreferencesWeb())
+  web: () => __vitePreload(() => import("./web-3Vyk7Ylr.js"), true ? [] : void 0).then((m2) => new m2.PreferencesWeb())
 });
 class InvalidTokenError extends Error {
 }
@@ -94134,12 +94135,24 @@ function NotificationSkeletonCard() {
     ] })
   ] }) });
 }
-function NotificationPopover({ userId, unreadCount = 0, onRefreshUnread }) {
+function NotificationPopover({ userId }) {
   const { t: t3 } = useTranslation$1();
   const navigate = useNavigate();
   const [notifications, setNotifications] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
   const [open, setOpen] = React.useState(false);
+  const [unreadCount, setUnreadCount] = React.useState(0);
+  const refreshUnreadCount = React.useCallback(() => {
+    if (!userId || !triggersTenantId || !triggersBaseUrl) return;
+    fetchUnreadCount(triggersBaseUrl, triggersTenantId, userId).then((count2) => setUnreadCount(count2)).catch((err) => console.log("Failed to fetch unread count", err));
+  }, [userId]);
+  React.useEffect(() => {
+    refreshUnreadCount();
+    const intervalId = setInterval(() => {
+      refreshUnreadCount();
+    }, unreadCountInterval);
+    return () => clearInterval(intervalId);
+  }, [refreshUnreadCount, unreadCountInterval]);
   const markRead = async (id2) => {
     if (!userId) return;
     setNotifications(
@@ -94147,7 +94160,7 @@ function NotificationPopover({ userId, unreadCount = 0, onRefreshUnread }) {
     );
     try {
       await markNotificationAsRead(triggersBaseUrl, triggersTenantId, userId, id2);
-      if (onRefreshUnread) onRefreshUnread();
+      refreshUnreadCount();
     } catch (err) {
       console.error(err);
     }
@@ -94359,7 +94372,6 @@ function Layout$2({ children }) {
   const isMobile = useIsMobile();
   const logout = useLogout();
   const { t: t3, i18n } = useTranslation$1();
-  const unreadCountInterval = "30000";
   const isRtl = i18n.language === "ar";
   const [balanceVisible, setBalanceVisible] = React.useState(false);
   const _me = React.useCallback(
@@ -94369,18 +94381,6 @@ function Layout$2({ children }) {
     []
   );
   const { data: me3 } = use$1(_me);
-  const [unreadCount, setUnreadCount] = React.useState(0);
-  const refreshUnreadCount = React.useCallback(() => {
-    if (!me3?._id || !triggersTenantId || !triggersBaseUrl) return;
-    fetchUnreadCount(triggersBaseUrl, triggersTenantId, me3._id).then((count2) => setUnreadCount(count2)).catch((err) => console.log("Failed to fetch unread count", err));
-  }, [me3?._id, triggersTenantId, triggersBaseUrl]);
-  React.useEffect(() => {
-    refreshUnreadCount();
-    const intervalId = setInterval(() => {
-      refreshUnreadCount();
-    }, unreadCountInterval);
-    return () => clearInterval(intervalId);
-  }, [refreshUnreadCount, unreadCountInterval]);
   const { routes: routes2, subRoutes } = React.useMemo(
     () => getNavRoutes(router2.routes),
     [router2.routes]
@@ -94547,9 +94547,7 @@ function Layout$2({ children }) {
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               NotificationPopover,
               {
-                userId: me3?._id,
-                unreadCount,
-                onRefreshUnread: refreshUnreadCount
+                userId: me3?._id
               }
             ),
             ThunderSDK.isPermitted(ThunderSDK.wallets.get) && /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -223697,7 +223695,7 @@ const Clipboard = registerPlugin("Clipboard", {
   web: () => new ClipboardWeb()
 });
 const Share = registerPlugin("Share", {
-  web: () => __vitePreload(() => import("./web-CmHxxIEH.js"), true ? [] : void 0).then((m2) => new m2.ShareWeb())
+  web: () => __vitePreload(() => import("./web-DdqnrrW8.js"), true ? [] : void 0).then((m2) => new m2.ShareWeb())
 });
 var __defProp = Object.defineProperty;
 var __getOwnPropSymbols = Object.getOwnPropertySymbols;

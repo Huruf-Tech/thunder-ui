@@ -9652,10 +9652,6 @@ form._multiFieldForm_f3hmk_1213 ._formField_f3hmk_1219 label {
       flex-direction: row;
     }
 
-    .md\:justify-between {
-      justify-content: space-between;
-    }
-
     .md\:gap-1\.5 {
       gap: calc(var(--spacing) * 1.5);
     }

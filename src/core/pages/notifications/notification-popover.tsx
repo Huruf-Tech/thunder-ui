@@ -13,10 +13,10 @@ import {
   IconInfoCircle,
 } from "@tabler/icons-react"
 import { toast } from "sonner"
-import { fetchNotifications, markNotificationAsRead } from "@/core/endpoints/notification"
+import { fetchNotifications, fetchUnreadCount, markNotificationAsRead } from "@/core/endpoints/notification"
 import { Card, CardContent } from "@/components/ui/card"
 import type { TNotification } from "@/core/types"
-import { timeAgo, triggersBaseUrl, triggersTenantId } from "@/core/lib/utils"
+import { timeAgo, triggersBaseUrl, triggersTenantId, unreadCountInterval } from "@/core/lib/utils"
 import { SkeletonRepeater } from "@/core/custom/SkeletonRepeater"
 import { Skeleton } from "@/components/ui/skeleton"
 
@@ -42,17 +42,35 @@ function NotificationSkeletonCard() {
 
 type NotificationPopoverProps = {
   userId?: string
-  unreadCount?: number
-  onRefreshUnread?: () => void
 }
 
-export function NotificationPopover({ userId, unreadCount: unreadCount = 0, onRefreshUnread }: NotificationPopoverProps) {
+export function NotificationPopover({ userId }: NotificationPopoverProps) {
   const { t } = useTranslation()
   const navigate = useNavigate()
 
   const [notifications, setNotifications] = React.useState<TNotification[]>([])
   const [loading, setLoading] = React.useState(false)
   const [open, setOpen] = React.useState(false)
+
+  const [unreadCount, setUnreadCount] = React.useState(0)
+
+  const refreshUnreadCount = React.useCallback(() => {
+    if (!userId || !triggersTenantId || !triggersBaseUrl) return
+
+    fetchUnreadCount(triggersBaseUrl, triggersTenantId, userId)
+      .then((count) => setUnreadCount(count))
+      .catch((err) => console.log("Failed to fetch unread count", err))
+  }, [userId])
+
+  React.useEffect(() => {
+    refreshUnreadCount()
+
+    const intervalId = setInterval(() => {
+      refreshUnreadCount()
+    }, unreadCountInterval)
+
+    return () => clearInterval(intervalId)
+  }, [refreshUnreadCount, unreadCountInterval])
 
   /*
   const markAllRead = () => {
@@ -70,7 +88,7 @@ export function NotificationPopover({ userId, unreadCount: unreadCount = 0, onRe
 
     try {
       await markNotificationAsRead(triggersBaseUrl, triggersTenantId, userId, id)
-      if (onRefreshUnread) onRefreshUnread()
+      refreshUnreadCount()
     } catch (err) {
       console.error(err)
     }
