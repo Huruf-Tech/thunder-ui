@@ -26,6 +26,9 @@ import {
 import { formatDistanceToNow } from "date-fns"
 import { triggersBaseUrl, triggersTenantId } from "@/lib/constants"
 import { fetchNotifications, markNotificationAsRead } from "@/core/endpoints/notification"
+import { useRegisterPushNotification } from "@/core/hooks/useRegisterPushNotification"
+import { PushNotifications } from "@capacitor/push-notifications"
+import { ThunderSDK } from "thunder-sdk"
 
 export type NotificationType = "order" | "payment" | "delivery" | "alert" | "info"
 
@@ -72,6 +75,32 @@ export function NotificationSidebar({
   const [loading, setLoading] = React.useState(false)
   const [error, setError] = React.useState<string | null>(null)
   const [open, setOpen] = React.useState(false)
+
+  const { registerPushNotification } = useRegisterPushNotification()
+
+  React.useEffect(() => {
+
+    let listenerHandle: Awaited<ReturnType<typeof PushNotifications.addListener>> | null = null
+
+    const setup = async () => {
+      listenerHandle = await PushNotifications.addListener("registration", async (token) => {
+        console.info("Registration token:", token.value)
+        try {
+          await ThunderSDK.users.addFcmToken({ body: { token: token.value } })
+        } catch (err) {
+          console.error("Failed to save FCM token", err)
+        }
+      })
+
+      await registerPushNotification()
+    }
+
+    setup()
+
+    return () => {
+      listenerHandle?.remove()
+    }
+  }, [])
 
   const markRead = async (id: string) => {
     if (!triggersTenantId || !userId) return

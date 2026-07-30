@@ -7,7 +7,6 @@ import { Capacitor, SystemBars, SystemBarsStyle } from "@capacitor/core";
 import { EdgeToEdge } from "@capawesome/capacitor-android-edge-to-edge-support";
 import { useCssVar } from "@/core/lib/cssVars";
 import { useTheme } from "@/components/theme-provider";
-import { useRegisterPushNotification } from "./hooks/useRegisterPushNotification";
 
 const setDarkStyle = async (color: string) => {
   const hexColor = rgbToHex(color);

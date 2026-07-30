@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils";
 import { ThunderSDK } from "thunder-sdk";
 import { use } from "@/core/hooks/use";
 import { fetchUnreadCount } from "@/core/endpoints/notification";
-import { NotificationSidebar } from "@/components/notification/notification-sidebar";
+import { NotificationSidebar } from "@/core/pages/notifications/notification-sidebar";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const { router } = useLayout();
