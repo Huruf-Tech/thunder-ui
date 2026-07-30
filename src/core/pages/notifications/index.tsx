@@ -4,10 +4,8 @@ import {
   IconBellOff,
   IconAlertCircle,
   IconInfoCircle,
-  IconTrash,
 } from "@tabler/icons-react"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -23,8 +21,8 @@ import type { TNotification } from "@/core/types"
 import { SkeletonRepeater } from "@/core/custom/SkeletonRepeater"
 import { getDateGroup, timeAgo } from "@/core/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
-
-const PAGE_SIZE = 5
+import { Pagination } from "@/components/pagination"
+import { usePagination } from "@/hooks/use-pagination"
 
 function NotificationCardSkeleton() {
   return (
@@ -47,7 +45,8 @@ export default function Notifications() {
   const [loading, setLoading] = React.useState(true)
   const [error, setError] = React.useState<string | null>(null)
   const [activeTab, setActiveTab] = React.useState("all")
-  const [page, setPage] = React.useState(1)
+
+  const { page, pageSize, setPage } = usePagination()
 
   const _me = React.useCallback(
     async ({ signal }: { signal?: AbortSignal }) => {
@@ -74,7 +73,7 @@ export default function Notifications() {
 
     const filters = activeTab === "unread" ? { read: false } : undefined
 
-    fetchNotifications(triggersBaseUrl, tenant, userId, 1, 100, filters)
+    fetchNotifications(triggersBaseUrl, tenant, userId, 1, 50, filters)
       .then((results) => {
         if (cancelled) return
 
@@ -114,18 +113,19 @@ export default function Notifications() {
     }
   }, [tenant, userId, triggersBaseUrl, activeTab, t])
 
-  const filtered = notifications
+  const filteredNotifications = notifications
 
   React.useEffect(() => {
-    setPage(1)
+    setPage(0)
   }, [activeTab])
 
-  const totalCount = filtered.length
-  const pageItemsCount = PAGE_SIZE * page
+  const totalCount = filteredNotifications.length
+
   const paginated = React.useMemo(
-    () => filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
-    [filtered, page]
+    () => filteredNotifications.slice(page * pageSize, page * pageSize + pageSize),
+    [filteredNotifications, page, pageSize]
   )
+
 
   const grouped = React.useMemo(() => {
     const groups: Record<string, TNotification[]> = {}
@@ -153,8 +153,6 @@ export default function Notifications() {
       console.error("Failed to mark as read", err)
     }
   }
-
-  const clearAll = () => setNotifications([])
 
   return (
     <div className="flex h-full min-h-0 flex-1 flex-col overflow-y-auto mask-y-from-98%">
@@ -191,17 +189,6 @@ export default function Notifications() {
                 </Button>
               )}
             */}
-            {notifications.length > 0 && (
-              <Button
-                variant="outline"
-                size="sm"
-                className="gap-1.5 text-xs text-destructive hover:text-destructive"
-                onClick={clearAll}
-              >
-                <IconTrash className="size-3.5" />
-                {t("Clear all")}
-              </Button>
-            )}
           </div>
         </div>
 
@@ -255,7 +242,7 @@ export default function Notifications() {
           </Card>
         )}
 
-        {!loading && filtered.length === 0 && (
+        {!loading && filteredNotifications.length === 0 && (
           <Card>
             <CardContent className="flex flex-col items-center justify-center py-16 text-center">
               <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted">
@@ -340,8 +327,8 @@ export default function Notifications() {
                               {n.data.body}
                             </p>
 
-                            <div className="mt-3 flex flex-wrap items-center gap-2">
-                              {/* {n.data.actions?.map((action, i) => (
+                            {/* <div className="mt-3 flex flex-wrap items-center gap-2">
+                              {n.data.actions?.map((action, i) => (
                                 <Button
                                   key={i}
                                   size="sm"
@@ -361,8 +348,8 @@ export default function Notifications() {
                                   )}
                                   {t(action.label ?? (action.type === "button" ? "View details" : "Open link"))}
                                 </Button>
-                              ))} */}
-                            </div>
+                              ))}
+                            </div> */}
                           </div>
                         </AccordionContent>
                       </AccordionItem>
@@ -375,30 +362,14 @@ export default function Notifications() {
         ))}
 
         {/* Pagination */}
-        {!loading && !error && totalCount > PAGE_SIZE && (
-          <div className="flex flex-wrap-reverse items-center justify-center gap-3 md:justify-between">
-            <Badge variant="outline">
-              {t("Current Page")} ({page}){" "}
-              {Math.min(pageItemsCount, totalCount)} -{" "}
-              <span className="text-muted-foreground">{totalCount}</span>
-            </Badge>
-            <div className="flex gap-3">
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={page <= 1}
-                onClick={() => setPage((p) => p - 1)}
-              >
-                {t("Previous")}
-              </Button>
-              <Button
-                size="sm"
-                disabled={pageItemsCount >= totalCount}
-                onClick={() => setPage((p) => p + 1)}
-              >
-                {t("Next")}
-              </Button>
-            </div>
+        {!loading && !error && totalCount > pageSize && (
+          <div className="py-2">
+            <Pagination
+              total={totalCount}
+              limit={pageSize}
+              active={page}
+              onChange={(newPage) => setPage(newPage)}
+            />
           </div>
         )}
       </Container>
