@@ -35,7 +35,7 @@ export default function RenderArray({ name, field }: TRenderArrayProp) {
     control,
     name,
     rules: {
-      required: field.required && t("You need to add one!"),
+      required: !field.optional && t("You need to add one!"),
     },
   })
 

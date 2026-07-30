@@ -4,12 +4,12 @@ import { useTranslation } from "react-i18next";
 import { buildWalletHTML } from "@/core/pages/wallet/print/wallet";
 import { printDocument } from "@/core/lib/utils";
 import { formatDateForInput } from "@/core/lib/utils";
-import type { ThunderSDK as TSDKType } from "thunder-sdk";
+import type { ThunderSDK } from "thunder-sdk";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
 type TWalletLedger =
-  typeof TSDKType.walletLedgers.type.get$return.results[number];
+  typeof ThunderSDK.walletLedgers.type.get$return.results[number];
 
 export type WalletHistoryPrintData = {
   transactions: TWalletLedger[];

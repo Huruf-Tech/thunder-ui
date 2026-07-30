@@ -1,7 +1,11 @@
 import type { Transition, Variants } from "motion/react";
 
 // Trigger box grows into the full-width panel and back — one shared surface.
-export const MORPH: Transition = { type: "spring", duration: 0.5, bounce: 0.22 };
+export const MORPH: Transition = {
+  type: "spring",
+  duration: 0.5,
+  bounce: 0.22,
+};
 
 export const LIST: Variants = {
   hidden: {},

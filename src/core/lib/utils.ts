@@ -8,6 +8,7 @@ import { converter, formatHex } from "culori";
 import axios from "axios";
 import { toast } from "sonner";
 import { Capacitor } from "@capacitor/core";
+import { format, formatDistanceToNow, isSameDay, subDays } from "date-fns";
 
 export function appName() {
   return Package.name
@@ -101,12 +102,12 @@ export function getLocalUrl(path?: string) {
 export function getAuthUrl(search: string = "") {
   const url = new URL(
     "/auth" + search,
-    import.meta.env.VITE_API_BASE_URL || window.location.origin
+    import.meta.env.VITE_API_BASE_URL || window.location.origin,
   );
 
   url.searchParams.set(
     "returnUri",
-    `${window.location.href}`
+    `${window.location.href}`,
   );
 
   return url;
@@ -308,3 +309,18 @@ export const printDocument = async <T>(
     toast.error("Failed to open the print dialog.");
   }
 };
+
+export const timeAgo = (dateStr: string | number | Date) =>
+  formatDistanceToNow(new Date(dateStr), { addSuffix: true });
+
+export const getDateGroup = (dateStr: string) => {
+  const date = new Date(dateStr);
+  const now = new Date();
+  if (isSameDay(date, now)) return "Today";
+  if (isSameDay(date, subDays(now, 1))) return "Yesterday";
+  return format(date, "MMM d, yyyy");
+};
+
+export const triggersTenantId = import.meta.env.VITE_TRIGGERS_TENANT_ID;
+export const triggersBaseUrl = import.meta.env.VITE_TRIGGERS_BASE_URL;
+export const unreadCountInterval = import.meta.env.VITE_UNREAD_COUNT_INTERVAL

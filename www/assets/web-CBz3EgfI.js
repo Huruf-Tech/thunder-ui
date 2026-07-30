@@ -1,4 +1,4 @@
-import { W as WebPlugin } from "./index-BQNN2dYb.js";
+import { W as WebPlugin } from "./index-dzBMrZdy.js";
 class ShareWeb extends WebPlugin {
   async canShare() {
     if (typeof navigator === "undefined" || !navigator.share) {

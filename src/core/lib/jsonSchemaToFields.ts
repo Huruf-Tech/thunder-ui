@@ -309,6 +309,7 @@ export const FieldTypes = [
   "email",
   "url",
   "hidden",
+  "phone",
 ] as const;
 
 export type TFieldType = (typeof FieldTypes)[number];
@@ -333,7 +334,8 @@ export type TField = {
   maxItems?: number;
   minimum?: number;
   maximum?: number;
-  required?: boolean;
+  required?: string[];
+  optional?: boolean;
   enum?: string[] | Array<{ label: string; value: unknown }>;
   pattern?: string;
   example?: string;
@@ -344,6 +346,8 @@ export type TField = {
   const?: unknown;
   canFilter?: boolean;
   requirementKey?: string;
+  fileType?: string;
+  fileSize?: number;
 };
 
 export class JSONSchemaToFields {
@@ -359,6 +363,10 @@ export class JSONSchemaToFields {
 
       case "email": {
         return "email";
+      }
+
+      case "e164": {
+        return "phone";
       }
 
       default: {
@@ -429,7 +437,7 @@ export class JSONSchemaToFields {
             this._toFields(prop, def, {
               parentName: name,
               ...("required" in schema && schema.required instanceof Array
-                ? { required: schema.required.includes(prop) }
+                ? { optional: !schema.required.includes(prop) }
                 : {}),
             })
           ),

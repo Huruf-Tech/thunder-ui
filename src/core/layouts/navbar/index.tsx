@@ -33,7 +33,9 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import { NavMenu } from "./nav-menu"
-import { appName, getNavRoutes } from "@/core/lib/utils"
+import {
+  appName, getNavRoutes
+} from "@/core/lib/utils"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -60,8 +62,7 @@ import { useTranslation } from "react-i18next"
 import { getWallets } from "@/core/endpoints/wallet.ts"
 import { Skeleton } from "@/components/ui/skeleton"
 import { ActionSwapText } from "@/core/pages/wallet/action-swap"
-import { NotificationPopover } from "@/components/notifications/notification-popover"
-
+import { NotificationPopover } from "@/core/pages/notifications/notification-popover"
 
 function NavBalance({ visible, onToggle }: { visible: boolean; onToggle: () => void }) {
   const walletRequest = React.useMemo(() => getWallets(), [])
@@ -78,38 +79,38 @@ function NavBalance({ visible, onToggle }: { visible: boolean; onToggle: () => v
     maximumFractionDigits: 2,
   })}`
 
-const maskedBalance = "∗∗∗∗∗"
+  const maskedBalance = "∗∗∗∗∗"
 
-return (
+  return (
     <div className="flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5">
-    <button
-      type="button"
-      onClick={onToggle}
-      aria-label={visible ? "Hide balance" : "Show balance"}
+      <button
+        type="button"
+        onClick={onToggle}
+        aria-label={visible ? "Hide balance" : "Show balance"}
         className="text-muted-foreground hover:text-foreground"
-    >
-      {visible ? (  
+      >
+        {visible ? (
           <IconEye className="size-4" />
-      ) : (
-        <IconEyeOff className="size-4" />
-      )}
-    </button>
-    <span className="text-sm font-semibold text-foreground flex items-center justify-center h-5 w-auto min-w-15">
-      {isLoading ? (
-        <Skeleton className="h-4 w-16 " />
-      ) : (
-        <ActionSwapText
-          value={visible ? formatted : "hidden"}
-          animation="cascade"
-          className="text-sm font-semibold text-foreground"
-        >
-          
-          {visible ? formatted : maskedBalance}
-        </ActionSwapText>
-      )}
-    </span>
-  </div>
-)
+        ) : (
+          <IconEyeOff className="size-4" />
+        )}
+      </button>
+      <span className="text-sm font-semibold text-foreground flex items-center justify-center h-5 w-auto min-w-15">
+        {isLoading ? (
+          <Skeleton className="h-4 w-16 " />
+        ) : (
+          <ActionSwapText
+            value={visible ? formatted : "hidden"}
+            animation="cascade"
+            className="text-sm font-semibold text-foreground"
+          >
+
+            {visible ? formatted : maskedBalance}
+          </ActionSwapText>
+        )}
+      </span>
+    </div>
+  )
 }
 
 function SidebarTrigger() {
@@ -335,17 +336,20 @@ export function Layout({ children }: { children: React.ReactNode }) {
                   {appName()}
                 </span>
               </div>
-              {/* Notifications */}
-                <NotificationPopover />        
               {/* Right Actions */}
               <div className="ms-auto flex items-center gap-3">
-              {/* Balance Toggle */}
-               {ThunderSDK.isPermitted(ThunderSDK.wallets.get) && ( 
-                <NavBalance
-                  visible={balanceVisible}
-                  onToggle={() => setBalanceVisible((v) => !v)}
+                {/* Notifications */}
+                <NotificationPopover
+                  userId={me?._id}
                 />
-                )} 
+
+                {/* Balance Toggle */}
+                {ThunderSDK.isPermitted(ThunderSDK.wallets.get) && (
+                  <NavBalance
+                    visible={balanceVisible}
+                    onToggle={() => setBalanceVisible((v) => !v)}
+                  />
+                )}
 
                 <Button
                   onClick={toggleTheme}

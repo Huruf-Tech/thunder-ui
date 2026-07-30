@@ -3,6 +3,9 @@
 import React from "react"
 import type { TField } from "@/core/lib/jsonSchemaToFields"
 import { FilterSelector } from "./components/filter-selector"
+import { ActiveFilters } from "./components/active-filters"
+import { FilterActions } from "./components/filter-actions"
+import { CardSelectAll } from "./components/card-select-all"
 import {
   IconCalendar,
   IconCircleDashed,
@@ -13,10 +16,8 @@ import {
   IconSquareCheck,
   type TablerIcon,
 } from "@tabler/icons-react"
-import { ActiveFilters } from "./components/active-filters"
-import { FilterActions } from "./components/filter-actions"
 
-export type TValue = { value: any; operator: string }
+export type TValue = { value: any ; operator: string }
 export type TFilterValue = Record<string, TValue>
 
 export type TFilter = {
@@ -24,6 +25,13 @@ export type TFilter = {
   fields: TField[]
   onChange: (value?: TFilterValue) => void
   children?: React.ReactNode
+
+  // Card View Selection Props
+  isCardView?: boolean
+  selectAllChecked?: boolean | "indeterminate"
+  selectedCount?: number
+  totalCount?: number
+  onSelectAllChange?: (checked: boolean) => void
 }
 
 export function filterIcon(field: TField): TablerIcon {
@@ -31,6 +39,7 @@ export function filterIcon(field: TField): TablerIcon {
 
   switch (field.type) {
     case "text":
+    default:
       return IconH1
     case "url":
       return IconLink
@@ -42,31 +51,51 @@ export function filterIcon(field: TField): TablerIcon {
       return IconSquareCheck
     case "number":
       return IconNumber
-    default:
-      return IconH1
   }
 }
 
-const FiltersContext = React.createContext<{
-  filters?: TFilterValue
-  fields: TField[]
-  onChange: (value?: TFilterValue) => void
-} | null>(null)
+const FiltersContext = React.createContext<
+  {
+    filters?: TFilterValue
+    fields: TField[]
+    onChange: (value?: TFilterValue) => void
+  } | null
+>(null)
 
 export function useFilters() {
   const context = React.useContext(FiltersContext)
 
-  if (!context)
+  if (!context) {
     throw new Error("useFilters must be used within FiltersProvider")
+  }
 
   return context
 }
 
-export function Filters({ filters, fields, onChange }: TFilter) {
+export function Filters({
+  filters,
+  fields,
+  onChange,
+  isCardView,
+  selectAllChecked,
+  selectedCount,
+  totalCount,
+  onSelectAllChange,
+}: TFilter) {
   return (
     <FiltersContext.Provider value={{ filters, fields, onChange }}>
       <div className="flex min-w-0 grow items-center justify-between gap-2">
         <div className="flex min-w-0 flex-1 items-center gap-2">
+          {/* Render Card Select All Badge only when in Card View */}
+          {isCardView && (
+            <CardSelectAll
+              checked={selectAllChecked}
+              selectedCount={selectedCount}
+              totalCount={totalCount}
+              onChange={onSelectAllChange}
+            />
+          )}
+
           <FilterSelector />
           <FilterActions
             hasFilters={!!filters}

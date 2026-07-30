@@ -1,4 +1,4 @@
-import { W as WebPlugin } from "./index-BQNN2dYb.js";
+import { W as WebPlugin } from "./index-dzBMrZdy.js";
 class PreferencesWeb extends WebPlugin {
   constructor() {
     super(...arguments);

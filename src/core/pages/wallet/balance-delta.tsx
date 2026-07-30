@@ -3,7 +3,7 @@
 import { IconTrendingDown3 , IconTrendingUp3  } from "@tabler/icons-react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
-import { EASE_OUT } from "@/lib/ease";
+import { EASE_OUT } from "@/core/lib/ease";
 import { cn } from "@/lib/utils";
 
 /**

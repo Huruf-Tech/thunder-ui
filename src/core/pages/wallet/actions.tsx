@@ -6,7 +6,7 @@ import { IconArrowDownDashed , IconArrowNarrowUp , IconCreditCardPay , IconQrcod
 import { motion, useReducedMotion } from "motion/react";
 import type { ComponentType } from "react";
 import { useTranslation } from "react-i18next";
-import { SPRING_PRESS } from "@/lib/ease";
+import { SPRING_PRESS } from "@/core/lib/ease";
 
 type WalletAction = {
   key: string;
