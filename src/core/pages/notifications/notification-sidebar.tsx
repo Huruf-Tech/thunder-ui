@@ -24,7 +24,7 @@ import {
   IconTruckDelivery,
 } from "@tabler/icons-react"
 import { formatDistanceToNow } from "date-fns"
-import { triggersBaseUrl, triggersTenantId } from "@/lib/constants"
+import { triggersBaseUrl, triggersTenantId } from "@/core/lib/constants"
 import { fetchNotifications, markNotificationAsRead } from "@/core/endpoints/notification"
 import { useRegisterPushNotification } from "@/core/hooks/useRegisterPushNotification"
 import { PushNotifications } from "@capacitor/push-notifications"
