@@ -19,6 +19,9 @@ import type { TNotification } from "@/core/types"
 import { timeAgo, triggersBaseUrl, triggersTenantId, unreadCountInterval } from "@/core/lib/utils"
 import { SkeletonRepeater } from "@/core/custom/SkeletonRepeater"
 import { Skeleton } from "@/components/ui/skeleton"
+import { PushNotifications } from "@capacitor/push-notifications"
+import { useRegisterPushNotification } from "@/core/hooks/useRegisterPushNotification"
+import { ThunderSDK } from "thunder-sdk"
 
 function NotificationSkeletonCard() {
   return (
@@ -53,6 +56,32 @@ export function NotificationPopover({ userId }: NotificationPopoverProps) {
   const [open, setOpen] = React.useState(false)
 
   const [unreadCount, setUnreadCount] = React.useState(0)
+
+  const { registerPushNotification } = useRegisterPushNotification()
+
+  React.useEffect(() => {
+
+    let listenerHandle: Awaited<ReturnType<typeof PushNotifications.addListener>> | null = null
+
+    const setup = async () => {
+      listenerHandle = await PushNotifications.addListener("registration", async (token) => {
+        console.info("Registration token:", token.value)
+        try {
+          await ThunderSDK.users.addFcmToken({ body: { token: token.value } })
+        } catch (err) {
+          console.error("Failed to save FCM token", err)
+        }
+      })
+
+      await registerPushNotification()
+    }
+
+    setup()
+
+    return () => {
+      listenerHandle?.remove()
+    }
+  }, [])
 
   const refreshUnreadCount = React.useCallback(() => {
     if (!userId || !triggersTenantId || !triggersBaseUrl) return

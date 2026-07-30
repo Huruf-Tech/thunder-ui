@@ -8,6 +8,10 @@ const config: CapacitorConfig = {
     SystemBars: {
       insetsHandling: "disable"
     },
+
+    PushNotifications: {
+      presentationOptions: ["badge", "sound", "alert"],
+    },
   }
 };
 
