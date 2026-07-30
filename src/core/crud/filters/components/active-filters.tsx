@@ -47,7 +47,7 @@ export function ActiveFilter({
   onRemove?: () => void
 }) {
   return (
-    <div className="flex h-7 items-center rounded-2xl border border-border bg-background text-xs shadow-xs max-w-fit">
+    <div className="flex h-7 max-w-fit items-center rounded-2xl border border-border bg-background text-xs shadow-xs">
       <FilterSubject field={field} />
       <Separator orientation="vertical" />
       <FilterOperator field={field} />

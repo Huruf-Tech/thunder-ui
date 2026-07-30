@@ -64,11 +64,17 @@ export function useFilters() {
 }
 
 export function Filters({ filters, fields, onChange, multiLiner }: TFilter) {
+  if (!fields.length) return <></>
+  
   return (
     <FiltersContext.Provider value={{ filters, fields, onChange }}>
       <div className="flex min-w-0 grow items-center gap-2">
         <div
-          className={multiLiner ? "flex flex-col gap-2" : "flex min-w-0 flex-1 items-center gap-2"}
+          className={
+            multiLiner
+              ? "flex flex-col gap-2"
+              : "flex min-w-0 flex-1 items-center gap-2"
+          }
         >
           <div className="flex min-w-0 items-center gap-2">
             <FilterSelector />

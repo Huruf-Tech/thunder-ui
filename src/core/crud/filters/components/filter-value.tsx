@@ -180,7 +180,7 @@ export function FilterValueDateDisplay({ filter }: { filter?: TValue }) {
 export function FilterValueTextDisplay({ filter }: { filter?: TValue }) {
   const value = filter?.value
 
-  if (value.length === 0 || value.trim() === "")
+  if (value.length === 0 || value.trim?.() === "")
     return <IconDots className="size-4" />
 
   return <span>{value}</span>

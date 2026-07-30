@@ -170,7 +170,7 @@ export const _mongoToFilter = (
             query instanceof Date
         ) {
             filter[key] = {
-                value: parseTypedValue(query),
+                value: [parseTypedValue(query)],
                 operator: "$eq",
             };
 
@@ -217,7 +217,7 @@ export const _mongoToFilter = (
             "$regex" in query.$not
         ) {
             filter[key] = {
-                value: parseTypedValue(query.$not.$regex),
+                value: [parseTypedValue(query.$not.$regex)],
                 operator: "$nregex",
             };
 
@@ -229,7 +229,7 @@ export const _mongoToFilter = (
          */
         if ("$regex" in query) {
             filter[key] = {
-                value: parseTypedValue(query.$regex),
+                value: [parseTypedValue(query.$regex)],
                 operator: "$regex",
             };
 
@@ -269,7 +269,7 @@ export const _mongoToFilter = (
             const [operator, value] = entries[0];
 
             filter[key] = {
-                value: parseTypedValue(value),
+                value: [parseTypedValue(value)],
                 operator,
             };
         }
@@ -282,9 +282,9 @@ export const mongoToFilter = (
     filters: TFilters,
     revertMap?: Map<string, TFilterInput>,
 ) => {
-    const revertedFilters = revertMap?.get(hash(filters));
+    let revertedFilters = revertMap?.get(hash(filters));
 
-    if (!revertedFilters) _mongoToFilter(filters);
+    if (!revertedFilters) revertedFilters = _mongoToFilter(filters);
 
     return revertedFilters;
 };
