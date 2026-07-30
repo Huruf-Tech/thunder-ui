@@ -7,7 +7,12 @@ import {
 import { Button } from "@/components/ui/button"
 import React from "react"
 import { Spinner } from "@/components/ui/spinner"
-import { IconPhoto, IconUpload, IconX, IconInfoCircle } from "@tabler/icons-react"
+import {
+  IconPhoto,
+  IconUpload,
+  IconX,
+  IconInfoCircle,
+} from "@tabler/icons-react"
 import { toast } from "sonner"
 
 export function ImageUpload({
@@ -62,7 +67,6 @@ export function ImageUpload({
     },
   })
 
-
   // Show toast when file validation errors occur (e.g. file too large)
   React.useEffect(() => {
     if (errors.length > 0) {
@@ -115,7 +119,7 @@ export function ImageUpload({
                 type="button"
                 aria-label="Remove image"
                 size="icon-xs"
-                className="absolute -top-1 -end-1 opacity-0 transition-opacity group-hover:opacity-100"
+                className="absolute -end-1 -top-1 opacity-0 transition-opacity group-hover:opacity-100"
                 onClick={() => {
                   removeFile(f.id)
                   onRemove?.(f.id)
@@ -139,11 +143,7 @@ export function ImageUpload({
             data-dragging={isDragging || undefined}
             disabled={busy}
           >
-            {busy ? (
-              <Spinner />
-            ) : (
-              <IconUpload className="size-4 opacity-60" />
-            )}
+            {busy ? <Spinner /> : <IconUpload className="size-4 opacity-60" />}
           </button>
         </div>
 

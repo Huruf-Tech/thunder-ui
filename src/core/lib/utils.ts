@@ -310,7 +310,7 @@ export const printDocument = async <T>(
   }
 };
 
-export const timeAgo = (dateStr: string) =>
+export const timeAgo = (dateStr: string | number | Date) =>
   formatDistanceToNow(new Date(dateStr), { addSuffix: true });
 
 export const getDateGroup = (dateStr: string) => {

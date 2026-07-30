@@ -25,10 +25,14 @@ import { Dropdown } from "../../custom/Dropdown"
 import { Multiselect } from "../../custom/Multiselect"
 import { Tag, TagInput } from "../../custom/TagInput"
 import { AvatarUpload } from "../../custom/AvatarUpload"
-import { ImageUpload } from "../../custom/ImageUpload"
 import { formatDateForInput, handleUpload } from "../../lib/utils"
 import RenderArray from "./RenderArray"
 import RenderObject from "./RenderObject"
+import {
+  filesFromUrls,
+  TableUpload,
+  urlsFromFiles,
+} from "@/core/custom/TableUpload"
 
 export type TRenderInputProps = {
   name: string
@@ -177,62 +181,33 @@ export const renderField = ({
           pattern,
         }}
         render={(def) => {
-          const currentValue = def.field.value
-
-          const initialFile =
-            !field.multi && typeof currentValue === "string" && currentValue
-              ? {
-                  id: currentValue,
-                  type: "image",
-                  name: currentValue,
-                  url: currentValue,
-                  size: 0,
-                }
-              : undefined
-
-          const initialFiles =
-            field.multi && Array.isArray(currentValue)
-              ? currentValue
-                  .filter((v: any) => typeof v === "string" && v)
-                  .map((v: string) => ({
-                    id: v,
-                    type: "image",
-                    name: v,
-                    url: v,
-                    size: 0,
-                  }))
-              : undefined
-
           return (
-            <ImageUpload
-              id={id}
-              multi={field.multi}
-              initialFile={initialFile}
-              initialFiles={initialFiles}
-              onUpload={async ({ file }, signal) => {
-                if (file instanceof File) {
-                  const res = await handleUpload(file, { signal })
-                  if (field.multi) {
-                    const prev = Array.isArray(def.field.value)
-                      ? def.field.value
-                      : []
-                    def.field.onChange([...prev, res.url])
-                  } else {
-                    def.field.onChange(res.url)
-                  }
-                }
-              }}
-              onRemove={(removedId) => {
-                if (field.multi) {
-                  const prev = Array.isArray(def.field.value)
-                    ? def.field.value
-                    : []
-                  def.field.onChange(
-                    prev.filter((url: string) => url !== removedId)
-                  )
-                } else {
-                  def.field.onChange(null)
-                }
+            <TableUpload
+              accept={field.fileType}
+              maxSize={field.fileSize}
+              maxFiles={field.maxItems}
+              initialFiles={filesFromUrls(def.field.value)}
+              onFilesChange={async (files) => {
+                const filesWithUrls = await Promise.all(
+                  files.map(async (file) => {
+                    if (
+                      file.file instanceof File &&
+                      file.status === "uploading"
+                    ) {
+                      const res = await handleUpload(file.file)
+
+                      return {
+                        ...file,
+                        preview: res.url,
+                      }
+                    }
+
+                    return file
+                  })
+                )
+
+                const urls = urlsFromFiles(filesWithUrls)
+                def.field.onChange(field.multi ? urls : urls[0])
               }}
             />
           )
