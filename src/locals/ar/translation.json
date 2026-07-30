@@ -68,5 +68,7 @@
   "Sent": "مُرسَل",
   "Received": "مُستلَم",
   "Transfer to {{target}}": "تحويل إلى {{target}}",
-  "name": "الاسم"
+  "name": "الاسم",
+  "Credit": "دائن",
+"Debit": "مدين"
 }

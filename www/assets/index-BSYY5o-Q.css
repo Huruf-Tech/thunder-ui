@@ -2855,12 +2855,12 @@ form._multiFieldForm_f3hmk_1213 ._formField_f3hmk_1219 label {
     inset-inline-start: 50%;
   }
 
-  .-end-1 {
-    inset-inline-end: calc(var(--spacing) * -1);
+  .-end-0\.5 {
+    inset-inline-end: calc(var(--spacing) * -.5);
   }
 
-  .-end-2 {
-    inset-inline-end: calc(var(--spacing) * -2);
+  .-end-1 {
+    inset-inline-end: calc(var(--spacing) * -1);
   }
 
   .-inset-e-0\.5 {
@@ -2893,10 +2893,6 @@ form._multiFieldForm_f3hmk_1213 ._formField_f3hmk_1219 label {
 
   .-top-1 {
     top: calc(var(--spacing) * -1);
-  }
-
-  .-top-1\.5 {
-    top: calc(var(--spacing) * -1.5);
   }
 
   .top-0 {
@@ -4842,6 +4838,11 @@ form._multiFieldForm_f3hmk_1213 ._formField_f3hmk_1219 label {
     gap: calc(var(--spacing) * 10);
   }
 
+  :where(.space-y-0 > :not(:last-child)) {
+    --tw-space-y-reverse: 0;
+    margin-block: 0;
+  }
+
   :where(.space-y-2 > :not(:last-child)) {
     --tw-space-y-reverse: 0;
     margin-block-start: calc(calc(var(--spacing) * 2) * var(--tw-space-y-reverse));
@@ -5296,6 +5297,14 @@ form._multiFieldForm_f3hmk_1213 ._formField_f3hmk_1219 label {
     border-color: #0000 !important;
   }
 
+  .border-l-blue-500 {
+    border-left-color: var(--color-blue-500);
+  }
+
+  .border-l-destructive {
+    border-left-color: var(--destructive);
+  }
+
   .border-l-muted-foreground\/20 {
     border-left-color: var(--muted-foreground);
   }
@@ -5304,6 +5313,20 @@ form._multiFieldForm_f3hmk_1213 ._formField_f3hmk_1219 label {
     .border-l-muted-foreground\/20 {
       border-left-color: color-mix(in oklab, var(--muted-foreground) 20%, transparent);
     }
+  }
+
+  .border-l-muted-foreground\/40 {
+    border-left-color: var(--muted-foreground);
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .border-l-muted-foreground\/40 {
+      border-left-color: color-mix(in oklab, var(--muted-foreground) 40%, transparent);
+    }
+  }
+
+  .border-l-primary {
+    border-left-color: var(--primary);
   }
 
   .bg-background, .bg-background\/60 {
@@ -5343,6 +5366,16 @@ form._multiFieldForm_f3hmk_1213 ._formField_f3hmk_1219 label {
   @supports (color: color-mix(in lab, red, red)) {
     .bg-black\/30 {
       background-color: color-mix(in oklab, var(--color-black) 30%, transparent);
+    }
+  }
+
+  .bg-blue-500\/10 {
+    background-color: #3080ff1a;
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .bg-blue-500\/10 {
+      background-color: color-mix(in oklab, var(--color-blue-500) 10%, transparent);
     }
   }
 
@@ -6062,6 +6095,10 @@ form._multiFieldForm_f3hmk_1213 ._formField_f3hmk_1219 label {
 
   .text-background {
     color: var(--background);
+  }
+
+  .text-blue-500 {
+    color: var(--color-blue-500);
   }
 
   .text-card-foreground {
@@ -9697,6 +9734,10 @@ form._multiFieldForm_f3hmk_1213 ._formField_f3hmk_1219 label {
       max-width: var(--container-md);
     }
 
+    .sm\:max-w-sm {
+      max-width: var(--container-sm);
+    }
+
     .sm\:flex-row {
       flex-direction: row;
     }
@@ -9754,6 +9795,10 @@ form._multiFieldForm_f3hmk_1213 ._formField_f3hmk_1219 label {
 
     .md\:flex-row {
       flex-direction: row;
+    }
+
+    .md\:justify-between {
+      justify-content: space-between;
     }
 
     .md\:gap-1\.5 {

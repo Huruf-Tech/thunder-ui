@@ -11,7 +11,10 @@ import { SubNav } from "../shared/sub-nav";
 import { useLayout } from "../layout-provider";
 import { Container } from "@/core/custom/Container";
 import { cn } from "@/lib/utils";
-// import { ShippingBanner } from "@/store/customer/shipping-banner"
+import { ThunderSDK } from "thunder-sdk";
+import { use } from "@/core/hooks/use";
+import { fetchUnreadCount } from "@/core/endpoints/notification";
+import { NotificationSidebar } from "@/components/notification/notification-sidebar";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const { router } = useLayout();
@@ -40,6 +43,45 @@ export function Layout({ children }: { children: React.ReactNode }) {
     resolvedTheme === "dark" ? "logo-dark.png" : "logo-light.png"
   }`;
 
+  // Current user
+  const _me = React.useCallback(
+    async ({ signal }: { signal?: AbortSignal }) => {
+      return await ThunderSDK.me.get({ signal });
+    },
+    [],
+  );
+  const { data: me } = use(_me);
+
+  const [unreadCount, setUnreadCount] = React.useState(0);
+  const triggersTenant = import.meta.env.VITE_TRIGGERS_TENANT_ID;
+  const triggersBaseUrl = import.meta.env.VITE_TRIGGERS_BASE_URL;
+  const unreadCountInterval = import.meta.env.VITE_UNREAD_COUNT_INTERVAL;
+
+  const refreshUnread = React.useCallback(() => {
+    if (!me?._id || !triggersTenant || !triggersBaseUrl) return;
+
+    fetchUnreadCount(triggersBaseUrl, triggersTenant, me._id)
+      .then((count) => setUnreadCount(count))
+      .catch(() => {
+        // silent fail
+      });
+  }, [me?._id, triggersTenant, triggersBaseUrl]);
+
+  // Instant counter decrement function at the layout level
+  const decrementUnread = React.useCallback(() => {
+    setUnreadCount((prev) => Math.max(0, prev - 1));
+  }, []);
+
+  React.useEffect(() => {
+    refreshUnread();
+
+    const intervalId = setInterval(() => {
+      refreshUnread();
+    }, unreadCountInterval);
+
+    return () => clearInterval(intervalId);
+  }, [refreshUnread, unreadCountInterval]);
+
   return (
     <div className="flex h-svh w-full flex-col bg-background">
       <header
@@ -49,7 +91,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         )}
       >
         <Container className="relative flex h-14 items-center justify-between">
-          {/* leading — back on sub-pages, spacer on home */}
+          {/* leading */}
           {isHome ? <span className="size-9" /> : (
             <Button
               variant="ghost"
@@ -70,18 +112,27 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <img src={logoSrc} alt={t("Doze")} className="h-7 w-auto" />
           </Link>
 
-          {/* trailing — settings (hidden while already on settings) */}
-          {activeParent === "settings" ? <span className="size-9" /> : (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() =>
-                navigate(`/${tenantId}/settings`, { viewTransition: true })}
-              aria-label={t("Settings")}
-            >
-              <IconSettings className="size-5" />
-            </Button>
-          )}
+          <div className="flex items-center gap-1">
+            {activeParent === "settings" ? <span className="size-9" /> : (
+            <NotificationSidebar
+              userId={me?._id}
+              unreadCount={unreadCount}
+              onRefreshUnread={refreshUnread}
+              onItemMarkedRead={decrementUnread}
+            />
+            )}
+            {activeParent === "settings" ? <span className="size-9" /> : (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() =>
+                  navigate(`/${tenantId}/settings`, { viewTransition: true })}
+                aria-label={t("Settings")}
+              >
+                <IconSettings className="size-5" />
+              </Button>
+            )}
+          </div>
         </Container>
 
         {subNavItems?.length
@@ -100,8 +151,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         {children}
       </main>
 
-      <BottomTabs variant="floating" />
-      {/* change to "default" for the full-width bar */}
+      <BottomTabs variant="floating" unreadCount={unreadCount} />
     </div>
   );
 }
