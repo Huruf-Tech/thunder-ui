@@ -33,6 +33,7 @@ import {
   TableUpload,
   urlsFromFiles,
 } from "@/core/custom/TableUpload"
+import { MongoFilters } from "@/core/custom/MongoFilters"
 
 export type TRenderInputProps = {
   name: string
@@ -113,6 +114,30 @@ export const renderField = ({
   t: TFunction
 }) => {
   const pattern = field.pattern ? new RegExp(field.pattern) : undefined
+
+  if (
+    field.type === "text" &&
+    field.fieldHint === "filters" &&
+    field.filterSchema
+  ) {
+    return (
+      <Controller
+        name={name}
+        control={control}
+        rules={{
+          required: !field.optional && t("This field is required!"),
+          pattern,
+        }}
+        render={(def) => (
+          <MongoFilters
+            schema={field.filterSchema!}
+            filters={def.field.value}
+            onChange={def.field.onChange}
+          />
+        )}
+      />
+    )
+  }
 
   if (field.type === "text" && field.fieldHint === "markdown") {
     return (

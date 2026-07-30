@@ -1,46 +1,49 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { hash } from "ohash";
+import type { TFilters } from "thunder-sdk/types";
+
 export type TServerValueTypes =
   | "string"
   | "number"
   | "boolean"
   | "date"
   | "regex"
-  | "objectId"
+  | "objectId";
 
 export type TFilterInput = Record<
   string,
   {
-    value: any
-    operator: string
+    value: any;
+    operator: string;
   }
->
+>;
 
 export const valueWithType = (
   type: TServerValueTypes,
   value: any,
   options?: {
-    regexFlags?: string
-  }
+    regexFlags?: string;
+  },
 ) => {
   return {
     type,
     value: `${value}`,
     options,
-  }
-}
+  };
+};
 
-const RANGE_OPERATORS = new Set(["$bt", "$nbt"])
-const REGEX_OPERATORS = new Set(["$regex", "$nregex"])
-const ARRAY_OPERATORS = new Set(["$in", "$nin", "$all"])
+const RANGE_OPERATORS = new Set(["$bt", "$nbt"]);
+const REGEX_OPERATORS = new Set(["$regex", "$nregex"]);
+const ARRAY_OPERATORS = new Set(["$in", "$nin", "$all"]);
 
 const normalizeValue = (value: any, operator: string) => {
-  if (!Array.isArray(value)) return value
+  if (!Array.isArray(value)) return value;
 
   /**
    * Keep arrays for real array/range operators.
    */
   if (RANGE_OPERATORS.has(operator) || ARRAY_OPERATORS.has(operator)) {
-    return value
+    return value;
   }
 
   /**
@@ -53,19 +56,19 @@ const normalizeValue = (value: any, operator: string) => {
    * So we convert it to:
    * { value: 18, operator: "$gte" }
    */
-  return value[0]
-}
+  return value[0];
+};
 
 const inferValueType = (value: any): TServerValueTypes => {
-  if (value instanceof Date) return "date"
+  if (value instanceof Date) return "date";
 
-  const type = typeof value
+  const type = typeof value;
 
-  if (type === "number") return "number"
-  if (type === "boolean") return "boolean"
+  if (type === "number") return "number";
+  if (type === "boolean") return "boolean";
 
-  return "string"
-}
+  return "string";
+};
 
 const isEmptyValue = (value: any) => {
   return (
@@ -73,13 +76,13 @@ const isEmptyValue = (value: any) => {
     value === null ||
     value === "" ||
     (Array.isArray(value) && value.length === 0)
-  )
-}
+  );
+};
 
 export const filterToMongo = (
   filter: TFilterInput,
   options?: {
-    regexFlags?: string
+    regexFlags?: string;
 
     /**
      * Use this when you know some fields are dates/objectIds/etc.
@@ -90,20 +93,21 @@ export const filterToMongo = (
     typeResolver?: (
       key: string,
       value: any,
-      operator: string
-    ) => TServerValueTypes | undefined
-  }
-) => {
-  const mongoFilter: Record<string, any> = {}
+      operator: string,
+    ) => TServerValueTypes | undefined;
+    revertMap?: Map<string, TFilterInput>;
+  },
+): TFilters => {
+  const mongoFilter: Record<string, any> = {};
 
   for (const key in filter) {
-    const condition = filter[key]
-    if (!condition) continue
+    const condition = filter[key];
+    if (!condition) continue;
 
-    const { operator } = condition
-    const value = normalizeValue(condition.value, operator)
+    const { operator } = condition;
+    const value = normalizeValue(condition.value, operator);
 
-    if (isEmptyValue(value)) continue
+    if (isEmptyValue(value)) continue;
 
     /**
      * Between / not between
@@ -112,25 +116,25 @@ export const filterToMongo = (
      * $nbt => not between
      */
     if (RANGE_OPERATORS.has(operator)) {
-      if (!Array.isArray(value) || value.length < 2) continue
+      if (!Array.isArray(value) || value.length < 2) continue;
 
-      const from = value[0]
-      const to = value[1]
+      const from = value[0];
+      const to = value[1];
 
-      if (isEmptyValue(from) || isEmptyValue(to)) continue
+      if (isEmptyValue(from) || isEmptyValue(to)) continue;
 
-      const type =
-        options?.typeResolver?.(key, from, operator) ?? inferValueType(from)
+      const type = options?.typeResolver?.(key, from, operator) ??
+        inferValueType(from);
 
       const rangeQuery = {
         $gte: valueWithType(type, from),
         $lte: valueWithType(type, to),
-      }
+      };
 
       if (operator === "$bt") {
-        mongoFilter[key] = rangeQuery
+        mongoFilter[key] = rangeQuery;
       } else {
-        mongoFilter.$or ??= []
+        mongoFilter.$or ??= [];
 
         mongoFilter.$or.push(
           {
@@ -142,11 +146,11 @@ export const filterToMongo = (
             [key]: {
               $gt: valueWithType(type, to),
             },
-          }
-        )
+          },
+        );
       }
 
-      continue
+      continue;
     }
 
     /**
@@ -155,19 +159,18 @@ export const filterToMongo = (
      * $in, $nin, $all
      */
     if (ARRAY_OPERATORS.has(operator)) {
-      const values = Array.isArray(value) ? value : [value]
+      const values = Array.isArray(value) ? value : [value];
 
-      if (values.length === 0) continue
+      if (values.length === 0) continue;
 
-      const type =
-        options?.typeResolver?.(key, values[0], operator) ??
-        inferValueType(values[0])
+      const type = options?.typeResolver?.(key, values[0], operator) ??
+        inferValueType(values[0]);
 
       mongoFilter[key] = {
         [operator]: values.map((item) => valueWithType(type, item)),
-      }
+      };
 
-      continue
+      continue;
     }
 
     /**
@@ -178,21 +181,21 @@ export const filterToMongo = (
     if (REGEX_OPERATORS.has(operator)) {
       const queryValue = valueWithType("regex", value, {
         regexFlags: options?.regexFlags ?? "i",
-      })
+      });
 
       if (operator === "$regex") {
         mongoFilter[key] = {
           $regex: queryValue,
-        }
+        };
       } else {
         mongoFilter[key] = {
           $not: {
             $regex: queryValue,
           },
-        }
+        };
       }
 
-      continue
+      continue;
     }
 
     /**
@@ -200,13 +203,17 @@ export const filterToMongo = (
      *
      * $eq, $ne, $gte, $lte, etc.
      */
-    const type =
-      options?.typeResolver?.(key, value, operator) ?? inferValueType(value)
+    const type = options?.typeResolver?.(key, value, operator) ??
+      inferValueType(value);
 
     mongoFilter[key] = {
       [operator]: valueWithType(type, value),
-    }
+    };
   }
 
-  return mongoFilter
-}
+  if (options?.revertMap instanceof Map) {
+    options?.revertMap.set(hash(mongoFilter), filter);
+  }
+
+  return mongoFilter;
+};

@@ -64,8 +64,12 @@ import { useTranslation } from "react-i18next"
 import i18next from "i18next"
 import { Pagination } from "@/components/pagination"
 import { usePagination } from "@/hooks/use-pagination"
+import { CardSelectAll } from "../custom/CardSelectAll"
 
-const columnFromModuleMetadata = async (metadata: any, resolveRef = false) => {
+export const columnFromModuleMetadata = async (
+  metadata: any,
+  resolveRef = false
+) => {
   const fields = await fieldsFromModuleMetadata(metadata, {
     type: "output",
     resolveRef,
@@ -77,7 +81,7 @@ const columnFromModuleMetadata = async (metadata: any, resolveRef = false) => {
 const prepareColumns = (
   fields: TField[],
   group?: string,
-  t?: any,
+  t?: any
 ): ColumnDef<unknown, any>[] =>
   fields
     .filter((field) => field.type !== "hidden")
@@ -106,14 +110,13 @@ const prepareColumns = (
                         getValue(),
                       ]
                         .filter(Boolean)
-                        .join("/"),
+                        .join("/")
                     ).toString()}
                   >
                     {getValue()}
                   </Link>
                 }
-              >
-              </Button>
+              ></Button>
             )
           }
 
@@ -144,29 +147,27 @@ const prepareColumns = (
           }
 
           if (typeof value === "object") {
-            return Object.keys(value ?? {}).length === 0
-              ? (
-                t("N/A")
-              )
-              : (
-                <Popover>
-                  <PopoverTrigger
-                    render={
-                      <button>
-                        <Badge>
-                          {t("View")}{" "}
-                          {field.label ? t(field.label) : t(field.name!)}
-                        </Badge>
-                      </button>
-                    }
-                  />
-                  <PopoverContent>
-                    <ScrollArea>
-                      <pre>{JSON.stringify(value, null, 2)}</pre>
-                    </ScrollArea>
-                  </PopoverContent>
-                </Popover>
-              )
+            return Object.keys(value ?? {}).length === 0 ? (
+              t("N/A")
+            ) : (
+              <Popover>
+                <PopoverTrigger
+                  render={
+                    <button>
+                      <Badge>
+                        {t("View")}{" "}
+                        {field.label ? t(field.label) : t(field.name!)}
+                      </Badge>
+                    </button>
+                  }
+                />
+                <PopoverContent>
+                  <ScrollArea>
+                    <pre>{JSON.stringify(value, null, 2)}</pre>
+                  </ScrollArea>
+                </PopoverContent>
+              </Popover>
+            )
           }
 
           return value ?? t("N/A")
@@ -184,9 +185,8 @@ export function ListPage({ group, name }: IListPageProps) {
   const navigate = useNavigate()
 
   const [fetchCount, setFetchCount] = React.useState(0)
-  const [fetchController, setFetchController] = React.useState<
-    AbortController | null
-  >(null)
+  const [fetchController, setFetchController] =
+    React.useState<AbortController | null>(null)
 
   const [filters, setFilters] = React.useState<TFilters>()
   const [subFilters, setSubFilters] = React.useState<TFilterValue>()
@@ -206,28 +206,28 @@ export function ListPage({ group, name }: IListPageProps) {
       filters: filters,
       subFilters: subFilters
         ? filterToMongo(subFilters, {
-          typeResolver: (key) => {
-            const field = fields.find((v) => v.name === key)
+            typeResolver: (key) => {
+              const field = fields.find((v) => v.name === key)
 
-            return field?.ref ? "objectId" : undefined
-          },
-        })
+              return field?.ref ? "objectId" : undefined
+            },
+          })
         : undefined,
       ...(isCard
         ? {
-          offset: page * pageSize,
-          limit: pageSize,
-        }
+            offset: page * pageSize,
+            limit: pageSize,
+          }
         : {}),
       project: Object.keys(project).length ? project : undefined,
       sort: Object.keys(sort).length ? sort : undefined,
     }),
-    [filters, subFilters, isCard, project, sort, page],
+    [filters, subFilters, isCard, project, sort, page]
   )
 
   const countQuery = React.useMemo(
     () => ({ filters: query.filters, subFilters: query.subFilters }),
-    [query],
+    [query]
   )
 
   const countQueryHash = React.useMemo(() => hash(countQuery), [countQuery])
@@ -239,7 +239,7 @@ export function ListPage({ group, name }: IListPageProps) {
         signal,
         query: countQuery,
       })) as { count: number },
-    { cacheTTL: parseInt(import.meta.env.VITE_DEFAULT_CACHE_TTL ?? "1") },
+    { cacheTTL: parseInt(import.meta.env.VITE_DEFAULT_CACHE_TTL ?? "1") }
   )
 
   const {
@@ -260,7 +260,7 @@ export function ListPage({ group, name }: IListPageProps) {
         signal,
         query,
       })) as { results: unknown[] },
-    { cacheTTL: parseInt(import.meta.env.VITE_DEFAULT_CACHE_TTL ?? "1") },
+    { cacheTTL: parseInt(import.meta.env.VITE_DEFAULT_CACHE_TTL ?? "1") }
   )
 
   const {
@@ -288,7 +288,7 @@ export function ListPage({ group, name }: IListPageProps) {
 
       return controller
     },
-    [],
+    []
   )
 
   React.useEffect(() => {
@@ -300,7 +300,7 @@ export function ListPage({ group, name }: IListPageProps) {
 
   const allowCreate = React.useMemo(
     () => ThunderSDK.isPermitted(ThunderSDK.getModule(name).create),
-    [name],
+    [name]
   )
 
   const metadata = React.useMemo(() => ThunderSDK.getMetadata(name), [name])
@@ -314,8 +314,10 @@ export function ListPage({ group, name }: IListPageProps) {
             id: "select",
             header: ({ table }) => (
               <Checkbox
-                checked={table.getIsAllPageRowsSelected() ||
-                  table.getIsSomePageRowsSelected()}
+                checked={
+                  table.getIsAllPageRowsSelected() ||
+                  table.getIsSomePageRowsSelected()
+                }
                 onCheckedChange={(value) => {
                   table.toggleAllPageRowsSelected(!!value)
                 }}
@@ -345,14 +347,14 @@ export function ListPage({ group, name }: IListPageProps) {
         getCoreRowModel: getCoreRowModel(),
         enableRowSelection: true,
       }),
-      [getData, fields, group, t],
-    ),
+      [getData, fields, group, t]
+    )
   )
 
   const selectedRows = table.getFilteredSelectedRowModel().rows
 
   React.useEffect(() => {
-    (async () => {
+    ;(async () => {
       setFields(await columnFromModuleMetadata(metadata))
       setFields(await columnFromModuleMetadata(metadata, true))
     })()
@@ -360,7 +362,7 @@ export function ListPage({ group, name }: IListPageProps) {
 
   const totalPages = React.useMemo(
     () => Math.ceil((countData?.count ?? 0) / pageSize),
-    [countData, pageSize],
+    [countData, pageSize]
   )
 
   return (
@@ -383,195 +385,188 @@ export function ListPage({ group, name }: IListPageProps) {
             </Container>
           )}
           <Container className="flex flex-wrap-reverse items-center justify-between gap-3 lg:flex-nowrap">
+            {/* Render Card Select All Badge only when in Card View */}
+            {isCard && (
+              <CardSelectAll
+                checked={
+                  table.getIsAllPageRowsSelected()
+                    ? true
+                    : table.getIsSomePageRowsSelected()
+                      ? "indeterminate"
+                      : false
+                }
+                selectedCount={selectedRows.length}
+                totalCount={getData?.results?.length ?? 0}
+                onChange={(checked) => {
+                  table.toggleAllPageRowsSelected(checked)
+                }}
+              />
+            )}
+
             <Filters
               fields={fields}
               filters={subFilters}
               onChange={setSubFilters}
-              isCardView={isCard}
-              selectAllChecked={table.getIsAllPageRowsSelected()
-                ? true
-                : table.getIsSomePageRowsSelected()
-                ? "indeterminate"
-                : false}
-              selectedCount={selectedRows.length}
-              totalCount={getData?.results?.length ?? 0}
-              onSelectAllChange={(checked) => {
-                table.toggleAllPageRowsSelected(checked)
-              }}
             />
 
             <div className="flex flex-1 shrink-0 grow items-center justify-end gap-3">
-              {isLoading
-                ? (
-                  <>
-                    <Skeleton className="h-9 w-18" />
-                    <Skeleton className="h-9 w-18" />
-                  </>
-                )
-                : (
-                  <>
-                    {getData?.results.length && !isCard
-                      ? (
-                        <DropdownMenu>
-                          <DropdownMenuTrigger
-                            render={
-                              <Button variant="outline" size="icon">
-                                <IconTableColumn />
-                              </Button>
-                            }
-                          >
-                          </DropdownMenuTrigger>
+              {isLoading ? (
+                <>
+                  <Skeleton className="h-9 w-18" />
+                  <Skeleton className="h-9 w-18" />
+                </>
+              ) : (
+                <>
+                  {getData?.results.length && !isCard ? (
+                    <DropdownMenu>
+                      <DropdownMenuTrigger
+                        render={
+                          <Button variant="outline" size="icon">
+                            <IconTableColumn />
+                          </Button>
+                        }
+                      ></DropdownMenuTrigger>
 
-                          <DropdownMenuContent
-                            align="end"
-                            className="no-scrollbar max-h-100 overflow-auto"
-                          >
-                            <DropdownMenuCheckboxItem
-                              checked={table.getIsAllColumnsVisible()}
-                              onCheckedChange={(value) =>
-                                table.toggleAllColumnsVisible(!!value)}
-                            >
-                              {t("Select all")}
-                            </DropdownMenuCheckboxItem>
-                            {table
-                              .getAllColumns()
-                              .filter((col) => col.getCanHide())
-                              .map((column) => {
-                                return (
-                                  <DropdownMenuCheckboxItem
-                                    key={column.id}
-                                    checked={column.getIsVisible()}
-                                    onCheckedChange={(value) =>
-                                      column.toggleVisibility(!!value)}
-                                  >
-                                    <span className="line-clamp-1 truncate">
-                                      {column.columnDef.header as string}
-                                    </span>
-                                  </DropdownMenuCheckboxItem>
-                                )
-                              })}
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      )
-                      : null}
-                    {allowCreate && (
-                      <Button onClick={() => navigate("form")}>
-                        {t("Create")}
-                      </Button>
-                    )}
-                    {!!Cards && (
-                      <ToggleGroup
-                        value={view}
-                        onValueChange={(view) => {
-                          setView(view)
-
-                          if (view === "table") {
-                            setFetchCount(0)
-                            setFetchController(null)
-                            setProject({})
-                            setSort({})
-                          }
-                        }}
+                      <DropdownMenuContent
+                        align="end"
+                        className="no-scrollbar max-h-100 overflow-auto"
                       >
-                        <ToggleGroupItem value="cards" aria-label="Cards view">
-                          <IconLayoutGrid className="size-4" />
-                        </ToggleGroupItem>
-                        <ToggleGroupItem value="table" aria-label="Table view">
-                          <IconTable className="size-4" />
-                        </ToggleGroupItem>
-                      </ToggleGroup>
-                    )}
-                  </>
-                )}
+                        <DropdownMenuCheckboxItem
+                          checked={table.getIsAllColumnsVisible()}
+                          onCheckedChange={(value) =>
+                            table.toggleAllColumnsVisible(!!value)
+                          }
+                        >
+                          {t("Select all")}
+                        </DropdownMenuCheckboxItem>
+                        {table
+                          .getAllColumns()
+                          .filter((col) => col.getCanHide())
+                          .map((column) => {
+                            return (
+                              <DropdownMenuCheckboxItem
+                                key={column.id}
+                                checked={column.getIsVisible()}
+                                onCheckedChange={(value) =>
+                                  column.toggleVisibility(!!value)
+                                }
+                              >
+                                <span className="line-clamp-1 truncate">
+                                  {column.columnDef.header as string}
+                                </span>
+                              </DropdownMenuCheckboxItem>
+                            )
+                          })}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  ) : null}
+                  {allowCreate && (
+                    <Button onClick={() => navigate("form")}>
+                      {t("Create")}
+                    </Button>
+                  )}
+                  {!!Cards && (
+                    <ToggleGroup
+                      value={view}
+                      onValueChange={(view) => {
+                        setView(view)
+
+                        if (view === "table") {
+                          setFetchCount(0)
+                          setFetchController(null)
+                          setProject({})
+                          setSort({})
+                        }
+                      }}
+                    >
+                      <ToggleGroupItem value="cards" aria-label="Cards view">
+                        <IconLayoutGrid className="size-4" />
+                      </ToggleGroupItem>
+                      <ToggleGroupItem value="table" aria-label="Table view">
+                        <IconTable className="size-4" />
+                      </ToggleGroupItem>
+                    </ToggleGroup>
+                  )}
+                </>
+              )}
             </div>
           </Container>
 
-          {isCard
-            ? (
-              <>
-                <Cards
-                  name={name}
-                  isLoading={isLoading}
-                  isRefetching={isRefetching}
-                  data={getData?.results ?? []}
-                  setFilters={setFilters}
-                  setProject={setProject}
-                  setSort={setSort}
-                  setPage={setPage}
-                  fetcher={fetcher}
-                  selectedIds={selectedRows.map((v) => (v.original as any)._id)}
-                  toggleSelect={(id) => {
-                    const row = table
-                      .getRowModel()
-                      .rows.find((v) => (v.original as any)._id === id)
+          {isCard ? (
+            <>
+              <Cards
+                name={name}
+                isLoading={isLoading}
+                isRefetching={isRefetching}
+                data={getData?.results ?? []}
+                setFilters={setFilters}
+                setProject={setProject}
+                setSort={setSort}
+                setPage={setPage}
+                fetcher={fetcher}
+                selectedIds={selectedRows.map((v) => (v.original as any)._id)}
+                toggleSelect={(id) => {
+                  const row = table
+                    .getRowModel()
+                    .rows.find((v) => (v.original as any)._id === id)
 
-                    if (row) row.toggleSelected()
-                    else table.toggleAllPageRowsSelected()
+                  if (row) row.toggleSelected()
+                  else table.toggleAllPageRowsSelected()
+                }}
+              />
+
+              {countLoading && !countData ? (
+                <div className="flex items-center justify-center">
+                  <Skeleton className="h-9 w-sm" />
+                </div>
+              ) : countData?.count ? (
+                <Pagination
+                  active={page}
+                  limit={pageSize}
+                  total={countData.count ?? 0}
+                  onChange={(page) => {
+                    setPage(page)
                   }}
                 />
+              ) : null}
 
-                {countLoading && !countData
-                  ? (
-                    <div className="flex items-center justify-center">
-                      <Skeleton className="h-9 w-sm" />
-                    </div>
-                  )
-                  : countData?.count
-                  ? (
-                    <Pagination
-                      active={page}
-                      limit={pageSize}
-                      total={countData.count ?? 0}
-                      onChange={(page) => {
-                        setPage(page)
-                      }}
-                    />
-                  )
-                  : null}
+              {isMobileLayout() &&
+                totalPages > 1 &&
+                selectedRows.length > 0 && <div className="h-20"></div>}
+            </>
+          ) : null}
 
-                {isMobileLayout() &&
-                  totalPages > 1 &&
-                  selectedRows.length > 0 && <div className="h-20"></div>}
-              </>
-            )
-            : null}
+          {!isCard ? (
+            <Container className="flex h-full min-h-0 flex-1 flex-col gap-3">
+              {isLoading ? (
+                <TableSkeleton />
+              ) : getData?.results.length === 0 && !isLoading ? (
+                <Empty>
+                  <EmptyHeader>
+                    <EmptyMedia variant="icon" className="bg-destructive/10">
+                      <IconXMark className="text-destructive" />
+                    </EmptyMedia>
+                    <EmptyTitle>{t("No results!")}</EmptyTitle>
+                    <EmptyDescription>
+                      {t("Adjust or clear filters to reveal issues.")}
+                    </EmptyDescription>
+                  </EmptyHeader>
+                </Empty>
+              ) : (
+                <DataTable table={table} />
+              )}
 
-          {!isCard
-            ? (
-              <Container className="flex h-full min-h-0 flex-1 flex-col gap-3">
-                {isLoading
-                  ? <TableSkeleton />
-                  : getData?.results.length === 0 && !isLoading
-                  ? (
-                    <Empty>
-                      <EmptyHeader>
-                        <EmptyMedia
-                          variant="icon"
-                          className="bg-destructive/10"
-                        >
-                          <IconXMark className="text-destructive" />
-                        </EmptyMedia>
-                        <EmptyTitle>{t("No results!")}</EmptyTitle>
-                        <EmptyDescription>
-                          {t("Adjust or clear filters to reveal issues.")}
-                        </EmptyDescription>
-                      </EmptyHeader>
-                    </Empty>
-                  )
-                  : <DataTable table={table} />}
-
-                {isMobileLayout() && selectedRows.length > 0 && (
-                  <div className="h-20"></div>
-                )}
-              </Container>
-            )
-            : null}
+              {isMobileLayout() && selectedRows.length > 0 && (
+                <div className="h-20"></div>
+              )}
+            </Container>
+          ) : null}
         </div>
 
         <ActionBar
           containerClassName={cn(
             "fixed inset-x-3 z-20 mx-auto max-w-md shadow-sm",
-            isMobileLayout() ? "bottom-21" : "bottom-4 sm:bottom-12",
+            isMobileLayout() ? "bottom-21" : "bottom-4 sm:bottom-12"
           )}
           data-open={!!selectedRows.length}
         >
@@ -588,10 +583,10 @@ export function ListPage({ group, name }: IListPageProps) {
                   variant="outline"
                   onClick={() => {
                     const row = selectedRows.map(
-                      (row) => row.original,
+                      (row) => row.original
                     )[0] as any
-                    const fallbackName = row.name || row.title || row.label ||
-                      ""
+                    const fallbackName =
+                      row.name || row.title || row.label || ""
 
                     navigate(`form/${row._id}`, {
                       state: { name: fallbackName },

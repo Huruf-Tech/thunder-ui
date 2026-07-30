@@ -5,7 +5,6 @@ import type { TField } from "@/core/lib/jsonSchemaToFields"
 import { FilterSelector } from "./components/filter-selector"
 import { ActiveFilters } from "./components/active-filters"
 import { FilterActions } from "./components/filter-actions"
-import { CardSelectAll } from "./components/card-select-all"
 import {
   IconCalendar,
   IconCircleDashed,
@@ -16,8 +15,9 @@ import {
   IconSquareCheck,
   type TablerIcon,
 } from "@tabler/icons-react"
+import { cn } from "@/lib/utils"
 
-export type TValue = { value: any ; operator: string }
+export type TValue = { value: any; operator: string }
 export type TFilterValue = Record<string, TValue>
 
 export type TFilter = {
@@ -25,13 +25,7 @@ export type TFilter = {
   fields: TField[]
   onChange: (value?: TFilterValue) => void
   children?: React.ReactNode
-
-  // Card View Selection Props
-  isCardView?: boolean
-  selectAllChecked?: boolean | "indeterminate"
-  selectedCount?: number
-  totalCount?: number
-  onSelectAllChange?: (checked: boolean) => void
+  multiLiner?: boolean
 }
 
 export function filterIcon(field: TField): TablerIcon {
@@ -54,13 +48,11 @@ export function filterIcon(field: TField): TablerIcon {
   }
 }
 
-const FiltersContext = React.createContext<
-  {
-    filters?: TFilterValue
-    fields: TField[]
-    onChange: (value?: TFilterValue) => void
-  } | null
->(null)
+const FiltersContext = React.createContext<{
+  fields: TField[]
+  filters?: TFilterValue
+  onChange: (value?: TFilterValue) => void
+} | null>(null)
 
 export function useFilters() {
   const context = React.useContext(FiltersContext)
@@ -72,36 +64,27 @@ export function useFilters() {
   return context
 }
 
-export function Filters({
-  filters,
-  fields,
-  onChange,
-  isCardView,
-  selectAllChecked,
-  selectedCount,
-  totalCount,
-  onSelectAllChange,
-}: TFilter) {
+export function Filters({ filters, fields, onChange, multiLiner }: TFilter) {
   return (
     <FiltersContext.Provider value={{ filters, fields, onChange }}>
-      <div className="flex min-w-0 grow items-center justify-between gap-2">
-        <div className="flex min-w-0 flex-1 items-center gap-2">
-          {/* Render Card Select All Badge only when in Card View */}
-          {isCardView && (
-            <CardSelectAll
-              checked={selectAllChecked}
-              selectedCount={selectedCount}
-              totalCount={totalCount}
-              onChange={onSelectAllChange}
+      <div className="flex min-w-0 grow items-center gap-2">
+        <div
+          className={multiLiner ? "flex flex-col gap-2" : "flex min-w-0 flex-1 items-center gap-2"}
+        >
+          <div className="flex min-w-0 items-center gap-2">
+            <FilterSelector />
+            <FilterActions
+              hasFilters={!!filters}
+              onClick={() => onChange(undefined)}
             />
-          )}
-
-          <FilterSelector />
-          <FilterActions
-            hasFilters={!!filters}
-            onClick={() => onChange(undefined)}
-          />
-          <div className="no-scrollbar flex min-w-0 flex-1 items-center gap-2 overflow-x-auto scroll-mask-x">
+          </div>
+          <div
+            className={
+              multiLiner
+                ? "flex flex-col gap-2"
+                : "no-scrollbar flex min-w-0 flex-1 items-center gap-2 overflow-x-auto scroll-mask-x"
+            }
+          >
             <ActiveFilters fields={fields} />
           </div>
         </div>
