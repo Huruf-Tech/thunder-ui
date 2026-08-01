@@ -5,7 +5,6 @@ import { Progress } from "./ui/progress"
 import React from "react"
 import { cn } from "@/lib/utils"
 import { Preferences } from "@capacitor/preferences"
-import { useAuth } from "@/core/context/AuthProvider"
 
 const Screens = [
   {
@@ -26,7 +25,6 @@ const Screens = [
 ]
 
 export function Onboarding() {
-  const auth = useAuth()
   const [open, setOpen] = React.useState(false)
   const [current, setCurrent] = React.useState(0)
 
@@ -49,7 +47,7 @@ export function Onboarding() {
     <Dialog open={open}>
       <DialogContent
         showCloseButton={false}
-        className="h-full max-w-full rounded-none border-none sm:h-auto sm:max-w-md sm:rounded-3xl bg-linear-0 from-primary dark:to-black to-white to-20%"
+        className="h-full max-w-full rounded-none border-none bg-linear-0 from-primary to-white to-20% sm:h-auto sm:max-w-md sm:rounded-3xl dark:to-black"
       >
         <div className="flex flex-col justify-between gap-5">
           <div className="flex flex-col gap-3">
@@ -137,7 +135,7 @@ export function Onboarding() {
                           value: "true",
                         }).catch(console.error)
 
-                        await auth.userManager.signinRedirect()
+                        setOpen(false)
                       }}
                     >
                       Get Started
