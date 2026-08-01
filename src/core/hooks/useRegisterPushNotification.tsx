@@ -1,31 +1,26 @@
-import { Capacitor } from "@capacitor/core";
-import { PushNotifications } from "@capacitor/push-notifications";
+import { PushNotifications } from "@capacitor/push-notifications"
 
 export const useRegisterPushNotification = () => {
-	const isWeb = Capacitor.getPlatform() === "web";
+  const registerPushNotification = async () => {
+    try {
+      let permStatus = await PushNotifications.checkPermissions()
 
-	const registerPushNotification = async () => {
-		if (isWeb) return;
+      if (permStatus.receive === "prompt") {
+        permStatus = await PushNotifications.requestPermissions()
+      }
 
-		try {
-			let permStatus = await PushNotifications.checkPermissions();
+      if (permStatus.receive !== "granted") {
+        // You might want to handle this more gracefully than a throw
+        console.warn("User denied push permissions")
+        return
+      }
 
-			if (permStatus.receive === "prompt") {
-				permStatus = await PushNotifications.requestPermissions();
-			}
+      await PushNotifications.register()
+      console.log("Push registration successful")
+    } catch (error) {
+      console.error("Push registration failed", error)
+    }
+  }
 
-			if (permStatus.receive !== "granted") {
-				// You might want to handle this more gracefully than a throw
-				console.warn("User denied push permissions");
-				return;
-			}
-
-			await PushNotifications.register();
-			console.log("Push registration successful");
-		} catch (error) {
-			console.error("Push registration failed", error);
-		}
-	};
-
-	return { registerPushNotification };
-};
+  return { registerPushNotification }
+}

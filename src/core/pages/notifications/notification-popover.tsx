@@ -1,35 +1,45 @@
 import React from "react"
 import { useNavigate } from "react-router"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { cn } from "@/lib/utils"
+import { useTranslation } from "react-i18next"
+import { IconBell, IconCheck, IconInfoCircle } from "@tabler/icons-react"
+import { toast } from "sonner"
+import { ThunderSDK } from "thunder-sdk"
+import { Capacitor } from "@capacitor/core"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
-import { cn } from "@/lib/utils"
-import { useTranslation } from "react-i18next"
 import {
-  IconBell,
-  IconCheck,
-  IconInfoCircle,
-} from "@tabler/icons-react"
-import { toast } from "sonner"
-import { fetchNotifications, fetchUnreadCount, markNotificationAsRead } from "@/core/endpoints/notification"
+  fetchNotifications,
+  fetchUnreadCount,
+  markNotificationAsRead,
+} from "@/core/endpoints/notification"
 import { Card, CardContent } from "@/components/ui/card"
 import type { TNotification } from "@/core/types"
-import { timeAgo, triggersBaseUrl, triggersTenantId, unreadCountInterval } from "@/core/lib/utils"
+import {
+  timeAgo,
+  triggersBaseUrl,
+  triggersTenantId,
+  unreadCountInterval,
+} from "@/core/lib/utils"
 import { SkeletonRepeater } from "@/core/custom/SkeletonRepeater"
 import { Skeleton } from "@/components/ui/skeleton"
 import { PushNotifications } from "@capacitor/push-notifications"
 import { useRegisterPushNotification } from "@/core/hooks/useRegisterPushNotification"
-import { ThunderSDK } from "thunder-sdk"
 
 function NotificationSkeletonCard() {
   return (
     <Card className="p-2 shadow-none">
       <CardContent className="flex w-full items-center gap-2 p-0">
         <Skeleton className="mt-0.5 size-8 rounded-full" />
-        <div className="w-full flex justify-between items-center">
-          <div className="min-w-0 flex-1 flex flex-col gap-2">
+        <div className="flex w-full items-center justify-between">
+          <div className="flex min-w-0 flex-1 flex-col gap-2">
             <Skeleton className="h-3 w-24 rounded sm:w-32" />
             <Skeleton className="h-2.5 w-32 rounded sm:w-40" />
           </div>
@@ -57,31 +67,39 @@ export function NotificationPopover({ userId }: NotificationPopoverProps) {
 
   const [unreadCount, setUnreadCount] = React.useState(0)
 
-  const { registerPushNotification } = useRegisterPushNotification()
+  if (Capacitor.getPlatform() === "web") {
+    const { registerPushNotification } = useRegisterPushNotification()
 
-  React.useEffect(() => {
+    React.useEffect(() => {
+      let listenerHandle: Awaited<
+        ReturnType<typeof PushNotifications.addListener>
+      > | null = null
 
-    let listenerHandle: Awaited<ReturnType<typeof PushNotifications.addListener>> | null = null
+      const setup = async () => {
+        listenerHandle = await PushNotifications.addListener(
+          "registration",
+          async (token) => {
+            console.info("Registration token:", token.value)
+            try {
+              await ThunderSDK.users.addFcmToken({
+                body: { token: token.value },
+              })
+            } catch (err) {
+              console.error("Failed to save FCM token", err)
+            }
+          }
+        )
 
-    const setup = async () => {
-      listenerHandle = await PushNotifications.addListener("registration", async (token) => {
-        console.info("Registration token:", token.value)
-        try {
-          await ThunderSDK.users.addFcmToken({ body: { token: token.value } })
-        } catch (err) {
-          console.error("Failed to save FCM token", err)
-        }
-      })
+        await registerPushNotification()
+      }
 
-      await registerPushNotification()
-    }
+      setup()
 
-    setup()
-
-    return () => {
-      listenerHandle?.remove()
-    }
-  }, [])
+      return () => {
+        listenerHandle?.remove()
+      }
+    }, [])
+  }
 
   const refreshUnreadCount = React.useCallback(() => {
     if (!userId || !triggersTenantId || !triggersBaseUrl) return
@@ -109,14 +127,19 @@ export function NotificationPopover({ userId }: NotificationPopoverProps) {
   */
 
   const markRead = async (id: string) => {
-    if (!triggersTenantId || !userId) return;
+    if (!triggersTenantId || !userId) return
 
     setNotifications((prev) =>
       prev.map((n) => (n._id === id ? { ...n, read: true } : n))
     )
 
     try {
-      await markNotificationAsRead(triggersBaseUrl, triggersTenantId, userId, id)
+      await markNotificationAsRead(
+        triggersBaseUrl,
+        triggersTenantId,
+        userId,
+        id
+      )
       refreshUnreadCount()
     } catch (err) {
       console.error(err)
@@ -152,7 +175,9 @@ export function NotificationPopover({ userId }: NotificationPopoverProps) {
       })
       .catch((err) => {
         if (cancelled) return
-        const message = t(`${err} || ${err?.message}  || ${err?.response?.data?.message}`) || t("Failed to load notifications")
+        const message =
+          t(`${err} || ${err?.message}  || ${err?.response?.data?.message}`) ||
+          t("Failed to load notifications")
         toast.error(message)
       })
       .finally(() => {
@@ -187,7 +212,7 @@ export function NotificationPopover({ userId }: NotificationPopoverProps) {
       <PopoverContent
         align="end"
         sideOffset={8}
-        className="w-90 p-0 sm:w-100 gap-0"
+        className="w-90 gap-0 p-0 sm:w-100"
       >
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3">
@@ -239,7 +264,7 @@ export function NotificationPopover({ userId }: NotificationPopoverProps) {
                   <Card
                     key={n._id}
                     className={cn(
-                      "border-l-[3px] p-2 shadow-none transition-all duration-150 hover:shadow-sm cursor-pointer",
+                      "cursor-pointer border-l-[3px] p-2 shadow-none transition-all duration-150 hover:shadow-sm",
                       !n.read && "bg-primary/3"
                     )}
                     onClick={() => markRead(n._id)}
@@ -252,12 +277,12 @@ export function NotificationPopover({ userId }: NotificationPopoverProps) {
                       >
                         <IconInfoCircle className="size-4" />
                       </span>
-                      <div className="w-full flex justify-between items-center">
-                        <div className="min-w-0 flex-1 flex flex-col gap-1">
+                      <div className="flex w-full items-center justify-between">
+                        <div className="flex min-w-0 flex-1 flex-col gap-1">
                           <div className="flex items-center gap-2">
                             <h6
                               className={cn(
-                                "line-clamp-1 truncate max-w-36 sm:max-w-48",
+                                "line-clamp-1 max-w-36 truncate sm:max-w-48",
                                 !n.read
                                   ? "font-medium text-foreground"
                                   : "text-foreground/80"
@@ -269,7 +294,7 @@ export function NotificationPopover({ userId }: NotificationPopoverProps) {
                               <span className="size-2 shrink-0 rounded-full bg-primary" />
                             )}
                           </div>
-                          <small className="line-clamp-1 truncate text-xs text-muted-foreground w-full max-w-36 sm:max-w-48">
+                          <small className="line-clamp-1 w-full max-w-36 truncate text-xs text-muted-foreground sm:max-w-48">
                             {n.data.body}
                           </small>
                         </div>
@@ -286,7 +311,7 @@ export function NotificationPopover({ userId }: NotificationPopoverProps) {
                             <IconCheck className="me-1 size-3" />
                             {t("Mark as read")}
                           </Button>
-                          <p className="text-[11px] text-muted-foreground/60 text-end p-1">
+                          <p className="p-1 text-end text-[11px] text-muted-foreground/60">
                             {n.createdAt}
                           </p>
                         </div>
