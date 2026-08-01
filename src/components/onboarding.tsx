@@ -5,6 +5,7 @@ import { Progress } from "./ui/progress"
 import React from "react"
 import { cn } from "@/lib/utils"
 import { Preferences } from "@capacitor/preferences"
+import { resolveUrl } from "@/core/lib/utils"
 
 const Screens = [
   {
@@ -85,7 +86,7 @@ export function Onboarding() {
             {Screens.map((screen, idx) => (
               <img
                 key={idx}
-                src={screen.image}
+                src={resolveUrl(screen.image).toString()}
                 alt={screen.title}
                 className={cn(
                   "absolute inset-0 h-full w-full object-contain transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]",

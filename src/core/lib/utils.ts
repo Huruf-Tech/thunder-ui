@@ -234,6 +234,7 @@ export function rgbToHex(oklch: string) {
 export function isMobileLayout() {
   return ["mobile"].includes(import.meta.env.VITE_APP_LAYOUT);
 }
+
 export const loadTailwindCSS = async () => {
   try {
     const baseUrl = import.meta.env.VITE_API_BASE_URL || "";
@@ -260,6 +261,7 @@ export const loadFontsCSS = async () => {
     console.error("Error fetching Font CSS:", error);
   }
 };
+
 export const printWindow = (content: string) => {
   const blob = new Blob([content], {
     type: "text/html",
@@ -271,6 +273,7 @@ export const printWindow = (content: string) => {
   // Open the URL in a new window
   window.open(url, "_blank", "popup=yes");
 };
+
 type HTMLBuilder<T> = (data: T & { content: string }) => Promise<string>;
 
 export const printDocument = async <T>(
