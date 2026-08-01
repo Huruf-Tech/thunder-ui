@@ -67,7 +67,7 @@ export function NotificationPopover({ userId }: NotificationPopoverProps) {
 
   const [unreadCount, setUnreadCount] = React.useState(0)
 
-  if (Capacitor.getPlatform() === "web") {
+  if (Capacitor.getPlatform() !== "web") {
     const { registerPushNotification } = useRegisterPushNotification()
 
     React.useEffect(() => {
