@@ -14,15 +14,13 @@ import "./i18n.ts"
 initThunder().then(() => {
   createRoot(document.getElementById("root")!).render(
     <StrictMode>
-      <ThemeProvider>
-        <DirectionProvider
-          direction={i18next.language === "ar" ? "rtl" : "ltr"}
-        >
+      <DirectionProvider direction={i18next.language === "ar" ? "rtl" : "ltr"}>
+        <ThemeProvider>
           <TooltipProvider>
             <App />
           </TooltipProvider>
-        </DirectionProvider>
-      </ThemeProvider>
+        </ThemeProvider>
+      </DirectionProvider>
     </StrictMode>
   )
 })
