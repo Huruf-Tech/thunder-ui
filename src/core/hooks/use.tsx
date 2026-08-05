@@ -11,6 +11,7 @@ type TRequester<T> = {
 }
 
 type TUseOpts = {
+  disabled?: boolean
   maxRetries?: number
   triggerTarget?: string
   manualTrigger?: boolean
@@ -28,6 +29,15 @@ export function use<T>(
   request?: TRequestCallback<T> | TRequester<T>,
   options?: TUseOpts
 ) {
+  if (options?.disabled) {
+    return {
+      isLoading: false,
+      data: null,
+      error: null,
+      refetch: async () => ({ controller: new AbortController() }),
+    }
+  }
+
   if (!request) request = () => Promise.resolve(null as T)
 
   const _request = typeof request === "function" ? request : request.get
