@@ -132,7 +132,9 @@ export const renderField = ({
           <MongoFilters
             schema={field.filterSchema!}
             filters={def.field.value}
-            onChange={def.field.onChange}
+            onChange={(value) => {
+              def.field.onChange(value ?? null);
+            }}
           />
         )}
       />

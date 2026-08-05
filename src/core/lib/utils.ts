@@ -21,6 +21,7 @@ export function appName() {
 export const handleUpload = async (
   file: File,
   opts?: {
+    folder?: string;
     path?: string | string[];
     filename?: string;
     signal?: AbortSignal;
@@ -47,6 +48,7 @@ export const handleUpload = async (
       opts?.onProgress?.((event.loaded / event.total) * 100),
     // Abort signal to allow cancellation of the upload if needed.
     abortSignal: opts?.signal,
+    folder: opts?.folder ?? (import.meta.env.VITE_UPLOAD_FOLDER || undefined),
   });
 };
 

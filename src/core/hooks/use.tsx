@@ -11,6 +11,7 @@ type TRequester<T> = {
 }
 
 type TUseOpts = {
+  disabled?: boolean
   maxRetries?: number
   triggerTarget?: string
   manualTrigger?: boolean
@@ -75,7 +76,7 @@ export function use<T>(
     options?.triggerTarget && document.getElementById(options.triggerTarget)
 
   React.useEffect(() => {
-    if (options?.manualTrigger) return
+    if (options?.manualTrigger || options?.disabled) return
 
     if (triggerElement) {
       const observer = new IntersectionObserver(
@@ -96,13 +97,13 @@ export function use<T>(
         observer.disconnect()
       }
     }
-  }, [SendRequest, options?.manualTrigger, triggerElement])
+  }, [SendRequest, options?.manualTrigger, options?.disabled, triggerElement])
 
   React.useEffect(() => {
     const controller = new AbortController()
 
     const handleChange = () => {
-      if (options?.manualTrigger) return
+      if (options?.manualTrigger || options?.disabled) return
 
       SendRequest({ signal: controller.signal })
     }
@@ -132,10 +133,11 @@ export function use<T>(
     _onExpire,
     _offExpire,
     options?.manualTrigger,
+    options?.disabled,
   ])
 
   React.useEffect(() => {
-    if (options?.manualTrigger) return
+    if (options?.manualTrigger || options?.disabled) return
 
     const controller = new AbortController()
 
@@ -144,7 +146,7 @@ export function use<T>(
     return () => {
       controller.abort()
     }
-  }, [count, SendRequest, options?.manualTrigger])
+  }, [count, SendRequest, options?.manualTrigger, options?.disabled])
 
   const refetch = React.useCallback(
     async (opts?: { controller: AbortController }) => {
