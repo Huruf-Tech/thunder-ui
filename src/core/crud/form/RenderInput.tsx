@@ -87,13 +87,7 @@ export default function RenderInput({ name, field }: TRenderInputProps) {
           {field.optional ? ` (${t("optional")})` : ""}
         </FieldLabel>
       )}
-      {renderField({
-        id,
-        name,
-        field,
-        control,
-        t,
-      })}
+      <RenderField id={id} name={name} field={field} control={control} t={t} />
       {field.type === "hidden" ? null : (
         <FieldDescription>{field.description}</FieldDescription>
       )}
@@ -102,19 +96,21 @@ export default function RenderInput({ name, field }: TRenderInputProps) {
   )
 }
 
-export const renderField = ({
-  id,
-  name,
-  field,
-  control,
-  t,
-}: {
+export type TRenderFieldProps = {
   id: string
   name: string
   field: TField
   control: Control<any, any, any>
   t: TFunction
-}) => {
+}
+
+export const RenderField = ({
+  id,
+  name,
+  field,
+  control,
+  t,
+}: TRenderFieldProps) => {
   const [query] = useSearchParams()
 
   const defaultValue = !field.ignoreQueryValue
