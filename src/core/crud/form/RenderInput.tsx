@@ -5,6 +5,8 @@ import React from "react"
 import { Controller, useFormContext, type Control } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import type { TFunction } from "i18next"
+import { useSearchParams } from "react-router"
+
 import {
   Field,
   FieldDescription,
@@ -113,6 +115,11 @@ export const renderField = ({
   control: Control<any, any, any>
   t: TFunction
 }) => {
+  const [query] = useSearchParams()
+
+  const defaultValue = !field.ignoreQueryValue
+    ? (query.get(field.queryValue ?? name) ?? undefined)
+    : undefined
   const pattern = field.pattern ? new RegExp(field.pattern) : undefined
 
   if (
@@ -128,12 +135,13 @@ export const renderField = ({
           required: !field.optional && t("This field is required!"),
           pattern,
         }}
+        defaultValue={defaultValue}
         render={(def) => (
           <MongoFilters
             schema={field.filterSchema!}
             filters={def.field.value}
             onChange={(value) => {
-              def.field.onChange(value ?? null);
+              def.field.onChange(value ?? null)
             }}
           />
         )}
@@ -150,6 +158,7 @@ export const renderField = ({
           required: !field.optional && t("This field is required!"),
           pattern,
         }}
+        defaultValue={defaultValue}
         render={(def) => (
           <MarkdownEditorField
             value={def.field.value}
@@ -169,6 +178,7 @@ export const renderField = ({
           required: !field.optional && t("This field is required!"),
           pattern,
         }}
+        defaultValue={defaultValue}
         render={(def) => (
           <AvatarUpload
             id={id}
@@ -207,6 +217,7 @@ export const renderField = ({
           required: !field.optional && t("This field is required!"),
           pattern,
         }}
+        defaultValue={defaultValue}
         render={(def) => {
           return (
             <TableUpload
@@ -252,6 +263,7 @@ export const renderField = ({
           required: !field.optional && t("This field is required!"),
           pattern,
         }}
+        defaultValue={defaultValue}
         render={(def) => (
           <Switch
             id={id}
@@ -271,6 +283,7 @@ export const renderField = ({
           required: !field.optional && t("This field is required!"),
           pattern,
         }}
+        defaultValue={defaultValue}
         render={(def) => (
           <Multiselect
             id={id}
@@ -290,6 +303,7 @@ export const renderField = ({
           required: !field.optional && t("This field is required!"),
           pattern,
         }}
+        defaultValue={defaultValue}
         render={(def) => {
           return (
             <Autocomplete
@@ -313,6 +327,7 @@ export const renderField = ({
           required: !field.optional && t("This field is required!"),
           pattern,
         }}
+        defaultValue={defaultValue}
         render={(def) => (
           <Dropdown
             id={id}
@@ -338,6 +353,7 @@ export const renderField = ({
           required: !field.optional && t("This field is required!"),
           pattern,
         }}
+        defaultValue={defaultValue}
         render={(def) => (
           <PhoneInput
             id={id}
@@ -359,6 +375,7 @@ export const renderField = ({
             required: !field.optional && t("This field is required!"),
             pattern,
           }}
+          defaultValue={defaultValue}
           render={(def) => (
             <Tag
               id={id}
@@ -382,6 +399,7 @@ export const renderField = ({
             required: !field.optional && t("This field is required!"),
             pattern,
           }}
+          defaultValue={defaultValue}
           render={(def) => (
             <Textarea
               id={id}
@@ -407,6 +425,7 @@ export const renderField = ({
             required: !field.optional && t("This field is required!"),
             pattern,
           }}
+          defaultValue={defaultValue}
           render={(def) => (
             <Input
               id={id}
@@ -428,6 +447,7 @@ export const renderField = ({
           required: !field.optional && t("This field is required!"),
           pattern,
         }}
+        defaultValue={defaultValue}
         render={(def) => (
           <Input
             id={id}
@@ -450,6 +470,7 @@ export const renderField = ({
           required: !field.optional && t("This field is required!"),
           pattern,
         }}
+        defaultValue={defaultValue}
         render={(def) => (
           <NumberInput
             id={id}
@@ -474,6 +495,7 @@ export const renderField = ({
         required: !field.optional && t("This field is required!"),
         pattern,
       }}
+      defaultValue={defaultValue}
       render={(def) => (
         <Input
           id={id}

@@ -349,6 +349,8 @@ export type TField = {
   fileType?: string;
   fileSize?: number;
   filterSchema?: string;
+  ignoreQueryValue?: boolean;
+  queryValue?: string;
 };
 
 export class JSONSchemaToFields {
