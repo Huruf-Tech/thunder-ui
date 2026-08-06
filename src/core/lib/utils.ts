@@ -94,11 +94,17 @@ export function resolveUrl(path?: string) {
 }
 
 export function getLocalUrl(path?: string) {
-  return resolveUrl(
-    [ThunderSDK.plugins.essentials.getTenant(), path?.trim().replace(/^\//, "")]
-      .filter(Boolean)
-      .join("/"),
-  );
+  return resolveUrl(getLocalPath(path))
+}
+
+export function getLocalPath(path?: string) {
+  return [
+    "/",
+    ThunderSDK.plugins.essentials.getTenant(),
+    path?.trim().replace(/^\//, ""),
+  ]
+    .filter(Boolean)
+    .join("/")
 }
 
 export function getAuthUrl(search: string = "") {
