@@ -1,4 +1,5 @@
 import React, { type HTMLProps } from "react";
+import { useTranslation } from "react-i18next";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -37,6 +38,7 @@ export const ConfirmationDialog = (
       | undefined;
   },
 ) => {
+  const { t } = useTranslation();
   const sheetRef = React.useRef<DialogRootActions>(null);
   const [value, setValue] = React.useState("");
   const [isConfirming, setIsConfirming] = React.useState(false);
@@ -61,9 +63,9 @@ export const ConfirmationDialog = (
       <SheetTrigger render={props.trigger}></SheetTrigger>
       <SheetContent side="bottom" className="mx-auto mb-2 max-w-sm rounded-2xl">
         <SheetHeader>
-          <SheetTitle className="text-xl">Confirmation</SheetTitle>
+          <SheetTitle className="text-xl">{t("Confirmation")}</SheetTitle>
           <SheetDescription>
-            Are you sure you want to do this action?
+            {t("Are you sure you want to do this action?")}
           </SheetDescription>
         </SheetHeader>
 
@@ -72,16 +74,17 @@ export const ConfirmationDialog = (
             <FieldGroup className="px-5">
               <Field>
                 <FieldLabel>
-                  Type <span className="bg-primary/10">{props.hint}</span>{" "}
-                  to confirm the action.
+                  {t("Type {{hint}} to confirm the action.", {
+                    hint: props.hint,
+                  })}
                 </FieldLabel>
                 <Input
-                  placeholder={"Hint here..."}
+                  placeholder={t("Hint here...")}
                   value={value}
                   onChange={(e) => setValue(e.target.value)}
                 />
                 {value && value !== props.hint && (
-                  <FieldError>please type a correct hint!</FieldError>
+                  <FieldError>{t("please type a correct hint!")}</FieldError>
                 )}
               </Field>
             </FieldGroup>
@@ -93,10 +96,10 @@ export const ConfirmationDialog = (
             disabled={type === "strict" && value !== props.hint || isConfirming}
             onClick={handleConfirm}
           >
-            Confirm
+            {t("Confirm")}
           </Button>
           <Button variant="outline" onClick={() => sheetRef.current!.close()}>
-            Dismiss
+            {t("Dismiss")}
           </Button>
         </SheetFooter>
       </SheetContent>
