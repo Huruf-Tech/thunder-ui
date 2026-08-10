@@ -70,5 +70,9 @@
   "Transfer to {{target}}": "تحويل إلى {{target}}",
   "name": "الاسم",
   "Credit": "دائن",
-"Debit": "مدين"
+  "Debit": "مدين",
+  "Confirmation": "تأكيد",
+  "Are you sure you want to do this action?": "هل أنت متأكد من رغبتك في تنفيذ هذا الإجراء؟",
+  "Type {{hint}} to confirm the action.": "أكتب {{hint}} لتأكيد الإجراء",
+  "please type a correct hint!": "يرجى كتابة تلميح صحيح"
 }
