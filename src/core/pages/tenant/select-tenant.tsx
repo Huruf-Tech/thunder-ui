@@ -201,13 +201,12 @@ export function SelectTenant() {
                           <ItemTitle
                             className="line-clamp-1"
                             title={tenant.name}
-                            onClick={() => navigate(`/${tenant._id}`)}
                           >
                             {tenant.name}
                           </ItemTitle>
                         </ItemContent>
 
-                        <ItemActions>
+                        <ItemActions onClick={(e) => e.stopPropagation()}>
                           <Button
                             variant={"link"}
                             onClick={(e) => {
