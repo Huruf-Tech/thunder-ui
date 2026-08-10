@@ -4,8 +4,6 @@ import {
   PaginationEllipsis,
   PaginationItem,
   PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
 } from "@/components/ui/pagination"
 import {
   Select,
@@ -16,6 +14,8 @@ import {
   SelectTrigger,
 } from "./ui/select"
 import React, { useMemo } from "react"
+import { useTranslation } from "react-i18next"
+import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react"
 
 function calculatePaginationRange(
   active: number,
@@ -25,22 +25,15 @@ function calculatePaginationRange(
   startFrom: 0 | 1
 ): { label: number; value: number }[] {
   if (totalItems <= 0 || itemsPerPage <= 0 || pagesToDisplay <= 0) return []
-
   const totalPages = Math.ceil(totalItems / itemsPerPage)
-
   const maxActive = totalPages - 1
   const safeActive = Math.min(Math.max(active, 0), maxActive)
-
   const visiblePages = Math.min(pagesToDisplay, totalPages)
-
   const groupIndex = Math.floor(safeActive / visiblePages)
-
   const startValue = groupIndex * visiblePages
   const endValue = Math.min(startValue + visiblePages - 1, totalPages - 1)
-
   return Array.from({ length: endValue - startValue + 1 }, (_, i) => {
     const value = startValue + i
-
     return {
       label: value + startFrom,
       value,
@@ -61,6 +54,8 @@ export function Pagination({
   paginationItemsToDisplay?: number
   onChange: (page: number) => void
 }) {
+  const { t, i18n } = useTranslation()
+  const isRtl = i18n.dir() === "rtl"
   const startFrom = 1
   const totalPages = React.useMemo(() => {
     return Array.from({ length: Math.ceil(total / limit) }, (_, i) => ({
@@ -89,12 +84,18 @@ export function Pagination({
   )
 
   return totalPages.length > 1 ? (
-    <_Pagination className="pb-2">
+    <_Pagination dir={isRtl ? "rtl" : "ltr"} className="pb-2">
       <PaginationContent>
         <PaginationItem>
-          <PaginationPrevious
+          <PaginationLink
+            aria-label={t("Go to previous page")}
+            size="default"
+            className="gap-1 px-2.5 sm:ps-2.5"
             onClick={() => handleChange(Math.max(active - 1, 0))}
-          />
+          >
+            {isRtl ? <IconChevronRight /> : <IconChevronLeft />}
+            <span className="hidden sm:block">{t("Previous")}</span>
+          </PaginationLink>
         </PaginationItem>
         {range.map((page) => (
           <PaginationItem key={page.value} value={page.value}>
@@ -127,11 +128,17 @@ export function Pagination({
           </Select>
         </PaginationItem>
         <PaginationItem>
-          <PaginationNext
+          <PaginationLink
+            aria-label={t("Go to next page")}
+            size="default"
+            className="gap-1 px-2.5 sm:pe-2.5"
             onClick={() =>
               handleChange(Math.min(active + 1, totalPages.length - 1))
             }
-          />
+          >
+            <span className="hidden sm:block">{t("Next")}</span>
+            {isRtl ? <IconChevronLeft /> : <IconChevronRight />}
+          </PaginationLink>
         </PaginationItem>
       </PaginationContent>
     </_Pagination>

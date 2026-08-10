@@ -183,6 +183,7 @@ export function SelectTenant() {
                           isFirst ? "rounded-b-lg" : "",
                           isLast ? "rounded-t-lg" : "",
                         )}
+                        onClick={() => navigate(`/${tenant._id}`)}
                       >
                         <ItemMedia variant="default">
                           <Avatar size="lg">
