@@ -123,7 +123,11 @@ export function OverdraftLimitModal({ isOpen, onClose, userId }: OverdraftLimitM
                 disabled={isLoading || tenants.length === 0}
               >
                 <SelectTrigger id="tenant-select" className="w-full bg-background transition-colors hover:bg-accent/50">
-                  <SelectValue placeholder={isLoading ? t("Loading tenants...") : t("Select a tenant")} />
+                  <SelectValue placeholder={isLoading ? t("Loading tenants...") : t("Select a tenant")}>
+                    {selectedTenantId 
+                      ? tenants.find((t: any) => t._id === selectedTenantId)?.name 
+                      : (isLoading ? t("Loading tenants...") : t("Select a tenant"))}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   {tenants.map((tenant: any) => (
