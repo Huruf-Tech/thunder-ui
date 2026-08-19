@@ -16,7 +16,7 @@ import { ViewPage } from "@/core/crud/ViewPage"
 import Overview from "@/pages/overview"
 import { Wallet } from "@/core/pages/wallet"
 import { lists } from "@/overrides/crud/lists"
-import { allowDisplayRoute } from "./lib/utils"
+import { allowDisplayRoute, sortRoutes } from "./lib/utils"
 import { routes as overrideRoutes } from "@/overrides/routes"
 import Notifications from "./pages/notifications"
 
@@ -124,11 +124,11 @@ export const coreRoutes = Object.entries(
   routes.push({
     path: "",
     Component: () => {
-      const indexRoute = routes.filter((route) =>
+      const indexRoute = sortRoutes(routes).filter((route) =>
         allowDisplayRoute(route.display)
       )[0]
 
-      return <Navigate to={indexRoute?.path ?? "notFound"} />
+      return <Navigate replace to={indexRoute?.path ?? "notFound"} />
     },
     display: false,
   })
