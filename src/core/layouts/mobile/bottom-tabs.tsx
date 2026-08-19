@@ -72,6 +72,7 @@ function TabLink({ item, active }: { item: TNav; active: boolean }) {
   const { t } = useTranslation();
   const Icon = item.icon ?? IconAlertCircle;
   const isHashRoute = item.path?.startsWith("#");
+  const ButtonComponent = item.button;
 
   return (
     <Link
@@ -82,7 +83,10 @@ function TabLink({ item, active }: { item: TNav; active: boolean }) {
         active ? "text-primary" : "text-muted-foreground hover:text-foreground",
       )}
     >
-      <Icon className="size-5 shrink-0" />
+      <div className="relative flex items-center justify-center">
+        <Icon className="size-5 shrink-0" />
+        {ButtonComponent && <ButtonComponent />}
+      </div>
       <span className="max-w-full truncate text-[11px] leading-none font-medium">
         {t(item.title)}
       </span>
@@ -117,9 +121,7 @@ export function BottomTabs({
   return (
     <nav className={cn(bottomTabsVariants({ variant }))}>
       <div className="mx-auto flex h-16 w-full max-w-3xl items-stretch">
-        {primary.map((item) => (item.button ?
-          <item.button key={item.title} />
-          :
+        {primary.map((item) => (
           <TabLink
             key={item.title}
             item={item}
