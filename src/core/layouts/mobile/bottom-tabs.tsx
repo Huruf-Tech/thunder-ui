@@ -20,6 +20,7 @@ export type TNav = {
   title: string;
   icon?: TablerIcon;
   path?: string;
+  button?: React.ComponentType
 };
 
 /** Primary route tabs shown before the Cart + "More" tabs (keeps the bar at ≤5). */
@@ -58,6 +59,7 @@ function useNavItems() {
           title: child.name || "Unnamed Route",
           icon: child.icon,
           path: child.path,
+          button: child.button
         });
       }
     }
@@ -115,7 +117,9 @@ export function BottomTabs({
   return (
     <nav className={cn(bottomTabsVariants({ variant }))}>
       <div className="mx-auto flex h-16 w-full max-w-3xl items-stretch">
-        {primary.map((item) => (
+        {primary.map((item) => (item.button ?
+          <item.button key={item.title} />
+          :
           <TabLink
             key={item.title}
             item={item}
