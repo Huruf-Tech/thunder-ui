@@ -119,6 +119,7 @@ export const coreRoutes = Object.entries(
     return overrideRoute
   }
 
+  
   routes = routes ?? []
 
   routes.push({
