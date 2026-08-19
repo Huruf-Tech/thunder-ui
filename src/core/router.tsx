@@ -27,6 +27,7 @@ export type TRouteObject = {
   icon?: TablerIcon
   display?: boolean | (() => boolean)
   children?: TRouteObject[]
+  button?: React.ComponentType
 } & RouteObject
 
 const moduleNames = Array.from(
