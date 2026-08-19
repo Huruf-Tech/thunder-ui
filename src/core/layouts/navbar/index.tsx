@@ -34,7 +34,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import { NavMenu } from "./nav-menu"
-import { appName, getNavRoutes } from "@/core/lib/utils"
+import { getNavRoutes } from "@/core/lib/utils"
 import {
   DropdownMenu,
   DropdownMenuContent,
