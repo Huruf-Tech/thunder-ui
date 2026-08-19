@@ -10,9 +10,6 @@ import { useLayout } from "@/core/layouts/layout-provider"
 import type { TRouteObject } from "@/core/router"
 import { allowDisplayRoute } from "@/core/lib/utils"
 import { cn } from "@/lib/utils"
-// import { useCartCount } from "@/hooks/useCart"
-// import { SheetRef } from "@/components/globalSheet"
-// import { CartSheet } from "@/store/cartsheet/sheet"
 import { MoreSheet } from "./more-sheet"
 import { useTranslation } from "react-i18next"
 
@@ -20,6 +17,7 @@ export type TNav = {
   title: string;
   icon?: TablerIcon;
   path?: string;
+  button?: React.ComponentType
 };
 
 /** Primary route tabs shown before the Cart + "More" tabs (keeps the bar at ≤5). */
@@ -58,6 +56,7 @@ function useNavItems() {
           title: child.name || "Unnamed Route",
           icon: child.icon,
           path: child.path,
+          button: child.button
         });
       }
     }
@@ -70,6 +69,7 @@ function TabLink({ item, active }: { item: TNav; active: boolean }) {
   const { t } = useTranslation();
   const Icon = item.icon ?? IconAlertCircle;
   const isHashRoute = item.path?.startsWith("#");
+  const ButtonComponent = item.button;
 
   return (
     <Link
@@ -80,7 +80,10 @@ function TabLink({ item, active }: { item: TNav; active: boolean }) {
         active ? "text-primary" : "text-muted-foreground hover:text-foreground",
       )}
     >
-      <Icon className="size-5 shrink-0" />
+      <div className="relative flex items-center justify-center">
+        <Icon className="size-5 shrink-0" />
+        {ButtonComponent && <ButtonComponent />}
+      </div>
       <span className="max-w-full truncate text-[11px] leading-none font-medium">
         {t(item.title)}
       </span>
