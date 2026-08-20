@@ -361,7 +361,35 @@ export const RenderField = ({
     )
   }
 
-  if (["text", "number", "url", "email", "phone"].includes(field.type)) {
+  if (field.type === "number" && field.fieldHint === "amount") {
+    return (
+      <Controller
+        name={name}
+        control={control}
+        rules={{
+          required: !field.optional && t("This field is required!"),
+          pattern,
+        }}
+        defaultValue={defaultValue}
+        render={(def) => (
+          <NumberInput
+            id={id}
+            type={field.type}
+            placeholder={field.example ?? field.name}
+            minLength={field.minLength}
+            maxLength={field.maxLength}
+            pattern={field.pattern}
+            value={def.field.value ?? ""}
+            onChange={(e) => def.field.onChange(e.target.valueAsNumber)}
+          />
+        )}
+      />
+    )
+  }
+
+  if (
+    ["text", "number", "url", "email", "phone", "integer"].includes(field.type)
+  ) {
     if (field.multi) {
       return (
         <Controller
@@ -451,32 +479,6 @@ export const RenderField = ({
             placeholder={field.example ?? field.name}
             defaultValue={formatDateForInput(def.field.value)}
             onChange={(e) => def.field.onChange(new Date(e.target.value))}
-          />
-        )}
-      />
-    )
-  }
-
-  if (field.type === "number" && field.fieldHint === "amount") {
-    return (
-      <Controller
-        name={name}
-        control={control}
-        rules={{
-          required: !field.optional && t("This field is required!"),
-          pattern,
-        }}
-        defaultValue={defaultValue}
-        render={(def) => (
-          <NumberInput
-            id={id}
-            type={field.type}
-            placeholder={field.example ?? field.name}
-            minLength={field.minLength}
-            maxLength={field.maxLength}
-            pattern={field.pattern}
-            value={def.field.value ?? ""}
-            onChange={(e) => def.field.onChange(e.target.valueAsNumber)}
           />
         )}
       />
