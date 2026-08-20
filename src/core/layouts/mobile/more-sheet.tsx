@@ -122,25 +122,30 @@ export function MoreSheet({
 
         <div className="flex flex-col gap-1 overflow-y-auto p-3">
           {overflowItems.length > 0 && (
-            <>
+            <React.Fragment>
               {overflowItems.map((item) => {
                 const Icon = item.icon ?? IconAlertCircle
                 const active = !!item.path && item.path === activeParent
+                const ButtonComponent = item.button
 
                 return (
-                  <Button
-                    key={item.title}
-                    variant={active ? "secondary" : "ghost"}
-                    className="justify-start"
-                    onClick={() => handleNavigate(item.path || "#")}
-                  >
-                    <Icon className="size-5 shrink-0" />
-                    <span className="truncate">{t(item.title)}</span>
-                  </Button>
+                  <React.Fragment key={item.title}>
+                    <Button
+                      variant={active ? "secondary" : "ghost"}
+                      className="justify-start"
+                      onClick={() => handleNavigate(item.path || "#")}
+                    >
+                      <div className="relative flex items-center justify-center">
+                        <Icon className="size-5 shrink-0" />
+                        {ButtonComponent && <ButtonComponent />}
+                      </div>
+                      <span className="truncate">{t(item.title)}</span>
+                    </Button>
+                  </React.Fragment>
                 )
               })}
               <Separator className="my-2" />
-            </>
+            </React.Fragment>
           )}
 
           <Button
