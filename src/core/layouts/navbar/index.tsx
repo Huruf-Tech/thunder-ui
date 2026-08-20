@@ -284,12 +284,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
                     <DropdownMenuItem
                       onClick={() => {
                         const authUrl = getAuthUrl()
-
-                        authUrl.searchParams.set(
-                          "returnUri",
-                          window.location.href
-                        )
-
                         window.location.href = authUrl.toString()
                       }}
                     >

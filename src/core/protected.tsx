@@ -190,9 +190,6 @@ function ProtectedWithSession({ children }: { children: React.ReactNode }) {
 
   const gotoAccount = () => {
     const authUrl = getAuthUrl()
-
-    authUrl.searchParams.set("returnUri", window.location.href)
-
     window.location.href = authUrl.toString()
   }
 
