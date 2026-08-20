@@ -298,16 +298,10 @@ export function ListPage({ group, name }: IListPageProps) {
     }
   }, [fetchCount, query])
 
-  const allowCreate = React.useCallback(
-    (type: "create" | "update") => {
-      const path = `/tenant/${group?.toLowerCase().replace(" ", "-")}/${name}/form`
-      return (
-        ThunderSDK.isPermitted(ThunderSDK.getModule(name)[type]) &&
-        matchPath({ path, end: true }, path)
-      )
-    },
-    [name]
-  )
+  const allowForm = React.useMemo(() => {
+    const path = `/tenant/${group?.toLowerCase().replace(" ", "-")}/${name}/form`
+    return matchPath({ path, end: true }, path)
+  }, [name])
 
   const metadata = React.useMemo(() => ThunderSDK.getMetadata(name), [name])
 
@@ -358,6 +352,14 @@ export function ListPage({ group, name }: IListPageProps) {
   )
 
   const selectedRows = table.getFilteredSelectedRowModel().rows
+
+  const canShowActionBar = React.useMemo(
+    () =>
+      [ThunderSDK.getModule(name).del, ThunderSDK.getModule(name).update].some(
+        (fn) => ThunderSDK.isPermitted(fn)
+      ),
+    [name]
+  )
 
   React.useEffect(() => {
     ;(async () => {
@@ -466,11 +468,14 @@ export function ListPage({ group, name }: IListPageProps) {
                       </DropdownMenuContent>
                     </DropdownMenu>
                   ) : null}
-                  {allowCreate("create") && (
-                    <Button onClick={() => navigate("form")}>
-                      {t("Create")}
-                    </Button>
-                  )}
+                  {allowForm &&
+                    ThunderSDK.isPermitted(
+                      ThunderSDK.getModule(name).create
+                    ) && (
+                      <Button onClick={() => navigate("form")}>
+                        {t("Create")}
+                      </Button>
+                    )}
                   {!!Cards && (
                     <ToggleGroup
                       value={view}
@@ -569,79 +574,74 @@ export function ListPage({ group, name }: IListPageProps) {
           ) : null}
         </div>
 
-        {ThunderSDK.isPermitted(ThunderSDK.getModule(name).del) &&
-          allowCreate("update") &&
-          selectedRows.length > 0 && (
-            <ActionBar
-              containerClassName={cn(
-                "fixed inset-x-3 z-20 mx-auto max-w-md shadow-sm",
-                isMobileLayout() ? "bottom-21" : "bottom-4 sm:bottom-12"
-              )}
-              data-open={!!selectedRows.length}
-            >
-              <div className="flex w-full items-center justify-between gap-2 rounded-full border bg-background p-3 dark:bg-black">
-                <p className="text-sm md:ltr:ml-3 md:rtl:mr-3">
-                  {selectedRows.length}{" "}
-                  <span className="font-medium">{t("selected")}</span>
-                </p>
+        <ActionBar
+          containerClassName={cn(
+            "fixed inset-x-3 z-20 mx-auto max-w-md shadow-sm",
+            isMobileLayout() ? "bottom-21" : "bottom-4 sm:bottom-12"
+          )}
+          data-open={!!selectedRows.length && canShowActionBar}
+        >
+          <div className="flex w-full items-center justify-between gap-2 rounded-full border bg-background p-3 dark:bg-black">
+            <p className="text-sm md:ltr:ml-3 md:rtl:mr-3">
+              {selectedRows.length}{" "}
+              <span className="font-medium">{t("selected")}</span>
+            </p>
 
-                <div className="flex items-center gap-2">
-                  {allowCreate("update") && (
-                    <Button
-                      size="icon-sm"
-                      variant="outline"
-                      onClick={() => {
-                        const row = selectedRows.map(
-                          (row) => row.original
-                        )[0] as any
-                        const fallbackName =
-                          row.name || row.title || row.label || ""
-
-                        navigate(`form/${row._id}`, {
-                          state: { name: fallbackName },
-                        })
-                      }}
-                    >
-                      <IconEdit />
-                    </Button>
-                  )}
-
-                  {ThunderSDK.isPermitted(ThunderSDK.getModule(name).del) && (
-                    <ConfirmationDialog
-                      trigger={
-                        <Button size="sm" variant="destructive">
-                          <IconTrash />
-                        </Button>
-                      }
-                      onConfirm={async (dismiss) => {
-                        const ids = selectedRows.map(
-                          (row: any) => row.original._id
-                        )
-                        for (const id of ids) {
-                          await ThunderSDK.getModule(name).del({
-                            params: { id },
-                          })
-                        }
-                        toast.success(t("Deleted successfully."))
-                        table.resetRowSelection()
-                        await get.invalidate()
-                        dismiss()
-                      }}
-                    />
-                  )}
-
+            <div className="flex items-center gap-2">
+              {allowForm &&
+                ThunderSDK.isPermitted(ThunderSDK.getModule(name).update) && (
                   <Button
                     size="icon-sm"
                     variant="outline"
-                    onClick={() => table.resetRowSelection()}
-                    aria-label="Clear selection"
+                    onClick={() => {
+                      const row = selectedRows.map(
+                        (row) => row.original
+                      )[0] as any
+                      const fallbackName =
+                        row.name || row.title || row.label || ""
+
+                      navigate(`form/${row._id}`, {
+                        state: { name: fallbackName },
+                      })
+                    }}
                   >
-                    <IconX />
+                    <IconEdit />
                   </Button>
-                </div>
-              </div>
-            </ActionBar>
-          )}
+                )}
+
+              {ThunderSDK.isPermitted(ThunderSDK.getModule(name).del) && (
+                <ConfirmationDialog
+                  trigger={
+                    <Button size="sm" variant="destructive">
+                      <IconTrash />
+                    </Button>
+                  }
+                  onConfirm={async (dismiss) => {
+                    const ids = selectedRows.map((row: any) => row.original._id)
+                    for (const id of ids) {
+                      await ThunderSDK.getModule(name).del({
+                        params: { id },
+                      })
+                    }
+                    toast.success(t("Deleted successfully."))
+                    table.resetRowSelection()
+                    await get.invalidate()
+                    dismiss()
+                  }}
+                />
+              )}
+
+              <Button
+                size="icon-sm"
+                variant="outline"
+                onClick={() => table.resetRowSelection()}
+                aria-label="Clear selection"
+              >
+                <IconX />
+              </Button>
+            </div>
+          </div>
+        </ActionBar>
       </Refresher>
     </React.Fragment>
   )
