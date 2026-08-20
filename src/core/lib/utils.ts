@@ -9,6 +9,7 @@ import axios from "axios";
 import { toast } from "sonner";
 import { Capacitor } from "@capacitor/core";
 import { format, formatDistanceToNow, isSameDay, subDays } from "date-fns";
+import config from "../../../capacitor.config";
 
 export function appName() {
   return Package.name
@@ -113,10 +114,12 @@ export function getAuthUrl(search: string = "") {
     import.meta.env.VITE_API_BASE_URL || window.location.origin,
   );
 
-  url.searchParams.set(
-    "returnUri",
-    `${window.location.href}`,
-  );
+  let returnUri = `${window.location.href}`;
+  if (Capacitor.isNativePlatform()) {
+    returnUri = `${config.appId}://auth/callback`;
+  }
+
+  url.searchParams.set("returnUri", returnUri);
 
   return url;
 }
