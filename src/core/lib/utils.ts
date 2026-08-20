@@ -99,11 +99,11 @@ export function getLocalUrl(path?: string) {
 
 export function getLocalPath(path?: string) {
   return [
-    "/",
+    "",
     ThunderSDK.plugins.essentials.getTenant(),
     path?.trim().replace(/^\//, ""),
   ]
-    .filter(Boolean)
+    .filter((path) => typeof path === "string")
     .join("/")
 }
 
