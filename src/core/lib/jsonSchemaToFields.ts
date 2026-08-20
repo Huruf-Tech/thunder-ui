@@ -310,6 +310,7 @@ export const FieldTypes = [
   "url",
   "hidden",
   "phone",
+  "integer",
 ] as const;
 
 export type TFieldType = (typeof FieldTypes)[number];
