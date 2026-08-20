@@ -12,7 +12,7 @@ import {
 } from "@tanstack/react-table"
 import { Button } from "@/components/ui/button"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
-import { Link, matchRoutes, useNavigate } from "react-router"
+import { Link, matchPath, useNavigate } from "react-router"
 import { use } from "../hooks/use"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import {
@@ -65,7 +65,6 @@ import i18next from "i18next"
 import { Pagination } from "@/components/pagination"
 import { usePagination } from "@/hooks/use-pagination"
 import { CardSelectAll } from "../custom/CardSelectAll"
-import { useLayout } from "../layouts/layout-provider"
 
 export const columnFromModuleMetadata = async (
   metadata: any,
@@ -184,7 +183,6 @@ export interface IListPageProps {
 export function ListPage({ group, name }: IListPageProps) {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const { router } = useLayout()
 
   const [fetchCount, setFetchCount] = React.useState(0)
   const [fetchController, setFetchController] =
@@ -301,13 +299,14 @@ export function ListPage({ group, name }: IListPageProps) {
   }, [fetchCount, query])
 
   const allowCreate = React.useCallback(
-    (type: "create" | "update") =>
-      ThunderSDK.isPermitted(ThunderSDK.getModule(name)[type]) &&
-      !!matchRoutes(
-        router.routes,
-        `/tenant/${group?.toLowerCase().replace(" ", "-")}/${name}/form`
-      ),
-    [name, router.routes]
+    (type: "create" | "update") => {
+      const path = `/tenant/${group?.toLowerCase().replace(" ", "-")}/${name}/form`
+      return (
+        ThunderSDK.isPermitted(ThunderSDK.getModule(name)[type]) &&
+        matchPath({ path, end: true }, path)
+      )
+    },
+    [name]
   )
 
   const metadata = React.useMemo(() => ThunderSDK.getMetadata(name), [name])
