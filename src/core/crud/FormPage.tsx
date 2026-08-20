@@ -207,7 +207,7 @@ export function FormPage({ name }: IFormPageProps) {
           await expire()
         },
         {
-          matcher: new RegExp(`${name}\\.get`),
+          matcher: new RegExp(name),
         }
       )
 
