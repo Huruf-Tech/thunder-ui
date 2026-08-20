@@ -66,8 +66,8 @@ export function Breadcrumb() {
   const crumbs = parts.slice(0, -1)
 
   return (
-    <_Breadcrumb>
-      <BreadcrumbList>
+    <_Breadcrumb className="min-w-0 max-w-full overflow-x-auto no-scrollbar scroll-mask-x-from-90%">
+      <BreadcrumbList className="flex-nowrap whitespace-nowrap">
         {crumbs.map((crumb, index) => {
           const to = "/" + parts.slice(0, index + 1).join("/")
 

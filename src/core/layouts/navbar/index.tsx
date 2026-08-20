@@ -3,6 +3,7 @@ import { useLayout } from "@/core/layouts/layout-provider"
 import { useTheme } from "@/components/theme-provider"
 import {
   IconArrowsExchange,
+  IconAsterisk,
   IconCheck,
   IconDotsVertical,
   IconEye,
@@ -33,9 +34,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import { NavMenu } from "./nav-menu"
-import {
-  appName, getNavRoutes
-} from "@/core/lib/utils"
+import { getNavRoutes } from "@/core/lib/utils"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -64,13 +63,18 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { ActionSwapText } from "@/core/pages/wallet/action-swap"
 import { NotificationPopover } from "@/core/pages/notifications/notification-popover"
 
-function NavBalance({ visible, onToggle }: { visible: boolean; onToggle: () => void }) {
+function NavBalance({
+  visible,
+  onToggle,
+}: {
+  visible: boolean
+  onToggle: () => void
+}) {
   const walletRequest = React.useMemo(() => getWallets(), [])
   const { data: walletData, isLoading } = use(walletRequest)
 
   const wallet = (walletData?.results ?? [])[0] as
-    | { balance: number; currency: string }
-    | undefined
+    { balance: number; currency: string } | undefined
 
   const balance = wallet?.balance ?? 0
   const currency = wallet?.currency?.toUpperCase() ?? "lyd"
@@ -79,37 +83,40 @@ function NavBalance({ visible, onToggle }: { visible: boolean; onToggle: () => v
     maximumFractionDigits: 2,
   })}`
 
-  const maskedBalance = "∗∗∗∗∗"
-
   return (
-    <div className="flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5">
-      <button
-        type="button"
-        onClick={onToggle}
-        aria-label={visible ? "Hide balance" : "Show balance"}
-        className="text-muted-foreground hover:text-foreground"
-      >
-        {visible ? (
-          <IconEye className="size-4" />
-        ) : (
-          <IconEyeOff className="size-4" />
-        )}
-      </button>
-      <span className="text-sm font-semibold text-foreground flex items-center justify-center h-5 w-auto min-w-15">
-        {isLoading ? (
-          <Skeleton className="h-4 w-16 " />
-        ) : (
-          <ActionSwapText
-            value={visible ? formatted : "hidden"}
-            animation="cascade"
-            className="text-sm font-semibold text-foreground"
-          >
+    <Button
+      variant="outline"
+      size="sm"
+      onClick={onToggle}
+      aria-label={visible ? "Hide balance" : "Show balance"}
+      className="text-muted-foreground hover:text-foreground"
+    >
+      {visible ? (
+        <IconEye className="size-4" />
+      ) : (
+        <IconEyeOff className="size-4" />
+      )}
 
-            {visible ? formatted : maskedBalance}
-          </ActionSwapText>
-        )}
-      </span>
-    </div>
+      {isLoading ? (
+        <Skeleton className="h-4 w-16" />
+      ) : (
+        <ActionSwapText
+          value={visible ? formatted : "hidden"}
+          animation="cascade"
+          className="flex items-center text-sm font-semibold text-foreground capitalize"
+        >
+          {visible ? (
+            formatted
+          ) : (
+            <span className="flex items-center">
+              {Array.from({ length: 6 }).map((_, idx) => (
+                <IconAsterisk key={idx} stroke={2} className="size-2" />
+              ))}
+            </span>
+          )}
+        </ActionSwapText>
+      )}
+    </Button>
   )
 }
 
@@ -185,7 +192,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <SidebarHeader>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton className="rounded-md py-0! ring-transparent group-data-[collapsible=icon]:size-8! hover:bg-transparent! group-data-[collapsible=icon]:[&>img]:block">
+              <SidebarMenuButton className="mt-4 rounded-md py-0! ring-transparent group-data-[collapsible=icon]:size-8! hover:bg-transparent! group-data-[collapsible=icon]:[&>img]:block">
                 <img
                   src={resolvedTheme === "dark" ? LogoDark : LogoLight}
                   alt="Logo"
@@ -202,7 +209,20 @@ export function Layout({ children }: { children: React.ReactNode }) {
           <NavMenu items={routes} onChange={handleNavigate} />
         </SidebarContent>
         <SidebarFooter>
-          <SidebarMenu>
+          <SidebarMenu className="gap-3">
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                tooltip={t("Toggle theme")}
+                onClick={toggleTheme}
+              >
+                {resolvedTheme === "dark" ? (
+                  <IconSun className="size-4" />
+                ) : (
+                  <IconMoon className="size-4" />
+                )}
+                <p className="font-medium">Toggle theme</p>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
             <SidebarMenuItem>
               <DropdownMenu>
                 <DropdownMenuTrigger
@@ -286,7 +306,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
                       <IconNotification className="size-4" />
                       {t("Notifications")}
                     </DropdownMenuItem>
-
                     {/* language sub menu */}
                     <DropdownMenuSub>
                       <DropdownMenuSubTrigger>
@@ -296,31 +315,40 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
                       <DropdownMenuPortal>
                         <DropdownMenuSubContent>
-
-                          <DropdownMenuItem onClick={() => i18n.changeLanguage("en")}>
+                          <DropdownMenuItem
+                            onClick={() => i18n.changeLanguage("en")}
+                          >
                             <span className="flex-1">{t("English")}</span>
-                            {i18n.language === "en" && <IconCheck className="size-4" />}
+                            {i18n.language === "en" && (
+                              <IconCheck className="size-4" />
+                            )}
                           </DropdownMenuItem>
 
-                          <DropdownMenuItem onClick={() => i18n.changeLanguage("ar")}>
+                          <DropdownMenuItem
+                            onClick={() => i18n.changeLanguage("ar")}
+                          >
                             <span className="flex-1">{t("Arabic")}</span>
-                            {i18n.language === "ar" && <IconCheck className="size-4" />}
+                            {i18n.language === "ar" && (
+                              <IconCheck className="size-4" />
+                            )}
                           </DropdownMenuItem>
-
                         </DropdownMenuSubContent>
                       </DropdownMenuPortal>
                     </DropdownMenuSub>
-
-
-
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem variant="destructive" onClick={logout}>
-                      <IconLogout className="size-4" />
-                      {t("Log out")}
-                    </DropdownMenuItem>
                   </DropdownMenuGroup>
                 </DropdownMenuContent>
               </DropdownMenu>
+            </SidebarMenuItem>
+
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                tooltip={t("Logout")}
+                onClick={logout}
+                className="bg-destructive-foreground/10 text-destructive"
+              >
+                <IconLogout className="size-4" />
+                <p className="font-medium">Logout</p>
+              </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarFooter>
@@ -329,19 +357,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <div className="@container/main relative flex h-full w-full flex-1 flex-col gap-2 rounded-xl border-border xl:border">
           <Container as="header">
             <div className="mx-auto flex items-center gap-3 py-2">
-              {/* Logo / Brand */}
-              <div className="flex shrink-0 items-center gap-3">
-                {/* <img src={Logo} alt="Logo" className="h-5 w-auto shrink-0" /> */}
-                <span className="text-base font-semibold capitalize">
-                  {appName()}
-                </span>
-              </div>
+              <Breadcrumb />
+
               {/* Right Actions */}
               <div className="ms-auto flex items-center gap-3">
                 {/* Notifications */}
-                <NotificationPopover
-                  userId={me?._id}
-                />
+                <NotificationPopover userId={me?._id} />
 
                 {/* Balance Toggle */}
                 {ThunderSDK.isPermitted(ThunderSDK.wallets.get) && (
@@ -351,52 +372,17 @@ export function Layout({ children }: { children: React.ReactNode }) {
                   />
                 )}
 
-                <Button
-                  onClick={toggleTheme}
-                  variant="outline"
-                  size="icon"
-                  aria-label="Toggle theme"
-                >
-                  {resolvedTheme === "dark" ? (
-                    <IconSun className="size-4" />
-                  ) : (
-                    <IconMoon className="size-4" />
-                  )}
-                </Button>
-
-                <Button
-                  className="hidden md:inline-flex"
-                  variant="destructive"
-                  onClick={logout}
-                  aria-label="Logout"
-                >
-                  <IconLogout className="size-4" />
-                  {t("Logout")}
-                </Button>
-                <Button
-                  className="inline-flex md:hidden"
-                  variant="destructive"
-                  onClick={logout}
-                  size={"icon"}
-                  aria-label="Logout"
-                >
-                  <IconLogout className="size-4" />
-                </Button>
-
                 <SidebarTrigger />
               </div>
             </div>
 
-            {subNavItems && (subNavItems?.length ?? 0) > 1 ? <SubNav navMenu={subNavItems} /> : null}
+            {subNavItems && (subNavItems?.length ?? 0) > 1 ? (
+              <SubNav navMenu={subNavItems} />
+            ) : null}
           </Container>
 
           {/* Main Content */}
           <main className="page-transition relative mx-auto flex min-h-0 w-full flex-1 flex-col gap-3 pb-3">
-            {/* You can use Breadcrumb component here */}
-            <Container>
-              <Breadcrumb />
-            </Container>
-
             {children}
           </main>
         </div>

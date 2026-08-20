@@ -129,7 +129,8 @@ export const coreRoutes = Object.entries(
         allowDisplayRoute(route.display)
       )[0]
 
-      return <Navigate replace to={indexRoute?.path ?? "notFound"} />
+      //! Replacing to avoid infinite back and forth navigation between the group and child route
+      return <Navigate to={indexRoute?.path ?? "notFound"} replace />
     },
     display: false,
   })
