@@ -96,6 +96,18 @@ export default function RenderInput({ name, field }: TRenderInputProps) {
   )
 }
 
+function resolveValueType(field: TField, value: any) {
+  if (field.type === "number" && typeof value === "string") {
+    return Number(value)
+  }
+
+  if (field.type === "boolean" && typeof value === "string") {
+    return value === "true"
+  }
+
+  return value
+}
+
 export type TRenderFieldProps = {
   id: string
   name: string
@@ -114,7 +126,7 @@ export const RenderField = ({
   const [query] = useSearchParams()
 
   const defaultValue = !field.ignoreQueryValue
-    ? (query.get(field.queryValue ?? name) ?? undefined)
+    ? resolveValueType(field, query.get(field.queryValue ?? name) ?? undefined)
     : undefined
   const pattern = field.pattern ? new RegExp(field.pattern) : undefined
 
@@ -361,6 +373,32 @@ export const RenderField = ({
     )
   }
 
+  if (field.type === "number" && field.fieldHint === "amount") {
+    return (
+      <Controller
+        name={name}
+        control={control}
+        rules={{
+          required: !field.optional && t("This field is required!"),
+          pattern,
+        }}
+        defaultValue={defaultValue}
+        render={(def) => (
+          <NumberInput
+            id={id}
+            type={field.type}
+            placeholder={field.example ?? field.name}
+            minLength={field.minLength}
+            maxLength={field.maxLength}
+            pattern={field.pattern}
+            value={def.field.value ?? ""}
+            onChange={(e) => def.field.onChange(e.target.valueAsNumber)}
+          />
+        )}
+      />
+    )
+  }
+
   if (["text", "number", "url", "email", "phone"].includes(field.type)) {
     if (field.multi) {
       return (
@@ -451,32 +489,6 @@ export const RenderField = ({
             placeholder={field.example ?? field.name}
             defaultValue={formatDateForInput(def.field.value)}
             onChange={(e) => def.field.onChange(new Date(e.target.value))}
-          />
-        )}
-      />
-    )
-  }
-
-  if (field.type === "number" && field.fieldHint === "amount") {
-    return (
-      <Controller
-        name={name}
-        control={control}
-        rules={{
-          required: !field.optional && t("This field is required!"),
-          pattern,
-        }}
-        defaultValue={defaultValue}
-        render={(def) => (
-          <NumberInput
-            id={id}
-            type={field.type}
-            placeholder={field.example ?? field.name}
-            minLength={field.minLength}
-            maxLength={field.maxLength}
-            pattern={field.pattern}
-            value={def.field.value ?? ""}
-            onChange={(e) => def.field.onChange(e.target.valueAsNumber)}
           />
         )}
       />
