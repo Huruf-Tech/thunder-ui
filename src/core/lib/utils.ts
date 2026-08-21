@@ -203,6 +203,7 @@ export function getNavRoutes(router: TRouteObject[]) {
         title: child.name || "Unnamed Route",
         icon: child.icon,
         path: parentPath,
+        button: child.button,
       })
 
       const childRoutes = sortRoutes((child.children ?? []) as TRouteObject[])
@@ -215,6 +216,7 @@ export function getNavRoutes(router: TRouteObject[]) {
           icon: subChild.icon,
           path: subChild.path,
           parent: parentPath,
+          button: subChild.button,
         })
       }
     }

@@ -10,7 +10,9 @@ export type TNav = {
   path?: string;
   parent?: string;
   priority?: number | (() => number);
+  button?: React.ComponentType;
 };
+
 
 // export function SubNav({
 //   navMenu,
@@ -126,17 +128,21 @@ export function SubNav({ navMenu }: { navMenu: TNav[] }) {
       className="no-scrollbar overflow-x-auto scroll-mask-x-from-90%"
     >
       <TabsList variant="line" className="gap-x-3">
-        {navMenu.map((nav) => (
-          <TabsTrigger
-            key={nav.title}
-            value={nav.path}
-            data-value={nav.path}
-            className="group-data-[variant=line]/tabs-list:data-active:after:rounded-xl px-0"
-          >
-            {nav.icon ? <nav.icon /> : <IconAlertCircle />}
-            {t(nav.title)}
-          </TabsTrigger>
-        ))}
+        {navMenu.map((nav) => {
+          const ButtonComponent = nav.button
+          return (
+            <TabsTrigger
+              key={nav.title}
+              value={nav.path}
+              data-value={nav.path}
+              className="group-data-[variant=line]/tabs-list:data-active:after:rounded-xl px-0"
+            >
+              {nav.icon ? <nav.icon /> : <IconAlertCircle />}
+              {t(nav.title)}
+              {ButtonComponent && <ButtonComponent />}
+            </TabsTrigger>
+          )
+        })}
       </TabsList>
     </Tabs>
   );
