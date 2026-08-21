@@ -192,13 +192,24 @@ export function FormPage({ name }: IFormPageProps) {
           params: { id },
           body,
         })
+
         toast.success(t("{{name}} updated successfully.", { name }))
       } else {
         await ThunderSDK.getModule(name).create({
           body,
         })
+
         toast.success(t("{{name}} created successfully.", { name }))
       }
+
+      await ThunderSDK.withCaching(
+        async ({ expire }) => {
+          await expire()
+        },
+        {
+          matcher: new RegExp(name),
+        }
+      )
 
       navigate(-1)
     } catch (error) {

@@ -40,7 +40,7 @@ export function use<T>(
   const _offExpire = typeof request === "object" ? request.offExpire : undefined
 
   const [can, setCan] = React.useState(!options?.triggerTarget)
-  const [isLoading, setLoading] = React.useState(true)
+  const [isLoading, setLoading] = React.useState(!options?.disabled)
   const [count, setCount] = React.useState(0)
   const [data, setData] = React.useState<T | null>(null)
   const [error, setError] = React.useState<Error | null>(null)
