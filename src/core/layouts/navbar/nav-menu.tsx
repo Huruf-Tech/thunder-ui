@@ -29,9 +29,11 @@ export interface INavMenuItem {
   path?: string
   icon?: TablerIcon
   isActive?: boolean
+  button?: React.ComponentType
   items?: {
     title: string
     path?: string
+    button?: React.ComponentType
   }[]
 }
 
@@ -50,8 +52,9 @@ export function NavMenu({ name, items, onChange }: INavMenuProps) {
       <SidebarGroupContent className="flex flex-col gap-2">
         {name && <SidebarGroupLabel>{t(name)}</SidebarGroupLabel>}
         <SidebarMenu>
-          {items?.map((item, idx) =>
-            item.items?.length ? (
+          {items?.map((item, idx) => {
+            const ButtonComponent = item.button;
+            return item.items?.length ? (
               <Collapsible
                 key={item.title + idx}
                 defaultOpen={item.isActive}
@@ -65,7 +68,10 @@ export function NavMenu({ name, items, onChange }: INavMenuProps) {
                         tooltip={t(item.title)}
                         size="lg"
                       >
-                        {item.icon ? <item.icon /> : <IconAlertCircle />}
+                        <div className="relative flex items-center justify-center">
+                          {item.icon ? <item.icon /> : <IconAlertCircle />}
+                          {ButtonComponent && <ButtonComponent />}
+                        </div>
                         <span>{item.title}</span>
                         <ChevronRight className="ms-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                       </SidebarMenuButton>
@@ -73,24 +79,28 @@ export function NavMenu({ name, items, onChange }: INavMenuProps) {
                   />
                   <CollapsibleContent>
                     <SidebarMenuSub>
-                      {item.items?.map((subItem, subIdx) => (
-                        <SidebarMenuSubItem key={subItem.title + subIdx}>
-                          <SidebarMenuSubButton
-                            render={
-                              <Button
-                                variant="ghost"
-                                className="justify-start"
-                                onClick={() => {
-                                  if (isMobile) setOpenMobile(false)
-                                  onChange?.(subItem.path || "#")
-                                }}
-                              >
-                                <span>{t(subItem.title)}</span>
-                              </Button>
-                            }
-                          />
-                        </SidebarMenuSubItem>
-                      ))}
+                      {item.items?.map((subItem, subIdx) => {
+                        const SubButtonComponent = subItem.button;
+                        return (
+                          <SidebarMenuSubItem key={subItem.title + subIdx}>
+                            <SidebarMenuSubButton
+                              render={
+                                <Button
+                                  variant="ghost"
+                                  className="justify-start relative"
+                                  onClick={() => {
+                                    if (isMobile) setOpenMobile(false)
+                                    onChange?.(subItem.path || "#")
+                                  }}
+                                >
+                                  <span>{t(subItem.title)}</span>
+                                  {SubButtonComponent && <SubButtonComponent />}
+                                </Button>
+                              }
+                            />
+                          </SidebarMenuSubItem>
+                        )
+                      })}
                     </SidebarMenuSub>
                   </CollapsibleContent>
                 </SidebarMenuItem>
@@ -103,20 +113,23 @@ export function NavMenu({ name, items, onChange }: INavMenuProps) {
                   render={
                     <Button
                       variant="ghost"
-                      className="justify-start"
+                      className="justify-start relative"
                       onClick={() => {
                         if (isMobile) setOpenMobile(false)
                         onChange?.(item.path || "#")
                       }}
                     >
-                      {item.icon ? <item.icon /> : <IconAlertCircle />}
+                      <div className="relative flex items-center justify-center">
+                        {item.icon ? <item.icon /> : <IconAlertCircle />}
+                        {ButtonComponent && <ButtonComponent />}
+                      </div>
                       <span>{t(item.title)}</span>
                     </Button>
                   }
                 ></SidebarMenuButton>
               </SidebarMenuItem>
             )
-          )}
+          })}
         </SidebarMenu>
       </SidebarGroupContent>
     </SidebarGroup>
