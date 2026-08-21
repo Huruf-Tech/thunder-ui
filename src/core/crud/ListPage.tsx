@@ -589,6 +589,7 @@ export function ListPage({ group, name }: IListPageProps) {
 
             <div className="flex items-center gap-2">
               {allowForm &&
+                selectedRows.length === 1 &&
                 ThunderSDK.isPermitted(ThunderSDK.getModule(name).update) && (
                   <Button
                     size="icon-sm"
