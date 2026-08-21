@@ -22,7 +22,9 @@ export const Multiselect: typeof Combobox = (props) => {
           {(values) => (
             <React.Fragment>
               {values.map((value: string) => (
-                <ComboboxChip key={value}>{value}</ComboboxChip>
+                <ComboboxChip key={value}>
+                  {props.items?.find((v) => v.value === value)?.label ?? value}
+                </ComboboxChip>
               ))}
               <ComboboxChipsInput />
             </React.Fragment>
