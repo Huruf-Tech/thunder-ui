@@ -156,6 +156,7 @@ export function FormPage({ name }: IFormPageProps) {
           })) as { results: any[] }
 
         if (results.length === 0) {
+          toast.error(t("Record not found."))
           navigate(-1)
           return
         }
