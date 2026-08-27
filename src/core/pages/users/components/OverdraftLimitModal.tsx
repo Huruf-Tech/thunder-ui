@@ -72,6 +72,43 @@ export function OverdraftLimitModal({ isOpen, onClose, userId }: OverdraftLimitM
     }
   }, [isOpen])
 
+  // Fetch wallet for the selected tenant to display existing overdraft limit
+  useEffect(() => {
+    let isMounted = true
+
+    const fetchOverdraftLimit = async () => {
+      if (!userId || !selectedTenantId) {
+        if (isMounted) setLimit(0)
+        return
+      }
+
+      try {
+        const response = await ThunderSDK.wallets.get({
+          params: {},
+          query: {
+            filters: {
+              user: { $eq: { type: "objectId", value: userId } }
+            }
+          }
+        })
+        if (isMounted) {
+          const wallets = response?.results || []
+          const wallet = wallets.find((w) => w.tenant === selectedTenantId)
+          setLimit(wallet?.overdraftLimit ?? 0)
+        }
+      } catch (error) {
+        console.error("Failed to fetch overdraft limit:", error)
+        if (isMounted) setLimit(0)
+      }
+    }
+
+    fetchOverdraftLimit()
+
+    return () => {
+      isMounted = false
+    }
+  }, [userId, selectedTenantId])
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!userId || !selectedTenantId || limit < 0) return
