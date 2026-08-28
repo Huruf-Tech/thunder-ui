@@ -394,7 +394,7 @@ export function ListPage({ group, name }: IListPageProps) {
           )}
           <Container className="flex flex-wrap-reverse items-center justify-between gap-3 lg:flex-nowrap">
             {/* Render Card Select All Badge only when in Card View */}
-            {isCard && (
+            {isCard && ThunderSDK.getModule(name).del && (
               <CardSelectAll
                 checked={
                   table.getIsAllPageRowsSelected()
