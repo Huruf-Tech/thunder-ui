@@ -192,12 +192,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <SidebarHeader>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton className="mt-4 rounded-md py-0! ring-transparent group-data-[collapsible=icon]:size-8! hover:bg-transparent! group-data-[collapsible=icon]:[&>img]:block">
-                <img
-                  src={resolvedTheme === "dark" ? LogoDark : LogoLight}
-                  alt="Logo"
-                  className="hidden h-5 w-auto shrink-0"
-                />
+              <SidebarMenuButton className="mt-4 rounded-md py-0! ring-transparent group-data-[collapsible=icon]:size-8! hover:bg-transparent! group-data-[collapsible=icon]:[&>div]:block">
+                <div className="hidden size-5 shrink-0">
+                  <img
+                    src={resolvedTheme === "dark" ? LogoDark : LogoLight}
+                    alt="Logo"
+                    className="h-5 w-auto"
+                  />
+                </div>
                 <span className="text-base font-semibold">
                   {t("Main Menu")}
                 </span>

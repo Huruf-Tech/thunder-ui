@@ -160,12 +160,17 @@ function formatDateRange(start: Date, end: Date) {
 }
 
 export function FilterValueDateDisplay({ filter }: { filter?: TValue }) {
-  if (!filter?.value) return null
+  console.log(filter)
+  if (!filter?.value) return <span>N/A</span>
 
   if (Array.isArray(filter?.value) && filter?.value.length === 0)
     return <IconDots className="size-4" />
-  if (Array.isArray(filter?.value) && filter?.value.length === 1) {
-    const value = filter?.value[0]
+  if (
+    filter?.value instanceof Date ||
+    (Array.isArray(filter?.value) && filter?.value.length === 1)
+  ) {
+    const value =
+      filter?.value instanceof Date ? filter?.value : filter?.value[0]
 
     const formattedDateStr = format(value, "MMM d, yyyy")
 
@@ -381,11 +386,14 @@ export function FilterValueDateController({
   onChange,
 }: {
   filter?: TValue
-  onChange: (value: Date[], operator?: string) => void
+  onChange: (value?: Date | Date[], operator?: string) => void
 }) {
+  const [tab, setTab] = React.useState<"single" | "range">(
+    !filter?.value || filter?.value instanceof Date ? "single" : "range"
+  )
   const [date, setDate] = React.useState<DateRange | undefined>({
-    from: filter?.value[0] ?? new Date(),
-    to: filter?.value[1] ?? undefined,
+    from: filter?.value?.[0] ?? new Date(),
+    to: filter?.value?.[1] ?? undefined,
   })
 
   const setFilterValueDebounced = useDebounceCallback(onChange, 500)
@@ -399,27 +407,51 @@ export function FilterValueDateController({
 
     setDate({ from: start, to: end })
 
-    const isRange = start && end
-    const newValues = isRange ? [start, end] : start ? [start] : []
+    setFilterValueDebounced(
+      [start, end].filter((v) => !!v),
+      tab === "single" ? DateOperator.is : RangeOperator["is between"]
+    )
+  }
 
-    const newOperator =
-      newValues.length === 1 ? DateOperator.is : RangeOperator["is between"]
-
-    setFilterValueDebounced(newValues, newOperator)
+  function changeSingleDate(value: Date) {
+    setDate({ from: value, to: undefined })
+    setFilterValueDebounced(value, DateOperator.is)
   }
 
   return (
     <Command>
       <CommandList className="max-h-fit">
-        <div>
-          <Calendar
-            mode="range"
-            defaultMonth={date?.from}
-            selected={date}
-            onSelect={changeDateRange}
-            numberOfMonths={1}
-            captionLayout="dropdown"
-          />
+        <div className="flex flex-col gap-1">
+          <Tabs value={tab}>
+            <TabsList className="w-full *:text-xs">
+              <TabsTrigger value="single" onClick={() => setTab("single")}>
+                Single
+              </TabsTrigger>
+              <TabsTrigger value="range" onClick={() => setTab("range")}>
+                Range
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+
+          {tab === "single" ? (
+            <Calendar
+              mode="single"
+              selected={date?.from}
+              onSelect={changeSingleDate}
+              numberOfMonths={1}
+              captionLayout="dropdown"
+              required
+            />
+          ) : (
+            <Calendar
+              mode="range"
+              defaultMonth={date?.from}
+              selected={date}
+              onSelect={changeDateRange}
+              numberOfMonths={1}
+              captionLayout="dropdown"
+            />
+          )}
         </div>
       </CommandList>
     </Command>
