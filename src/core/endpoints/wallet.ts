@@ -18,3 +18,10 @@ export const getWalletLedgers = (query: Record<string, unknown> = {}) => {
         { cacheTTL },
     );
 };
+
+export const invalidateWallets = async () => {
+    await Promise.all([
+        getWallets().invalidate(),
+        getWalletLedgers().invalidate(),
+    ]);
+};

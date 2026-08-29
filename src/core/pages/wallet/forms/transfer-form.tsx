@@ -14,10 +14,23 @@ import { Field, FieldLabel, FieldError, FieldGroup } from "@/components/ui/field
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
 import { getInitials } from "@/core/lib/utils";
+import { invalidateWallets } from "@/core/endpoints/wallet";
+
+const CURRENCY_LABELS_AR: Record<string, string> = {
+  LYD: "د.ل",
+};
+
+function getCurrencyLabel(currency: string, lang: string) {
+  const code = (currency || "LYD").toUpperCase();
+  if (lang?.startsWith("ar")) {
+    return CURRENCY_LABELS_AR[code] ?? code;
+  }
+  return code;
+}
 
 type TSendForm = { receiver: string; amount: string; description: string };
 export function SendForm({ open, onOpenChange }: { open: boolean; onOpenChange: (o: boolean) => void }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [step, setStep] = useState<"input" | "review" | "success">("input");
   const [signData, setSignData] = useState<any>(null);
   const [ref, setRef] = useState<string>("");
@@ -76,6 +89,7 @@ export function SendForm({ open, onOpenChange }: { open: boolean; onOpenChange: 
       const res = await ThunderSDK.wallets.transfer({ body: { token: signData.challenge.token } });
       setRef(res.transaction.reference);
       setStep("success");
+      await invalidateWallets();
     } catch (err: any) {
       setError(err.message);
       toast.error("Transfer failed");
@@ -139,10 +153,10 @@ export function SendForm({ open, onOpenChange }: { open: boolean; onOpenChange: 
             </div>
 
             <div className="rounded-xl border p-3 text-sm flex flex-col gap-2">
-              <div className="flex justify-between"><span>{t("Amount")}</span><span className="font-medium">{signData.transactionDetails.amount / 100} {signData.transactionDetails.currency}</span></div>
-              <div className="flex justify-between"><span>{t("Fee")}</span><span className="font-medium">{signData.transactionDetails.fee > 0 ? `${signData.transactionDetails.fee / 100} ${signData.transactionDetails.currency}` : t("Free")}</span></div>
+              <div className="flex justify-between"><span>{t("Amount")}</span><span className="font-medium">{signData.transactionDetails.amount / 100} {getCurrencyLabel(signData.transactionDetails.currency, i18n.language)}</span></div>
+              <div className="flex justify-between"><span>{t("Fee")}</span><span className="font-medium">{signData.transactionDetails.fee > 0 ? `${signData.transactionDetails.fee / 100} ${getCurrencyLabel(signData.transactionDetails.currency, i18n.language)}` : t("Free")}</span></div>
               <hr className="my-1 border-border" />
-              <div className="flex justify-between font-bold"><span>{t("Total")}</span><span>{(signData.transactionDetails.amount + signData.transactionDetails.fee) / 100} {signData.transactionDetails.currency}</span></div>
+              <div className="flex justify-between font-bold"><span>{t("Total")}</span><span>{(signData.transactionDetails.amount + signData.transactionDetails.fee) / 100} {getCurrencyLabel(signData.transactionDetails.currency, i18n.language)}</span></div>
             </div>
             {error && <FieldError>{error}</FieldError>}
             <div className="flex gap-2">
