@@ -119,7 +119,6 @@ export const coreRoutes = Object.entries(
     return overrideRoute
   }
 
-  
   routes = routes ?? []
 
   routes.push({
@@ -176,6 +175,10 @@ coreRoutes.unshift(
     icon: IconWallet,
     priority: 50,
     Component: () => <Wallet />,
+    display: () =>
+      ThunderSDK.isPermitted(ThunderSDK.wallets.get) ||
+      ThunderSDK.isPermitted(ThunderSDK.walletLedgers.get) ||
+      ThunderSDK.isPermitted(ThunderSDK.wallets.signTransfer),
   },
   {
     name: "Notifications",
