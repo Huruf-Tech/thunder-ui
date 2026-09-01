@@ -361,7 +361,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 <NotificationPopover userId={me?._id} />
 
                 {/* Balance Toggle */}
-                {!import.meta.env.DISABLE_WALLET &&
+                {!import.meta.env.VITE_DISABLE_WALLET &&
                   ThunderSDK.isPermitted(ThunderSDK.wallets.get) && (
                     <NavBalance
                       visible={balanceVisible}
