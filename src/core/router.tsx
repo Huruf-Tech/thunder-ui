@@ -176,6 +176,7 @@ coreRoutes.unshift(
     priority: 50,
     Component: () => <Wallet />,
     display: () =>
+      !import.meta.env.DISABLE_WALLET ||
       ThunderSDK.isPermitted(ThunderSDK.wallets.get) ||
       ThunderSDK.isPermitted(ThunderSDK.walletLedgers.get) ||
       ThunderSDK.isPermitted(ThunderSDK.wallets.signTransfer),

@@ -361,12 +361,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 <NotificationPopover userId={me?._id} />
 
                 {/* Balance Toggle */}
-                {ThunderSDK.isPermitted(ThunderSDK.wallets.get) && (
-                  <NavBalance
-                    visible={balanceVisible}
-                    onToggle={() => setBalanceVisible((v) => !v)}
-                  />
-                )}
+                {!import.meta.env.DISABLE_WALLET &&
+                  ThunderSDK.isPermitted(ThunderSDK.wallets.get) && (
+                    <NavBalance
+                      visible={balanceVisible}
+                      onToggle={() => setBalanceVisible((v) => !v)}
+                    />
+                  )}
 
                 <SidebarTrigger />
               </div>
