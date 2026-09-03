@@ -70,6 +70,7 @@ JSONSchemaToFields.resolveRef = async (ref, field) => {
       async () =>
         (await ThunderSDK.getModule(ref).get({
           query: {
+            filters: field.refFilters,
             project: createProjection(),
           },
         })) as {

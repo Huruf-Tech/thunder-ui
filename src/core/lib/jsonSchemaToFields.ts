@@ -299,6 +299,7 @@
     }
  */
 
+import type { TFilters } from "thunder-sdk/types"
 import z from "zod"
 
 export const FieldTypes = [
@@ -340,6 +341,7 @@ export type TField = {
   pattern?: string
   example?: string
   ref?: string
+  refFilters?: TFilters;
   refLabel?: string | string[]
   refValue?: string
   fieldHint?: string
@@ -404,6 +406,7 @@ export class JSONSchemaToFields {
       description: z.string().optional(),
       example: z.string().optional(),
       ref: z.string().optional(),
+      refFilters: z.record(z.string(), z.any()).optional(),
       refLabel: z.union([z.string(), z.string().array()]).optional(),
       refValue: z.string().optional(),
       fieldHint: z.string().optional(),
