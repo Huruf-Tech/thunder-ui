@@ -25,7 +25,8 @@ interface OverdraftLimitModalProps {
 export function OverdraftLimitModal({ isOpen, onClose, userId }: OverdraftLimitModalProps) {
   const { t } = useTranslation()
   const [selectedTenantId, setSelectedTenantId] = useState<string>("")
-  const [limit, setLimit] = useState<number>(0)
+  const [limit, setLimit] = useState<string>("")
+  const [existingLimit, setExistingLimit] = useState<number>(0)
   const [isSubmitting, setIsSubmitting] = useState(false)
   
   const [tenants, setTenants] = useState<any[]>([])
@@ -68,7 +69,8 @@ export function OverdraftLimitModal({ isOpen, onClose, userId }: OverdraftLimitM
   useEffect(() => {
     if (isOpen) {
       setSelectedTenantId("")
-      setLimit(0)
+      setLimit("")
+      setExistingLimit(0)
     }
   }, [isOpen])
 
@@ -78,27 +80,30 @@ export function OverdraftLimitModal({ isOpen, onClose, userId }: OverdraftLimitM
 
     const fetchOverdraftLimit = async () => {
       if (!userId || !selectedTenantId) {
-        if (isMounted) setLimit(0)
+        if (isMounted) {
+          setLimit("")
+          setExistingLimit(0)
+        }
         return
       }
 
       try {
-        const response = await ThunderSDK.wallets.get({
-          params: {},
+        const response = await ThunderSDK.wallets.getOverdraftLimit({
           query: {
-            filters: {
-              user: { $eq: { type: "objectId", value: userId } }
-            }
+            userId,
+            tenantId: selectedTenantId,
           }
         })
         if (isMounted) {
-          const wallets = response?.results || []
-          const wallet = wallets.find((w) => w.tenant === selectedTenantId)
-          setLimit(wallet?.overdraftLimit ?? 0)
+          setExistingLimit(response?.overdraftLimit ?? 0)
+          setLimit("")
         }
       } catch (error) {
         console.error("Failed to fetch overdraft limit:", error)
-        if (isMounted) setLimit(0)
+        if (isMounted) {
+          setLimit("")
+          setExistingLimit(0)
+        }
       }
     }
 
@@ -111,7 +116,8 @@ export function OverdraftLimitModal({ isOpen, onClose, userId }: OverdraftLimitM
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!userId || !selectedTenantId || limit < 0) return
+    const parsedLimit = parseFloat(limit)
+    if (!userId || !selectedTenantId || !limit || isNaN(parsedLimit) || parsedLimit < 0) return
 
     try {
       setIsSubmitting(true)
@@ -119,7 +125,7 @@ export function OverdraftLimitModal({ isOpen, onClose, userId }: OverdraftLimitM
         body: {
           userId,
           tenantId: selectedTenantId,
-          limit,
+          limit: parsedLimit,
         },
       })
       toast.success(t("Overdraft limit updated successfully!"))
@@ -180,24 +186,27 @@ export function OverdraftLimitModal({ isOpen, onClose, userId }: OverdraftLimitM
                   {t("This user does not belong to any tenants.")}
                 </p>
               )}
+              {selectedTenantId && existingLimit > 0 && (
+                <div className="mt-2 flex items-center justify-between rounded-lg border border-primary/20 bg-primary/5 px-3 py-2">
+                  <span className="text-xs font-medium text-muted-foreground">{t("Current Overdraft Limit")}</span>
+                  <span className="text-sm font-semibold text-primary">{existingLimit}</span>
+                </div>
+              )}
             </div>
 
             <div className="flex flex-col gap-2 pt-2">
-              <Label htmlFor="limit-input" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              <Label htmlFor="input" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 {t("Overdraft Limit Amount")}
               </Label>
               <div className="relative">
-                {/* <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-muted-foreground">
-                 
-                </span> */}
                 <Input
-                  id="limit-input"
+                  id="input"
                   type="number"
-                  min="0"
                   step="any"
                   value={limit}
-                  onChange={(e) => setLimit(parseFloat(e.target.value) || 0)}
-                  className="pl-8 bg-background text-lg font-medium transition-colors hover:bg-accent/50 focus:bg-background"
+                  onChange={(e) => setLimit(e.target.value)}
+                  placeholder="0"
+                  className="pl-8 bg-background text-lg font-medium transition-colors hover:bg-accent/50 focus:bg-background [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   required
                 />
               </div>
@@ -211,7 +220,7 @@ export function OverdraftLimitModal({ isOpen, onClose, userId }: OverdraftLimitM
             <Button type="button" variant="ghost" onClick={onClose} disabled={isSubmitting}>
               {t("Cancel")}
             </Button>
-            <Button type="submit" disabled={isSubmitting || !selectedTenantId || limit < 0} className="w-full sm:w-auto gap-2 shadow-md">
+            <Button type="submit" disabled={isSubmitting || !selectedTenantId || !limit} className="w-full sm:w-auto gap-2 shadow-md">
               {isSubmitting ? (
                 <>
                   <IconLoader2 className="h-4 w-4 animate-spin" />

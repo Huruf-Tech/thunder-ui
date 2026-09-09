@@ -25,6 +25,7 @@ const usersSchema = z.object({
   email: z.string(),
   image: z.string().optional(),
   role: z.string(),
+  banned: z.boolean().optional(),
   createdAt: z.string(),
 })
 
@@ -42,9 +43,10 @@ export default function UserCardView({
   const [overdraftUserId, setOverdraftUserId] = React.useState<string | null>(null)
   const banTriggerRef = React.useRef<HTMLButtonElement>(null)
 
-  const userActions = [
-    { name: t("Ban"), value: "ban" },
-    { name: t("Unban"), value: "unban" },
+  const userActions = (user: { banned?: boolean }) => [
+    user.banned
+      ? { name: t("Unban"), value: "unban" }
+      : { name: t("Ban"), value: "ban" },
     { name: t("Add Overdraft Limit"), value: "add-overdraft-limit" },
   ]
 
@@ -171,7 +173,7 @@ export default function UserCardView({
                           </SelectTrigger>
                           <SelectContent align="end">
                             <SelectGroup>
-                              {userActions.map((opt) => (
+                              {userActions(user).map((opt) => (
                                 <SelectItem key={opt.value} value={opt.value} className="text-xs">
                                   {opt.name}
                                 </SelectItem>
