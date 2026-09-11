@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card.tsx"
 import { Checkbox } from "@/components/ui/checkbox.tsx"
 
-import UserCardSkeleton from "./userCardSkeleton.tsx"
+import UserCardSkeleton from "./components/userCardSkeleton.tsx"
 import type { TCardProps } from "@/core/types.ts"
 import { zodToMongoProjection } from "@/core/lib/zodToMongoProjection.ts"
 import { IconUser, IconClock, IconMail, IconBadge } from "@tabler/icons-react"
@@ -104,7 +104,7 @@ export default function UserCardView({
                   <Card
                     key={user._id}
                     className="shrink-0 cursor-pointer gap-2 rounded-lg p-0 shadow-sm"
-                    onClick={() => navigate(`./form/${user._id}`, {state: {name: user.name}}) }
+                    onClick={() => navigate(`./${user._id}`, {state: {name: user.name}}) }
                   >
                     <div className="relative h-32 w-full overflow-hidden bg-muted">
                       {user.image ? (
