@@ -60,7 +60,7 @@ export default function UserDetail() {
   const [tenants, setTenants] = useState<any[]>([]);
 
   const request = useMemo(() => {
-    if (!id) return null;
+    if (!id) return undefined;
     return getUsers({ 
       filters: { _id: { $in: [{ type: 'objectId', value: id }] } } 
     });
@@ -114,7 +114,7 @@ export default function UserDetail() {
         <Avatar className="size-24 border-4 border-background shadow-md">
           <AvatarImage src={transformImage(user.image)} alt={user.name} />
           <AvatarFallback className="text-2xl">{getInitials(user.name)}</AvatarFallback>
-          <AvatarBadge className={cn("size-5 border-2", user.banned ? "bg-destructive" : "bg-green-500")} />
+          <AvatarBadge className={cn("size-5 border-2", (user as any).banned ? "bg-destructive" : "bg-green-500")} />
         </Avatar>
         
         <div className="mt-4 space-y-1">
@@ -131,7 +131,7 @@ export default function UserDetail() {
               {t('Verified')}
             </Badge>
           )}
-          {user.banned && (
+          {(user as any).banned && (
             <Badge variant="destructive" className="rounded-full">
               {t('Banned')}
             </Badge>
