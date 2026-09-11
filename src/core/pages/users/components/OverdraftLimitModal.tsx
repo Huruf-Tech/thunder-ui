@@ -48,7 +48,13 @@ export function OverdraftLimitModal({ isOpen, onClose, userId }: OverdraftLimitM
         
         if (isMounted) {
           // The backend route directly returns the array of { _id, name } objects
-          setTenants(response || [])
+          const data = response
+          setTenants(data)
+          if (data.length > 0) {
+            setSelectedTenantId(data[0]._id)
+          } else {
+            setSelectedTenantId("")
+          }
         }
       } catch (error: any) {
         console.error("Failed to fetch tenants:", error)
@@ -68,7 +74,6 @@ export function OverdraftLimitModal({ isOpen, onClose, userId }: OverdraftLimitM
   // Reset state when modal opens/closes
   useEffect(() => {
     if (isOpen) {
-      setSelectedTenantId("")
       setLimit("")
       setExistingLimit(0)
     }
