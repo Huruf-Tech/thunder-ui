@@ -48,7 +48,7 @@ export function OverdraftLimitModal({ isOpen, onClose, userId }: OverdraftLimitM
         
         if (isMounted) {
           // The backend route directly returns the array of { _id, name } objects
-          const data = Array.isArray(response) ? response : (response?.results || response?.data || [])
+          const data = response
           setTenants(data)
           if (data.length > 0) {
             setSelectedTenantId(data[0]._id)
