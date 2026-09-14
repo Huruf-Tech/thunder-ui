@@ -10,9 +10,20 @@ import {
 } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
-import { IconWallet, IconAlertCircle, IconCheck, IconLoader2 } from "@tabler/icons-react"
+import {
+  IconWallet,
+  IconAlertCircle,
+  IconCheck,
+  IconLoader2,
+} from "@tabler/icons-react"
 import { ThunderSDK } from "thunder-sdk"
 import { toast } from "sonner"
 
@@ -22,13 +33,21 @@ interface OverdraftLimitModalProps {
   userId?: string | null
 }
 
-export function OverdraftLimitModal({ isOpen, onClose, userId }: OverdraftLimitModalProps) {
+// Wallet amounts are always persisted as integer minor units (cents/paisa)
+const toMinorUnits = (amount: number) => Math.round(amount * 100)
+const fromMinorUnits = (minorUnits: number) => minorUnits / 100
+
+export function OverdraftLimitModal({
+  isOpen,
+  onClose,
+  userId,
+}: OverdraftLimitModalProps) {
   const { t } = useTranslation()
   const [selectedTenantId, setSelectedTenantId] = useState<string>("")
   const [limit, setLimit] = useState<string>("")
   const [existingLimit, setExistingLimit] = useState<number>(0)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  
+
   const [tenants, setTenants] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(false)
 
@@ -41,11 +60,11 @@ export function OverdraftLimitModal({ isOpen, onClose, userId }: OverdraftLimitM
 
       try {
         setIsLoading(true)
-        
+
         const response = await ThunderSDK.users.getUserTenants({
-          params: { id: userId }
+          params: { id: userId },
         })
-        
+
         if (isMounted) {
           // The backend route directly returns the array of { _id, name } objects
           const data = response
@@ -58,7 +77,9 @@ export function OverdraftLimitModal({ isOpen, onClose, userId }: OverdraftLimitM
         }
       } catch (error: any) {
         console.error("Failed to fetch tenants:", error)
-        toast.error("Fetch tenants error: " + (error?.message || "Unknown error"))
+        toast.error(
+          "Fetch tenants error: " + (error?.message || "Unknown error")
+        )
       } finally {
         if (isMounted) setIsLoading(false)
       }
@@ -97,10 +118,10 @@ export function OverdraftLimitModal({ isOpen, onClose, userId }: OverdraftLimitM
           query: {
             userId,
             tenantId: selectedTenantId,
-          }
+          },
         })
         if (isMounted) {
-          setExistingLimit(response?.overdraftLimit ?? 0)
+          setExistingLimit(fromMinorUnits(response?.overdraftLimit ?? 0))
           setLimit("")
         }
       } catch (error) {
@@ -122,7 +143,14 @@ export function OverdraftLimitModal({ isOpen, onClose, userId }: OverdraftLimitM
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     const parsedLimit = parseFloat(limit)
-    if (!userId || !selectedTenantId || !limit || isNaN(parsedLimit) || parsedLimit < 0) return
+    if (
+      !userId ||
+      !selectedTenantId ||
+      !limit ||
+      isNaN(parsedLimit) ||
+      parsedLimit < 0
+    )
+      return
 
     try {
       setIsSubmitting(true)
@@ -130,7 +158,7 @@ export function OverdraftLimitModal({ isOpen, onClose, userId }: OverdraftLimitM
         body: {
           userId,
           tenantId: selectedTenantId,
-          limit: parsedLimit,
+          limit: toMinorUnits(parsedLimit),
         },
       })
       toast.success(t("Overdraft limit updated successfully!"))
@@ -141,8 +169,6 @@ export function OverdraftLimitModal({ isOpen, onClose, userId }: OverdraftLimitM
       setIsSubmitting(false)
     }
   }
-
-
 
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
@@ -155,14 +181,19 @@ export function OverdraftLimitModal({ isOpen, onClose, userId }: OverdraftLimitM
             {t("Add Overdraft Limit")}
           </SheetTitle>
           <SheetDescription className="pt-2">
-            {t("Select a tenant and set an overdraft limit for this user's wallet. This allows them to spend beyond their current balance.")}
+            {t(
+              "Select a tenant and set an overdraft limit for this user's wallet. This allows them to spend beyond their current balance."
+            )}
           </SheetDescription>
         </SheetHeader>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-6 py-4">
           <div className="flex flex-col gap-4 rounded-xl border bg-card/50 p-4 shadow-sm">
             <div className="flex flex-col gap-2">
-              <Label htmlFor="tenant-select" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              <Label
+                htmlFor="tenant-select"
+                className="text-xs font-semibold tracking-wider text-muted-foreground uppercase"
+              >
                 {t("Tenant")}
               </Label>
               <Select
@@ -170,37 +201,61 @@ export function OverdraftLimitModal({ isOpen, onClose, userId }: OverdraftLimitM
                 onValueChange={(val) => setSelectedTenantId(val || "")}
                 disabled={isLoading || tenants.length === 0}
               >
-                <SelectTrigger id="tenant-select" className="w-full bg-background transition-colors hover:bg-accent/50">
-                  <SelectValue placeholder={isLoading ? t("Loading tenants...") : t("Select a tenant")}>
-                    {selectedTenantId 
-                      ? tenants.find((t: any) => t._id === selectedTenantId)?.name 
-                      : (isLoading ? t("Loading tenants...") : t("Select a tenant"))}
+                <SelectTrigger
+                  id="tenant-select"
+                  className="w-full bg-background transition-colors hover:bg-accent/50"
+                >
+                  <SelectValue
+                    placeholder={
+                      isLoading ? t("Loading tenants...") : t("Select a tenant")
+                    }
+                  >
+                    {selectedTenantId
+                      ? tenants.find((t: any) => t._id === selectedTenantId)
+                          ?.name
+                      : isLoading
+                        ? t("Loading tenants...")
+                        : t("Select a tenant")}
                   </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   {tenants.map((tenant: any) => (
-                    <SelectItem key={tenant._id} value={tenant._id} className="cursor-pointer">
+                    <SelectItem
+                      key={tenant._id}
+                      value={tenant._id}
+                      className="cursor-pointer"
+                    >
                       {tenant.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
               {tenants.length === 0 && !isLoading && (
-                <p className="mt-1 text-xs text-destructive flex items-center gap-1">
+                <p className="mt-1 flex items-center gap-1 text-xs text-destructive">
                   <IconAlertCircle className="h-3 w-3" />
                   {t("This user does not belong to any tenants.")}
                 </p>
               )}
               {selectedTenantId && existingLimit > 0 && (
                 <div className="mt-2 flex items-center justify-between rounded-lg border border-primary/20 bg-primary/5 px-3 py-2">
-                  <span className="text-xs font-medium text-muted-foreground">{t("Current Overdraft Limit")}</span>
-                  <span className="text-sm font-semibold text-primary">{existingLimit}</span>
+                  <span className="text-xs font-medium text-muted-foreground">
+                    {t("Current Overdraft Limit")}
+                  </span>
+                  <span className="text-sm font-semibold text-primary">
+                    {existingLimit.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                  </span>
                 </div>
               )}
             </div>
 
             <div className="flex flex-col gap-2 pt-2">
-              <Label htmlFor="input" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              <Label
+                htmlFor="input"
+                className="text-xs font-semibold tracking-wider text-muted-foreground uppercase"
+              >
                 {t("Overdraft Limit Amount")}
               </Label>
               <div className="relative">
@@ -211,21 +266,30 @@ export function OverdraftLimitModal({ isOpen, onClose, userId }: OverdraftLimitM
                   value={limit}
                   onChange={(e) => setLimit(e.target.value)}
                   placeholder="0"
-                  className="pl-8 bg-background text-lg font-medium transition-colors hover:bg-accent/50 focus:bg-background [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  className="[appearance:textfield] bg-background pl-8 text-lg font-medium transition-colors hover:bg-accent/50 focus:bg-background [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                   required
                 />
               </div>
-              <p className="text-xs text-muted-foreground mt-1">
+              <p className="mt-1 text-xs text-muted-foreground">
                 {t("Maximum allowed negative balance.")}
               </p>
             </div>
           </div>
 
-          <SheetFooter className="mt-auto sm:justify-end gap-2">
-            <Button type="button" variant="ghost" onClick={onClose} disabled={isSubmitting}>
+          <SheetFooter className="mt-auto gap-2 sm:justify-end">
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={onClose}
+              disabled={isSubmitting}
+            >
               {t("Cancel")}
             </Button>
-            <Button type="submit" disabled={isSubmitting || !selectedTenantId || !limit} className="w-full sm:w-auto gap-2 shadow-md">
+            <Button
+              type="submit"
+              disabled={isSubmitting || !selectedTenantId || !limit}
+              className="w-full gap-2 shadow-md sm:w-auto"
+            >
               {isSubmitting ? (
                 <>
                   <IconLoader2 className="h-4 w-4 animate-spin" />
