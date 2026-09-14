@@ -72,7 +72,7 @@ export function NavMenu({ name, items, onChange }: INavMenuProps) {
                           {item.icon ? <item.icon /> : <IconAlertCircle />}
                           {ButtonComponent && <ButtonComponent />}
                         </div>
-                        <span>{item.title}</span>
+                        <span>{t(item.title)}</span>
                         <ChevronRight className="ms-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                       </SidebarMenuButton>
                     }

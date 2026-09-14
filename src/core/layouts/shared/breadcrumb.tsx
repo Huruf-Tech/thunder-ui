@@ -55,13 +55,34 @@ export function Breadcrumb() {
     [router.routes]
   )
 
+  const [dynamicTitle, setDynamicTitle] = React.useState<string | null>(null)
+
+  React.useEffect(() => {
+    const handler = (e: Event) => {
+      const customEvent = e as CustomEvent<string>
+      if (customEvent.detail) {
+        setDynamicTitle(customEvent.detail)
+      }
+    }
+    window.addEventListener("breadcrumb-title", handler)
+    return () => window.removeEventListener("breadcrumb-title", handler)
+  }, [])
+
+  React.useEffect(() => {
+    setDynamicTitle(null)
+  }, [location.pathname])
+
   if (parts.length <= 1) return null
   const state = location.state as TBreadcrumbState | null
 
   const lastPart = parts.at(-1)!
-  const lastLabel = state?.name
-    ? t(state.name)
+  const isObjectId = /^[0-9a-fA-F]{24}$/.test(lastPart)
+
+  const defaultLabel = isObjectId
+    ? t("Order details")
     : t(segmentNameMap[lastPart] ?? lastPart)
+
+  const lastLabel = dynamicTitle || (state?.name ? t(state.name) : defaultLabel)
 
   const crumbs = parts.slice(0, -1)
 
