@@ -1,6 +1,5 @@
-import { Container } from '@/components/container';
+import { Container } from '@/core/custom/Container'
 import { Skeleton } from '@/components/ui/skeleton';
-import { BottomSpacer } from '@/components/bottom-spacer';
 import { Button } from '@/components/ui/button';
 import { IconArrowLeft } from '@tabler/icons-react';
 
@@ -65,7 +64,6 @@ export function UserDetailSkeleton() {
           </div>
         </div>
       </div>
-      <BottomSpacer />
     </Container>
   );
 }
