@@ -40,7 +40,62 @@ function buildSegmentNameMap(routes: TRouteObject[]): Record<string, string> {
   return map
 }
 
-export function Breadcrumb() {
+export type TBreadcrumbCallback = (
+  segment: string,
+  context: {
+    pathname: string
+    isLast: boolean
+    defaultLabel: string
+  }
+) => string | null | undefined
+
+export interface BreadcrumbProps {
+  className?: string
+  /**
+   * Optional callback function to customize or dynamically compute breadcrumb labels.
+   * Return a custom label string, or null/undefined to use the default label.
+   */
+  customTitleCallback?: TBreadcrumbCallback
+  resolveLabel?: TBreadcrumbCallback
+}
+
+/**
+ * Sets a custom text or dynamic value in the breadcrumb from any page or component.
+ */
+export function setBreadcrumbTitle(title: string | null) {
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(
+      new CustomEvent("breadcrumb-title", { detail: title })
+    )
+  }
+}
+
+export const setBreadcrumb = setBreadcrumbTitle
+
+/**
+ * Hook to set custom text or dynamic value in the breadcrumb from page components.
+ * Automatically cleans up when the component unmounts or title changes.
+ */
+export function useBreadcrumbTitle(title?: string | null) {
+  React.useEffect(() => {
+    if (title !== undefined) {
+      setBreadcrumbTitle(title)
+    }
+    return () => {
+      setBreadcrumbTitle(null)
+    }
+  }, [title])
+
+  return { setTitle: setBreadcrumbTitle, setBreadcrumb: setBreadcrumbTitle }
+}
+
+export const useBreadcrumb = useBreadcrumbTitle
+
+export function Breadcrumb({
+  className,
+  customTitleCallback,
+  resolveLabel,
+}: BreadcrumbProps = {}) {
   const location = useLocation()
   const { router } = useLayout()
   const { t } = useTranslation()
@@ -55,21 +110,61 @@ export function Breadcrumb() {
     [router.routes]
   )
 
+  const [dynamicTitle, setDynamicTitle] = React.useState<string | null>(null)
+
+  React.useEffect(() => {
+    const handler = (e: Event) => {
+      const customEvent = e as CustomEvent<string | null>
+      setDynamicTitle(customEvent.detail ?? null)
+    }
+    window.addEventListener("breadcrumb-title", handler)
+    return () => window.removeEventListener("breadcrumb-title", handler)
+  }, [])
+
+  React.useEffect(() => {
+    setDynamicTitle(null)
+  }, [location.pathname])
+
   if (parts.length <= 1) return null
   const state = location.state as TBreadcrumbState | null
 
+  const callback = customTitleCallback ?? resolveLabel
   const lastPart = parts.at(-1)!
-  const lastLabel = state?.name
-    ? t(state.name)
-    : t(segmentNameMap[lastPart] ?? lastPart)
+  const defaultLabel = t(segmentNameMap[lastPart] ?? lastPart)
+
+  const customLastLabel = callback?.(lastPart, {
+    pathname: location.pathname,
+    isLast: true,
+    defaultLabel,
+  })
+
+  const lastLabel =
+    dynamicTitle ||
+    customLastLabel ||
+    (state?.name ? t(state.name) : defaultLabel)
 
   const crumbs = parts.slice(0, -1)
 
   return (
-    <_Breadcrumb className="min-w-0 max-w-full overflow-x-auto no-scrollbar scroll-mask-x-from-90%">
+    <_Breadcrumb
+      className={
+        className ??
+        "min-w-0 max-w-full overflow-x-auto no-scrollbar scroll-mask-x-from-90%"
+      }
+    >
       <BreadcrumbList className="flex-nowrap whitespace-nowrap">
         {crumbs.map((crumb, index) => {
           const to = "/" + parts.slice(0, index + 1).join("/")
+          const crumbDefaultLabel =
+            index === 0 ? null : t(segmentNameMap[crumb] ?? crumb)
+          const customCrumbLabel =
+            index === 0
+              ? null
+              : callback?.(crumb, {
+                  pathname: to,
+                  isLast: false,
+                  defaultLabel: crumbDefaultLabel ?? crumb,
+                })
 
           return (
             <React.Fragment key={to}>
@@ -80,7 +175,7 @@ export function Breadcrumb() {
                   {index === 0 ? (
                     <IconBrandGoogleHome className="size-4" />
                   ) : (
-                    t(segmentNameMap[crumb] ?? crumb)
+                    customCrumbLabel || crumbDefaultLabel
                   )}
                 </BreadcrumbLink>
               </BreadcrumbItem>

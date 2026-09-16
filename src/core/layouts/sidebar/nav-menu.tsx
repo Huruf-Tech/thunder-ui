@@ -19,6 +19,7 @@ import {
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 import { Link } from "react-router";
+import { useTranslation } from "react-i18next";
 
 export interface INavMenuItem {
   title: string;
@@ -37,9 +38,10 @@ export interface INavMenuProps {
 }
 
 export function NavMenu({ name, items }: INavMenuProps) {
+  const { t } = useTranslation();
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>{name}</SidebarGroupLabel>
+      <SidebarGroupLabel>{t(name)}</SidebarGroupLabel>
       <SidebarMenu>
         {items?.map((item, idx) =>
           item.items?.length
@@ -52,9 +54,9 @@ export function NavMenu({ name, items }: INavMenuProps) {
                 <SidebarMenuItem>
                   <CollapsibleTrigger
                     render={
-                      <SidebarMenuButton is="div" tooltip={item.title}>
+                      <SidebarMenuButton is="div" tooltip={t(item.title)}>
                         {item.icon && <item.icon />}
-                        <span>{item.title}</span>
+                        <span>{t(item.title)}</span>
                         <ChevronRight className="ms-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                       </SidebarMenuButton>
                     }
@@ -66,7 +68,7 @@ export function NavMenu({ name, items }: INavMenuProps) {
                           <SidebarMenuSubButton
                             render={
                               <Link to={subItem.path || "#"}>
-                                <span>{subItem.title}</span>
+                                <span>{t(subItem.title)}</span>
                               </Link>
                             }
                           />
@@ -80,9 +82,9 @@ export function NavMenu({ name, items }: INavMenuProps) {
             : (
               <SidebarMenuItem key={item.title + idx}>
                 <Link to={item.path || "#"}>
-                  <SidebarMenuButton tooltip={item.title}>
+                  <SidebarMenuButton tooltip={t(item.title)}>
                     {item.icon && <item.icon />}
-                    <span>{item.title}</span>
+                    <span>{t(item.title)}</span>
                   </SidebarMenuButton>
                 </Link>
               </SidebarMenuItem>
