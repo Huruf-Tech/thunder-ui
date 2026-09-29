@@ -62,6 +62,7 @@ import { getWallets } from "@/core/endpoints/wallet.ts"
 import { Skeleton } from "@/components/ui/skeleton"
 import { ActionSwapText } from "@/core/pages/wallet/action-swap"
 import { NotificationPopover } from "@/core/pages/notifications/notification-popover"
+import { HeaderActionsProvider } from "@/core/context/HeaderActions"
 
 function NavBalance({
   visible,
@@ -351,33 +352,37 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </Sidebar>
       <SidebarInset className="h-svh overflow-hidden md:p-2">
         <div className="@container/main relative flex h-full w-full flex-1 flex-col gap-2 rounded-xl border-border xl:border">
-          <Container as="header">
-            <div className="mx-auto flex items-center gap-3 py-2">
-              <Breadcrumb />
+          <HeaderActionsProvider>
+            {(actionsElement) => (
+              <Container as="header">
+                <div className="relative mx-auto flex items-center gap-3 py-2">
+                  {actionsElement}
+                  <Breadcrumb />
 
-              {/* Right Actions */}
-              <div className="ms-auto flex items-center gap-3">
-                {/* Notifications */}
-                <NotificationPopover userId={me?._id} />
+                  {/* Right Actions */}
+                  <div className="ms-auto flex items-center gap-3">
+                    {/* Notifications */}
+                    <NotificationPopover userId={me?._id} />
 
-                {/* Balance Toggle */}
-                {!import.meta.env.VITE_DISABLE_WALLET &&
-                  ThunderSDK.isPermitted(ThunderSDK.wallets.get) && (
-                    <NavBalance
-                      visible={balanceVisible}
-                      onToggle={() => setBalanceVisible((v) => !v)}
-                    />
-                  )}
+                    {/* Balance Toggle */}
+                    {!import.meta.env.VITE_DISABLE_WALLET &&
+                      ThunderSDK.isPermitted(ThunderSDK.wallets.get) && (
+                        <NavBalance
+                          visible={balanceVisible}
+                          onToggle={() => setBalanceVisible((v) => !v)}
+                        />
+                      )}
 
-                <SidebarTrigger />
-              </div>
-            </div>
+                    <SidebarTrigger />
+                  </div>
+                </div>
 
-            {subNavItems && (subNavItems?.length ?? 0) > 1 ? (
-              <SubNav navMenu={subNavItems} />
-            ) : null}
-          </Container>
-
+                {subNavItems && (subNavItems?.length ?? 0) > 1 ? (
+                  <SubNav navMenu={subNavItems} />
+                ) : null}
+              </Container>
+            )}
+          </HeaderActionsProvider>
           {/* Main Content */}
           <main className="page-transition relative mx-auto flex min-h-0 w-full flex-1 flex-col gap-3 pb-3">
             {children}
