@@ -14,7 +14,7 @@ export function HeaderActionsProvider({
   return (
     <HeaderActionsContext.Provider value={target}>
       {children?.(
-        <div ref={setTarget} className="absolute z-99 h-full w-full" />
+        <div ref={setTarget} className="absolute z-20 h-full w-full" />
       )}
     </HeaderActionsContext.Provider>
   )
