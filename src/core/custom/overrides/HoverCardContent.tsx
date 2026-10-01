@@ -3,6 +3,7 @@ import { PreviewCard as PreviewCardPrimitive } from "@base-ui/react/preview-card
 import { usePortalContainer } from "../../context/FullScreenProvider"
 
 export function HoverCardContent({
+  containerRef,
   className,
   side = "bottom",
   sideOffset = 4,
@@ -13,13 +14,15 @@ export function HoverCardContent({
   Pick<
     PreviewCardPrimitive.Positioner.Props,
     "align" | "alignOffset" | "side" | "sideOffset"
-  >) {
+  > & {
+    containerRef?: React.RefObject<HTMLElement | null>
+  }) {
   const container = usePortalContainer()
 
   return (
     <PreviewCardPrimitive.Portal
       data-slot="hover-card-portal"
-      container={container}
+      container={containerRef || container}
     >
       <PreviewCardPrimitive.Positioner
         align={align}
