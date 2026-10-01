@@ -24,6 +24,7 @@ import { useFilters, type TFilterValue, type TValue } from ".."
 import { IconCheck, IconDots } from "@tabler/icons-react"
 import { format, isEqual } from "date-fns"
 import React from "react"
+import { parseDate } from "chrono-node"
 import { DebouncedInput } from "./debounced-input"
 import { createNumberRange } from "../lib/helpers"
 import type { DateRange } from "react-day-picker"
@@ -36,6 +37,7 @@ import {
 } from "../lib/operators"
 import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
+import { Input } from "@/components/ui/input"
 
 type TFilterValueProps = {
   field: TField
@@ -160,11 +162,11 @@ function formatDateRange(start: Date, end: Date) {
 }
 
 export function FilterValueDateDisplay({ filter }: { filter?: TValue }) {
-  console.log(filter)
   if (!filter?.value) return <span>N/A</span>
 
   if (Array.isArray(filter?.value) && filter?.value.length === 0)
     return <IconDots className="size-4" />
+
   if (
     filter?.value instanceof Date ||
     (Array.isArray(filter?.value) && filter?.value.length === 1)
@@ -175,6 +177,10 @@ export function FilterValueDateDisplay({ filter }: { filter?: TValue }) {
     const formattedDateStr = format(value, "MMM d, yyyy")
 
     return <span>{formattedDateStr}</span>
+  }
+
+  if (typeof filter?.value === "string") {
+    return <span>{filter?.value.replace(/^nldate:/, "")}</span>
   }
 
   const formattedRangeStr = formatDateRange(filter?.value[0], filter?.value[1])
@@ -386,11 +392,15 @@ export function FilterValueDateController({
   onChange,
 }: {
   filter?: TValue
-  onChange: (value?: Date | Date[], operator?: string) => void
+  onChange: (
+    value?: Date | Date[] | `nldate:${string}`,
+    operator?: string
+  ) => void
 }) {
-  const [tab, setTab] = React.useState<"single" | "range">(
+  const [tab, setTab] = React.useState<"single" | "range" | "relative">(
     !filter?.value || filter?.value instanceof Date ? "single" : "range"
   )
+  const [relativeValue, setRelativeValue] = React.useState<string>("")
   const [date, setDate] = React.useState<DateRange | undefined>({
     from: filter?.value?.[0] ?? new Date(),
     to: filter?.value?.[1] ?? undefined,
@@ -409,13 +419,21 @@ export function FilterValueDateController({
 
     setFilterValueDebounced(
       [start, end].filter((v) => !!v),
-      tab === "single" ? DateOperator.is : RangeOperator["is between"]
+      RangeOperator["is between"]
     )
   }
 
   function changeSingleDate(value: Date) {
     setDate({ from: value, to: undefined })
     setFilterValueDebounced(value, DateOperator.is)
+  }
+
+  function changeRelativeDate(value: string) {
+    setRelativeValue(value)
+
+    if (parseDate(value))
+      // If the natural language date is parsable
+      setFilterValueDebounced(`nldate:${value}`, DateOperator.is)
   }
 
   return (
@@ -430,6 +448,9 @@ export function FilterValueDateController({
               <TabsTrigger value="range" onClick={() => setTab("range")}>
                 Range
               </TabsTrigger>
+              <TabsTrigger value="relative" onClick={() => setTab("relative")}>
+                Relative
+              </TabsTrigger>
             </TabsList>
           </Tabs>
 
@@ -442,7 +463,7 @@ export function FilterValueDateController({
               captionLayout="dropdown"
               required
             />
-          ) : (
+          ) : tab === "range" ? (
             <Calendar
               mode="range"
               defaultMonth={date?.from}
@@ -451,7 +472,18 @@ export function FilterValueDateController({
               numberOfMonths={1}
               captionLayout="dropdown"
             />
-          )}
+          ) : tab === "relative" ? (
+            <div className="flex flex-col gap-2 p-2">
+              <Label>Relative Date</Label>
+              <Input
+                value={relativeValue}
+                placeholder="Tomorrow or next week"
+                onChange={(e) => {
+                  changeRelativeDate(e.target.value)
+                }}
+              />
+            </div>
+          ) : null}
         </div>
       </CommandList>
     </Command>

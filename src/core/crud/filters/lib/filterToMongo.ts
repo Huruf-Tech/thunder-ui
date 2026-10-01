@@ -8,7 +8,8 @@ export type TServerValueTypes =
   | "boolean"
   | "date"
   | "regex"
-  | "objectId";
+  | "objectId"
+  | "milliseconds";
 
 export type TFilterInput = Record<
   string,
@@ -60,7 +61,10 @@ const normalizeValue = (value: any, operator: string) => {
 };
 
 const inferValueType = (value: any): TServerValueTypes => {
-  if (value instanceof Date) return "date";
+  if (
+    value instanceof Date ||
+    (typeof value === "string" && value.startsWith("nldate:"))
+  ) return "date";
 
   const type = typeof value;
 
