@@ -162,30 +162,33 @@ function formatDateRange(start: Date, end: Date) {
 }
 
 export function FilterValueDateDisplay({ filter }: { filter?: TValue }) {
-  if (!filter?.value) return <span>N/A</span>
+  try {
+    if (!filter?.value) return <span>N/A</span>
 
-  if (Array.isArray(filter?.value) && filter?.value.length === 0)
-    return <IconDots className="size-4" />
+    if (Array.isArray(filter?.value) && filter?.value.length === 0)
+      return <IconDots className="size-4" />
 
-  if (
-    filter?.value instanceof Date ||
-    (Array.isArray(filter?.value) && filter?.value.length === 1)
-  ) {
-    const value =
-      filter?.value instanceof Date ? filter?.value : filter?.value[0]
+    if (
+      filter?.value instanceof Date ||
+      (Array.isArray(filter?.value) && filter?.value.length === 1)
+    ) {
+      const value =
+        filter?.value instanceof Date ? filter?.value : filter?.value[0]
 
-    const formattedDateStr = format(value, "MMM d, yyyy")
+      const formattedDateStr = format(value, "MMM d, yyyy")
 
-    return <span>{formattedDateStr}</span>
+      return <span>{formattedDateStr}</span>
+    }
+
+    const formattedRangeStr = formatDateRange(
+      filter?.value[0],
+      filter?.value[1]
+    )
+
+    return <span>{formattedRangeStr}</span>
+  } catch {
+    return <span>{String(filter?.value).replace(/^nldate:/, "")}</span>
   }
-
-  if (typeof filter?.value === "string") {
-    return <span>{filter?.value.replace(/^nldate:/, "")}</span>
-  }
-
-  const formattedRangeStr = formatDateRange(filter?.value[0], filter?.value[1])
-
-  return <span>{formattedRangeStr}</span>
 }
 
 export function FilterValueTextDisplay({ filter }: { filter?: TValue }) {
