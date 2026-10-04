@@ -94,7 +94,15 @@ fully custom shell.
 - [ ] **B-01 — `npm run lint` is dead.** `eslint.config.js` was deleted in commit `e867b3a`, but the
       script, all eslint devDependencies, and ~35 `eslint-disable` comments across 24 files remain.
       No lint runs in CI or locally. *Decide: restore the config or drop the tooling.*
-- [ ] **B-02 — `FormPage` crashes when a module has no `crud` metadata.**
+- [x] **B-02 — `FormPage` breaks on a module with no usable schema.** **Fixed.** Investigation found
+      **three** entry points, not one. (1) `crud` not an object → `[]` → `fields[0].fields` threw
+      `Cannot read properties of undefined`. (2) `crud` present but the chosen schema missing →
+      `toFields` threw → the effect rejected → `isFieldsLoading` never cleared → skeleton forever.
+      (3) edit mode resolved `updateSchema ?? insertSchema` and never fell back to `crud.schema`.
+      Fix: `fieldsFromModuleMetadata` is now **total** (always returns `TField[]`, never rejects),
+      which also protects `ListPage` via `columnFromModuleMetadata`; the fields effect got a
+      try/finally plus a cancellation guard; the render path shows a translated empty state and
+      disables submit. Verified against all three modes. Original report:
       [FormPage.tsx:254](../src/core/crud/FormPage.tsx#L254) does `fields[0].fields ?? []`, but
       `fieldsFromModuleMetadata` returns `[]` when `typeof metadata.crud !== "object"`
       ([FormPage.tsx:33](../src/core/crud/FormPage.tsx#L33)) → `Cannot read properties of undefined`.

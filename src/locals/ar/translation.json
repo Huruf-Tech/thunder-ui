@@ -74,5 +74,7 @@
   "Confirmation": "تأكيد",
   "Are you sure you want to do this action?": "هل أنت متأكد من رغبتك في تنفيذ هذا الإجراء؟",
   "Type {{hint}} to confirm the action.": "أكتب {{hint}} لتأكيد الإجراء",
-  "please type a correct hint!": "يرجى كتابة تلميح صحيح"
+  "please type a correct hint!": "يرجى كتابة تلميح صحيح",
+  "This form is unavailable": "هذا النموذج غير متاح",
+  "{{name}} does not publish a schema for this action, so there is nothing to fill in.": "لا يوفر {{name}} مخططًا لهذا الإجراء، لذا لا يوجد ما يمكن ملؤه."
 }

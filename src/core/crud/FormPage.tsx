@@ -15,6 +15,14 @@ import {
 } from "@/components/ui/field"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty"
+import { IconAlertTriangle } from "@tabler/icons-react"
 import { JSONSchemaToFields, type TField } from "../lib/jsonSchemaToFields"
 import { forms } from "@/overrides/crud/forms"
 import { RenderFieldGroup } from "./form/RenderFieldGroup"
@@ -30,7 +38,7 @@ export const fieldsFromModuleMetadata = async (
 ) => {
   if (!metadata) return []
 
-  if (typeof metadata.crud !== "object") return []
+  if (typeof metadata.crud !== "object" || metadata.crud === null) return []
 
   const schema = (() => {
     switch (opts.type) {
@@ -38,12 +46,21 @@ export const fieldsFromModuleMetadata = async (
         return metadata.crud.insertSchema ?? metadata.crud.schema
 
       case "update":
-        return metadata.crud.updateSchema ?? metadata.crud.insertSchema
+        return (
+          metadata.crud.updateSchema ??
+          metadata.crud.insertSchema ??
+          metadata.crud.schema
+        )
 
       default:
         return metadata.crud.schema
     }
   })()
+
+  //! A module can expose create/update without publishing a schema for them, and
+  //! `toFields` throws on anything that is not an object. Returning [] keeps this
+  //! function total so no caller has to handle a rejected promise. See B-02.
+  if (typeof schema !== "object" || schema === null) return []
 
   // Convert json schema to fields data
   const results = await JSONSchemaToFields.toFields(undefined, schema, {
@@ -171,20 +188,37 @@ export function FormPage({ name }: IFormPageProps) {
   const [fields, setFields] = React.useState<TField[]>([])
 
   React.useEffect(() => {
-    ;(async () => {
+    let cancelled = false
+
+    void (async () => {
       setIsFieldsLoading(true)
 
-      const fields = await fieldsFromModuleMetadata(metadata, {
-        type: isEditMode ? "update" : "insert",
-        resolveRef: true,
-      })
+      try {
+        const fields = await fieldsFromModuleMetadata(metadata, {
+          type: isEditMode ? "update" : "insert",
+          resolveRef: true,
+        })
 
-      setFields(fields)
-      setIsFieldsLoading(false)
+        if (!cancelled) setFields(fields)
+      } catch (error) {
+        console.error("Failed to build form fields:", error)
+
+        if (!cancelled) setFields([])
+      } finally {
+        if (!cancelled) setIsFieldsLoading(false)
+      }
     })()
+
+    return () => {
+      cancelled = true
+    }
   }, [isEditMode, metadata])
 
   const isFormLoading = isFieldsLoading || (isEditMode && isRecordLoading)
+
+  //! A module can expose create/update with no schema behind it, so `fields` can
+  //! legitimately come back empty. See B-02.
+  const hasFields = !!fields[0]?.fields?.length
   const onSubmit: SubmitHandler<any> = async (body) => {
     try {
       if (isEditMode) {
@@ -248,8 +282,23 @@ export function FormPage({ name }: IFormPageProps) {
                 <Skeleton className="py-8 text-center text-sm text-muted-foreground">
                   {isEditMode ? t("Loading record...") : t("Loading form...")}
                 </Skeleton>
+              ) : hasFields ? (
+                <RenderFieldGroup fields={fields[0]!.fields!} />
               ) : (
-                <RenderFieldGroup fields={fields[0].fields ?? []} />
+                <Empty>
+                  <EmptyHeader>
+                    <EmptyMedia variant="icon" className="bg-destructive/10">
+                      <IconAlertTriangle className="text-destructive" />
+                    </EmptyMedia>
+                    <EmptyTitle>{t("This form is unavailable")}</EmptyTitle>
+                    <EmptyDescription>
+                      {t(
+                        "{{name}} does not publish a schema for this action, so there is nothing to fill in.",
+                        { name }
+                      )}
+                    </EmptyDescription>
+                  </EmptyHeader>
+                </Empty>
               )}
 
               <FieldSet>
@@ -257,7 +306,9 @@ export function FormPage({ name }: IFormPageProps) {
                   <Field orientation="horizontal">
                     <Button
                       type="submit"
-                      disabled={methods.formState.isSubmitting || isFormLoading}
+                      disabled={
+                        methods.formState.isSubmitting || isFormLoading || !hasFields
+                      }
                     >
                       {t("Submit")}
                     </Button>

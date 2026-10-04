@@ -70,5 +70,7 @@
   "Transfer to {{target}}": "Transfer to {{target}}",
   "name": "Name",
   "Credit": "Credit",
-  "Debit": "Debit"
+  "Debit": "Debit",
+  "This form is unavailable": "This form is unavailable",
+  "{{name}} does not publish a schema for this action, so there is nothing to fill in.": "{{name}} does not publish a schema for this action, so there is nothing to fill in."
 }
