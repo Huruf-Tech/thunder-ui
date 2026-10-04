@@ -2,6 +2,7 @@
 import React from "react";
 import { createBrowserRouter } from "react-router";
 import { Toaster } from "sonner";
+import { useTheme } from "@/components/theme-provider";
 
 import { Layout as NavbarLayout } from "@/core/layouts/navbar";
 import { Layout as MobileLayout } from "@/core/layouts/mobile";
@@ -22,6 +23,8 @@ export interface ILayoutProps {
 }
 
 export function LayoutProvider({ children, layout, router }: ILayoutProps) {
+  const { resolvedTheme } = useTheme();
+
   const Layout = layout ??
     (() => {
       switch (import.meta.env.VITE_APP_LAYOUT) {
@@ -41,7 +44,7 @@ export function LayoutProvider({ children, layout, router }: ILayoutProps) {
       <Layout>{children}</Layout>
 
       <Toaster
-        theme={"light"}
+        theme={resolvedTheme}
         position="bottom-center"
         toastOptions={{
           className: "!items-start !gap-3 !rounded-4xl !p-5",

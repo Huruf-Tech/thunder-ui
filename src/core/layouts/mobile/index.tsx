@@ -21,6 +21,9 @@ import {
   unreadCountInterval,
 } from "@/core/lib/constants";
 
+/** Flip to true once a `settings` route exists. See F-08. */
+const HAS_SETTINGS_ROUTE = false
+
 export function Layout({ children }: { children: React.ReactNode }) {
   const { router } = useLayout();
   const location = useLocation();
@@ -123,7 +126,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
               onItemMarkedRead={decrementUnread}
             />
             )}
-            {activeParent === "settings" ? <span className="size-9" /> : (
+            {/*
+              There is no `settings` route in coreRoutes, so this button used to
+              navigate straight to a 404. It stays hidden until the page exists;
+              see B-13 / F-08 in docs/AUDIT.md.
+            */}
+            {HAS_SETTINGS_ROUTE && activeParent !== "settings" ? (
               <Button
                 variant="ghost"
                 size="icon"
@@ -133,7 +141,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
               >
                 <IconSettings className="size-5" />
               </Button>
-            )}
+            ) : <span className="size-9" />}
           </div>
         </Container>
 

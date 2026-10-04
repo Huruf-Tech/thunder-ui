@@ -8,16 +8,13 @@ import { EdgeToEdge } from "@capawesome/capacitor-android-edge-to-edge-support";
 import { useCssVar } from "@/core/lib/cssVars";
 import { useTheme } from "@/components/theme-provider";
 
-const setDarkStyle = async (color: string) => {
-  const hexColor = rgbToHex(color);
-  await SystemBars.setStyle({ style: SystemBarsStyle.Dark });
-  await EdgeToEdge.setStatusBarColor({ color: hexColor });
-  await EdgeToEdge.setNavigationBarColor({ color: hexColor });
-};
-
-const setLightStyle = async (color: string) => {
-  const hexColor = rgbToHex(color);
-  await SystemBars.setStyle({ style: SystemBarsStyle.Light });
+//! These take an already-converted hex value. They used to call `rgbToHex` a
+//! second time on the output of the caller's conversion. See B-20.
+const setSystemBars = async (
+  hexColor: string,
+  style: SystemBarsStyle,
+) => {
+  await SystemBars.setStyle({ style });
   await EdgeToEdge.setStatusBarColor({ color: hexColor });
   await EdgeToEdge.setNavigationBarColor({ color: hexColor });
 };
@@ -33,10 +30,12 @@ export function AppWrapper({ children }: { children: React.ReactNode }) {
       try {
         await EdgeToEdge.enable();
 
-        const hexColor = rgbToHex(background);
-
-        if (resolvedTheme === "dark") await setDarkStyle(hexColor);
-        else await setLightStyle(hexColor);
+        await setSystemBars(
+          rgbToHex(background),
+          resolvedTheme === "dark"
+            ? SystemBarsStyle.Dark
+            : SystemBarsStyle.Light,
+        );
       } catch (error) {
         console.error(error);
       }
@@ -47,7 +46,7 @@ export function AppWrapper({ children }: { children: React.ReactNode }) {
 
       void EdgeToEdge.disable();
     };
-  }, [background]);
+  }, [background, resolvedTheme]);
 
   return (
     <LoadingProvider>

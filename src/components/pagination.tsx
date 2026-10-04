@@ -76,11 +76,13 @@ export function Pagination({
     [active, total, limit, paginationItemsToDisplay]
   )
 
+  //! This clamped against `total`, the number of ITEMS, so with 500 records any
+  //! page index up to 500 was accepted on a 5-page list. See B-16.
   const handleChange = React.useCallback(
     (page: number) => {
-      onChange(Math.min(Math.max(page, 0), total))
+      onChange(Math.min(Math.max(page, 0), Math.max(totalPages.length - 1, 0)))
     },
-    [total]
+    [totalPages.length, onChange]
   )
 
   return totalPages.length > 1 ? (
@@ -117,7 +119,7 @@ export function Pagination({
             </SelectTrigger>
             <SelectContent className="max-h-50">
               <SelectGroup>
-                <SelectLabel>Pages</SelectLabel>
+                <SelectLabel>{t("Pages")}</SelectLabel>
                 {totalPages.map((item) => (
                   <SelectItem key={item.value} value={item.value}>
                     {item.label}

@@ -8,11 +8,10 @@ import type { FieldErrors } from "react-hook-form"
  * Callers read `.message` for a plain field, or `.root?.message` for the
  * field-array-level error produced by `useFieldArray({ rules })`.
  *
- * !! Known defect, tracked as B-08 in docs/AUDIT.md: the `?? errors[p]` fallback
- * !! re-applies on every segment, so a miss part-way down a nested path resolves
- * !! to the top-level key of that name instead of to nothing. Behaviour is
- * !! preserved here verbatim from the three copies this replaced; fixing it is a
- * !! one-line change in this function.
+ * The descent starts at the root and then follows the path strictly. The old
+ * `error?.[part] ?? errors[part]` re-applied the root lookup on every segment,
+ * so a miss part-way down resolved to an unrelated top-level key of the same
+ * name — `wage.amount` could surface the error belonging to `amount`. See B-08.
  */
 export function findFieldError(
   errors: FieldErrors,
@@ -20,10 +19,12 @@ export function findFieldError(
 ): any | undefined {
   if (!name) return
 
-  let error: any
+  let error: any = errors
 
   for (const part of name.split(".")) {
-    error = error?.[part] ?? errors[part]
+    if (error === undefined || error === null) return
+
+    error = error[part]
   }
 
   return error

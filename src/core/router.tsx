@@ -16,7 +16,12 @@ import { ViewPage } from "@/core/crud/ViewPage"
 import Overview from "@/pages/overview"
 import { Wallet } from "@/core/pages/wallet"
 import { lists } from "@/overrides/crud/lists"
-import { allowDisplayRoute, groupPath, sortRoutes } from "./lib/utils"
+import {
+  allowDisplayRoute,
+  envFlag,
+  groupPath,
+  sortRoutes,
+} from "./lib/utils"
 import { routes as overrideRoutes } from "@/overrides/routes"
 import Notifications from "./pages/notifications"
 
@@ -176,7 +181,7 @@ coreRoutes.unshift(
     priority: 50,
     Component: () => <Wallet />,
     display: () =>
-      !import.meta.env.VITE_DISABLE_WALLET &&
+      !envFlag(import.meta.env.VITE_DISABLE_WALLET) &&
       (ThunderSDK.isPermitted(ThunderSDK.wallets.get) ||
         ThunderSDK.isPermitted(ThunderSDK.walletLedgers.get) ||
         ThunderSDK.isPermitted(ThunderSDK.wallets.signTransfer)),

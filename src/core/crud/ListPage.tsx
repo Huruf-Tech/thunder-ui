@@ -12,7 +12,7 @@ import {
 } from "@tanstack/react-table"
 import { Button } from "@/components/ui/button"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
-import { Link, matchPath, useNavigate } from "react-router"
+import { Link, useNavigate } from "react-router"
 import { use } from "../hooks/use"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import {
@@ -223,7 +223,7 @@ export function ListPage({ group, name }: IListPageProps) {
       project: Object.keys(project).length ? project : undefined,
       sort: Object.keys(sort).length ? sort : undefined,
     }),
-    [filters, subFilters, isCard, project, sort, page]
+    [filters, subFilters, isCard, project, sort, page, pageSize]
   )
 
   const countQuery = React.useMemo(
@@ -299,9 +299,14 @@ export function ListPage({ group, name }: IListPageProps) {
     }
   }, [fetchCount, query])
 
+  //! This used to build a path and `matchPath` it against itself, which always
+  //! succeeds — so the flag was permanently true and the literal "/tenant/"
+  //! prefix never matched a real tenant anyway. The module's own metadata is the
+  //! real answer: a form route exists only when create or update does. See B-10.
   const allowForm = React.useMemo(() => {
-    const path = `/tenant/${groupPath(group)}/${name}/form`
-    return matchPath({ path, end: true }, path)
+    const module = ThunderSDK.getModule(name)
+
+    return "create" in module || "update" in module
   }, [name])
 
   const metadata = React.useMemo(() => ThunderSDK.getMetadata(name), [name])
@@ -620,14 +625,42 @@ export function ListPage({ group, name }: IListPageProps) {
                   }
                   onConfirm={async (dismiss) => {
                     const ids = selectedRows.map((row: any) => row.original._id)
-                    for (const id of ids) {
-                      await ThunderSDK.getModule(name).del({
-                        params: { id },
-                      })
+
+                    //! Deletes used to run in a bare loop: the first rejection
+                    //! threw past the success toast and the cache refresh, so the
+                    //! list kept showing rows that were already gone. See B-11.
+                    const results = await Promise.allSettled(
+                      ids.map((id: string) =>
+                        ThunderSDK.getModule(name).del({ params: { id } })
+                      )
+                    )
+
+                    const failed = results.filter(
+                      (result) => result.status === "rejected"
+                    ).length
+
+                    if (failed) {
+                      toast.error(
+                        t("Failed to delete {{count}} of {{total}} item(s).", {
+                          count: failed,
+                          total: ids.length,
+                        })
+                      )
                     }
-                    toast.success(t("Deleted successfully."))
+
+                    if (failed < ids.length) {
+                      toast.success(t("Deleted successfully."))
+                    }
+
                     table.resetRowSelection()
-                    await get.invalidate()
+
+                    //! The total is a separate cache entry; refreshing only the
+                    //! rows left the count stale. See B-11.
+                    await Promise.allSettled([
+                      get.invalidate(),
+                      count.invalidate(),
+                    ])
+
                     dismiss()
                   }}
                 />

@@ -86,10 +86,15 @@ export function transformImage(
 }
 
 export function getInitials(name?: string) {
-  const [first, ...last] = name || "unamed"
-  return !last
-    ? first.substring(0, 2).toUpperCase()
-    : `${first[0].toUpperCase()}${last[0].toUpperCase()}`
+  //! This used to destructure the *string*, so `last` was an array of characters
+  //! and never empty: "John Doe" returned "JO" instead of "JD". See B-05.
+  const [first, ...rest] = (name || "Unnamed").trim().split(/\s+/)
+
+  if (!first) return "?"
+
+  const last = rest.at(-1)
+
+  return (last ? `${first[0]}${last[0]}` : first.slice(0, 2)).toUpperCase()
 }
 
 export function resolveUrl(path?: string) {
@@ -159,13 +164,25 @@ export function formatDateForInput(
 /**
  * Converts a module group name into its route path segment.
  *
- * !! Known defect, tracked as B-09 in docs/AUDIT.md: `replace` only substitutes
- * !! the FIRST space, so "Human Resources Admin" becomes "human-resources admin".
- * !! Behaviour is preserved verbatim from the four call sites this replaced;
- * !! fixing it is a one-line change here.
+ * Replaces every run of whitespace: `replace(" ", "-")` substituted only the
+ * first one, so "Human Resources Admin" produced "human-resources admin", which
+ * matched no route. See B-09.
  */
 export function groupPath(group?: string) {
-  return group?.toLowerCase().replace(" ", "-")
+  return group?.trim().toLowerCase().replace(/\s+/g, "-")
+}
+
+/**
+ * Reads a boolean from a Vite env var.
+ *
+ * Every value in `import.meta.env` is a string, so `!import.meta.env.FLAG` was
+ * true only when the variable was absent entirely — `FLAG=0` and `FLAG=false`
+ * both read as enabled. See B-24.
+ */
+export function envFlag(value: unknown, fallback = false) {
+  if (value === undefined || value === "") return fallback
+
+  return !["0", "false", "off", "no"].includes(String(value).toLowerCase())
 }
 
 export function allowDisplayRoute(display?: boolean | (() => boolean)) {

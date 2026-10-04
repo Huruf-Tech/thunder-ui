@@ -121,7 +121,7 @@ fully custom shell.
       ([thunder.ts:33](../src/core/lib/thunder.ts#L33)), never in `initThunder()` — which is what
       `main.tsx` calls. Users see no server error detail until after a logout/refresh cycle.
       Compounded by [FormPage.tsx:217](../src/core/crud/FormPage.tsx#L217) swallowing the caught error.
-- [ ] **B-39 — A failed form submit now raises up to three toasts.** With B-03 fixed, a validation
+- [x] **B-39** **Fixed.** The generic toast is suppressed when the response already carried `messages`, so a validation failure shows the server's reasons only. Original report: — A failed form submit now raises up to three toasts.** With B-03 fixed, a validation
       failure shows each server message *plus* `FormPage`'s generic "Failed to create {{name}}."
       ([FormPage.tsx](../src/core/crud/FormPage.tsx)). Informative but noisy — the generic toast
       should probably be suppressed when the response carried its own messages.
@@ -130,11 +130,21 @@ fully custom shell.
       `<Pagination>` is only rendered in the card branch
       ([ListPage.tsx:534](../src/core/crud/ListPage.tsx#L534)). The default table view fetches the
       **entire collection** on every load.
-- [ ] **B-05 — `getInitials()` returns the first two characters, not initials.**
+- [x] **B-05** **Fixed.** `getInitials` now splits on whitespace and uses first + last word. Verified: `"John Doe"`→`JD`, `"Mary Jane Watson"`→`MW`, `"Ali"`→`AL`. Typo `unamed` corrected. Original report: — `getInitials()` returns the first two characters, not initials.**
       [utils.ts:78-83](../src/core/lib/utils.ts#L78-L83) destructures a *string*, so `last` is always a
       non-empty char array and the `!last` branch is dead. Verified: `"John Doe"` → `"JO"`, expected `"JD"`.
       Also the fallback string is misspelled `"unamed"`.
-- [ ] **B-06 — `getWallets(query)` ignores its own argument.**
+- [x] **B-06 — Wallet reads dropped their query, and invalidation missed the live cache entry.**
+      **Fixed.** Two defects, and the second was the one users could see. (1) `getWallets` hashed
+      `query` into the cache key then sent `query: {}` — a latent landmine, since both current callers
+      pass no query. (2) The live bug: `invalidateWallets()` called `getWallets()` /
+      `getWalletLedgers()` **with no arguments**, invalidating only the entry keyed by `hash({})`,
+      while `transaction-history.tsx` reads through `getWalletLedgers(query)` with filters and
+      pagination — so **the transaction history stayed stale after every transfer**. Fix: the query is
+      passed through; invalidation now uses `ThunderSDK.withCaching({ matcher })` to reach every
+      wallet entry whatever its query hash; both reads accept the `signal` so they can be aborted.
+      Matcher verified against 12 key shapes, including lookalikes (`subwallets.get`,
+      `wallets.getBalance`, `walletLedgersArchive.get`) that must not be caught. Original report:
       [wallet.ts:9](../src/core/endpoints/wallet.ts#L9) hashes `query` into the cache key but then calls
       `ThunderSDK.wallets.get({params:{}, query:{}})`. Any filtered wallet fetch silently returns
       unfiltered data under a distinct cache key. `invalidateWallets()` then only clears the `{}` entry.
@@ -144,28 +154,28 @@ fully custom shell.
       to `false` inside `.finally()` *before* calling `methods.reset(results[0])`
       ([FormPage.tsx:155-165](../src/core/crud/FormPage.tsx#L155-L165)). The form renders once with
       empty values, and uncontrolled inputs never pick up the reset.
-- [ ] **B-08 — Nested field errors resolve to the wrong error.** The `getError` loop
+- [x] **B-08** **Fixed** in the shared `findFieldError` helper: the descent now starts at the root and follows the path strictly. Verified that `wage.amount` no longer resolves to an unrelated top-level `amount` error. Original report: — Nested field errors resolve to the wrong error.** The `getError` loop
       `error = error?.[p] ?? errors[p]` re-falls-back to the *top-level* key on every iteration.
       Duplicated verbatim in three files:
       [RenderInput.tsx:57-72](../src/core/crud/form/RenderInput.tsx#L57-L72),
       [RenderArray.tsx:42-57](../src/core/crud/form/RenderArray.tsx#L42-L57),
       [RenderObject.tsx:32-47](../src/core/crud/form/RenderObject.tsx#L32-L47).
-- [ ] **B-09 — Group paths with more than one space break.** `.replace(" ", "-")` replaces only the
+- [x] **B-09** **Fixed** in the shared `groupPath` helper: `replace(/\s+/g, "-")`. Verified `"Human Resources Admin"` → `human-resources-admin`. Original report: — Group paths with more than one space break.** `.replace(" ", "-")` replaces only the
       first space. A group named `"Human Resources Admin"` becomes `human-resources admin`, which does
       not match its own route. Four sites: [router.tsx:143](../src/core/router.tsx#L143),
       [ListPage.tsx:108](../src/core/crud/ListPage.tsx#L108),
       [ListPage.tsx:302](../src/core/crud/ListPage.tsx#L302),
       [ViewPage.tsx:21](../src/core/crud/ViewPage.tsx#L21). Same class of bug in
       `appName()` ([utils.ts:16](../src/core/lib/utils.ts#L16)).
-- [ ] **B-10 — `allowForm` is always true.** [ListPage.tsx:301-304](../src/core/crud/ListPage.tsx#L301-L304)
+- [x] **B-10** **Fixed.** The self-matching `matchPath` call is gone; `allowForm` now asks the module metadata whether `create` or `update` exists — the actual condition `router.tsx` uses to emit a form route. Original report: — `allowForm` is always true.** [ListPage.tsx:301-304](../src/core/crud/ListPage.tsx#L301-L304)
       matches a path against *itself*, which always succeeds (verified). The literal `/tenant/` prefix is
       also wrong — the real segment is the tenant id. The permission check beside it is doing all the work.
-- [ ] **B-11 — Count is not invalidated after a bulk delete.**
+- [x] **B-11** **Fixed.** Deletes run through `Promise.allSettled`, so one rejection no longer skips the rest (and the user is told how many failed), and the **count** cache is invalidated alongside the rows. Original report: — Count is not invalidated after a bulk delete.**
       [ListPage.tsx:629](../src/core/crud/ListPage.tsx#L629) calls `get.invalidate()` only; the total
       stays stale. The delete loop also has no error handling — one failure aborts the rest with no toast.
-- [ ] **B-12 — `use()` never clears a previous error.** On a successful retry,
+- [x] **B-12** **Fixed.** `setError(null)` on a successful response, so error UI clears on a working retry. Original report: — `use()` never clears a previous error.** On a successful retry,
       [use.tsx:58](../src/core/hooks/use.tsx#L58) sets data but leaves `error` set, so error UI sticks.
-- [ ] **B-13 — Mobile "Settings" button navigates to a route that does not exist.**
+- [x] **B-13** **Partly fixed.** The button is hidden behind a `HAS_SETTINGS_ROUTE` constant instead of navigating to a guaranteed 404. Building the page stays open as F-08. Original report: — Mobile "Settings" button navigates to a route that does not exist.**
       [mobile/index.tsx:129](../src/core/layouts/mobile/index.tsx#L129) goes to `/${tenantId}/settings`;
       there is no `settings` route anywhere in `coreRoutes`. Guaranteed 404.
 - [x] **B-14 — Unread-count polling runs at ~4 ms when the env var is unset.** **Fixed in passing**
@@ -174,33 +184,33 @@ fully custom shell.
       [mobile/index.tsx:80](../src/core/layouts/mobile/index.tsx#L80) passes the raw
       `import.meta.env.VITE_UNREAD_COUNT_INTERVAL` to `setInterval`; `undefined` → minimum delay.
       `VITE_UNREAD_COUNT_INTERVAL` only exists in `.env`, not in the mode-specific env files.
-- [ ] **B-15 — Onboarding "Skip" does not persist.**
+- [x] **B-15** **Fixed.** Skip and Get Started share one `dismiss()` that persists the preference. Original report: — Onboarding "Skip" does not persist.**
       [onboarding.tsx:76](../src/components/onboarding.tsx#L76) only calls `setOpen(false)`; it never
       writes the `onboarding` preference, so the flow reappears on every launch.
-- [ ] **B-16 — Pagination page clamp uses the item count.**
+- [x] **B-16** **Fixed.** Clamps to `totalPages - 1`. Verified page 999 of a 5-page list resolves to 4. Original report: — Pagination page clamp uses the item count.**
       [pagination.tsx:81](../src/components/pagination.tsx#L81) clamps to `total` (number of records)
       instead of `totalPages - 1`.
 - [ ] **B-17 — Multiple "is not between" filters collapse into one `$or`.**
       [filterToMongo.ts:141-154](../src/core/crud/filters/lib/filterToMongo.ts#L141-L154) pushes every
       `$nbt` into one shared `mongoFilter.$or`, turning an AND of two exclusions into a single OR.
-- [ ] **B-18 — "is greater than" maps to `$gte`, "is less than" maps to `$lte`.**
+- [x] **B-18** **Fixed** by renaming the labels to match the inclusive operators (`is at least` / `is at most`, `is on or after` / `is on or before`). Swapping the operators to `$gt`/`$lt` would silently change the meaning of filters already saved in URLs. Original report: — "is greater than" maps to `$gte`, "is less than" maps to `$lte`.**
       [operators.ts:19-20](../src/core/crud/filters/lib/operators.ts#L19-L20) and
       [:37-38](../src/core/crud/filters/lib/operators.ts#L37-L38) — the labels say strict, the operators are inclusive.
 - [x] ~~**B-19 — Regex filter values are not escaped.**~~ **Resolved by D3** — the framework escapes
       `{ type: "regex" }` values server-side. No client change; document the guarantee instead.
-- [ ] **B-20 — Native system-bar colour is converted twice.**
+- [x] **B-20** **Fixed.** One `setSystemBars(hex, style)` replaces the pair that re-converted an already-hex value, and `resolvedTheme` is now a dependency so the bars follow a theme switch. Original report: — Native system-bar colour is converted twice.**
       [AppWrapper.tsx:36-39](../src/core/AppWrapper.tsx#L36-L39) calls `rgbToHex(background)` and then
       passes the result into `setDarkStyle`/`setLightStyle`, which call `rgbToHex` again on an already-hex
       value. The effect also omits `resolvedTheme` from its deps, so the bars do not follow a theme switch.
-- [ ] **B-21 — Toasts are locked to the light theme.**
+- [x] **B-21** **Fixed.** `<Toaster theme={resolvedTheme} />`. Original report: — Toasts are locked to the light theme.**
       [layout-provider.tsx:51](../src/core/layouts/layout-provider.tsx#L51) hardcodes `theme={"light"}`.
-- [ ] **B-22 — `DirectionProvider` is fixed at mount.**
+- [x] **B-22** **Fixed.** A `Root` component subscribes to `useTranslation` and feeds `i18n.dir()` to `DirectionProvider`, so Base UI re-lays-out on language change. Original report: — `DirectionProvider` is fixed at mount.**
       [main.tsx:17](../src/main.tsx#L17) reads `i18next.language` once. Switching language updates the
       `dir` attribute ([App.tsx:72](../src/App.tsx#L72)) but not Base UI's direction context.
-- [ ] **B-23 — Pressing `d` anywhere toggles dark mode.**
+- [x] **B-23** **Fixed.** The unmodified `d` hotkey is removed, along with the `isEditableTarget` helper that existed only to serve it. Original report: — Pressing `d` anywhere toggles dark mode.**
       [theme-provider.tsx:170-205](../src/components/theme-provider.tsx#L170-L205) — no modifier key,
       only guarded against editable targets. Surprising and undocumented.
-- [ ] **B-24 — `VITE_DISABLE_WALLET` can never be falsy.** Vite env values are strings, so
+- [x] **B-24** **Fixed** with an `envFlag()` reader treating `0`/`false`/`off`/`no` as disabled; applied at both `VITE_DISABLE_WALLET` sites. Original report: — `VITE_DISABLE_WALLET` can never be falsy.** Vite env values are strings, so
       `VITE_DISABLE_WALLET=0` still disables the wallet.
       [router.tsx:179](../src/core/router.tsx#L179), [navbar/index.tsx:368](../src/core/layouts/navbar/index.tsx#L368).
 - [ ] **B-25 — `AuthProvider` leaks its native URL listener and has a stale-closure effect.**
@@ -211,14 +221,14 @@ fully custom shell.
       [notification.ts](../src/core/endpoints/notification.ts) uses bare `axios`, so no auth
       interceptors, no `withCredentials`, no error toasts; `baseUrl` is concatenated without trailing-slash
       normalisation.
-- [ ] **B-27 — `ListPage` query memo is missing `pageSize`.**
+- [x] **B-27** **Fixed.** `pageSize` added to the query memo deps. Original report: — `ListPage` query memo is missing `pageSize`.**
       [ListPage.tsx:225](../src/core/crud/ListPage.tsx#L225) — changing page size does not refetch.
-- [ ] **B-28 — Dead "Notifications" menu item.**
+- [x] **B-28** **Fixed.** The item now links to the notifications route. Original report: — Dead "Notifications" menu item.**
       [navbar/index.tsx:302-305](../src/core/layouts/navbar/index.tsx#L302-L305) has no `onClick`.
-- [ ] **B-29 — Radix CSS variable in a Base UI component.**
+- [x] **B-29** **Fixed.** The unresolvable Radix variable is dropped; `min-w-56` already sized the menu. Original report: — Radix CSS variable in a Base UI component.**
       [navbar/index.tsx:257](../src/core/layouts/navbar/index.tsx#L257) uses
       `w-(--radix-dropdown-menu-trigger-width)`, which never resolves in this stack.
-- [ ] **B-30 — `index.html` favicon MIME type is `image/svg+xm+png`.**
+- [x] **B-30** **Fixed.** `type="image/png"`. Original report: — `index.html` favicon MIME type is `image/svg+xm+png`.**
       [index.html:5](../index.html#L5) — typo; the file is a PNG.
 - [ ] **B-31 — Ref dropdowns fetch the entire referenced collection.**
       `JSONSchemaToFields.resolveRef` ([FormPage.tsx:69-83](../src/core/crud/FormPage.tsx#L69-L83))

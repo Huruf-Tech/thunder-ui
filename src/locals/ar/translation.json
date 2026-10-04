@@ -83,5 +83,11 @@
   "Must be {{max}} or less.": "يجب أن يكون {{max}} أو أقل.",
   "Select at least {{count}} item(s).": "اختر {{count}} عنصرًا على الأقل.",
   "Select at most {{count}} item(s).": "اختر {{count}} عنصرًا على الأكثر.",
-  "Enter valid JSON.": "أدخل JSON صالحًا."
+  "Enter valid JSON.": "أدخل JSON صالحًا.",
+  "Failed to delete {{count}} of {{total}} item(s).": "تعذر حذف {{count}} من أصل {{total}} عنصر.",
+  "Pages": "الصفحات",
+  "is at least": "لا يقل عن",
+  "is at most": "لا يزيد عن",
+  "is on or after": "في أو بعد",
+  "is on or before": "في أو قبل"
 }

@@ -79,5 +79,11 @@
   "Must be {{max}} or less.": "Must be {{max}} or less.",
   "Select at least {{count}} item(s).": "Select at least {{count}} item(s).",
   "Select at most {{count}} item(s).": "Select at most {{count}} item(s).",
-  "Enter valid JSON.": "Enter valid JSON."
+  "Enter valid JSON.": "Enter valid JSON.",
+  "Failed to delete {{count}} of {{total}} item(s).": "Failed to delete {{count}} of {{total}} item(s).",
+  "Pages": "Pages",
+  "is at least": "is at least",
+  "is at most": "is at most",
+  "is on or after": "is on or after",
+  "is on or before": "is on or before"
 }

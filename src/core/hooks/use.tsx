@@ -56,6 +56,9 @@ export function use<T>(
           const Response = await _request(opts)
 
           setData(Response)
+          //! Without this the error state survived a successful refetch, so the
+          //! error UI stayed on screen forever. See B-12.
+          setError(null)
           setLoading(false)
 
           return

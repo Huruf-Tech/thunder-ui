@@ -31,6 +31,16 @@ export function Onboarding() {
 
   const isLastScreen = current === Screens.length - 1
 
+  //! Skip used to only close the dialog, so onboarding reappeared on the next
+  //! launch. Both exits must record that it was seen. See B-15.
+  const dismiss = React.useCallback(async () => {
+    setOpen(false)
+
+    await Preferences.set({ key: "onboarding", value: "true" }).catch(
+      console.error
+    )
+  }, [])
+
   const handleNext = () => {
     if (!isLastScreen) {
       setCurrent((prev) => prev + 1)
@@ -74,7 +84,7 @@ export function Onboarding() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setOpen(false)}
+                onClick={dismiss}
                 className={!isLastScreen ? "visible" : "invisible"}
               >
                 Skip <IconChevronsRight />
@@ -130,14 +140,7 @@ export function Onboarding() {
                   {current + 1 === Screens.length ? (
                     <Button
                       className="mt-2 w-full"
-                      onClick={async () => {
-                        await Preferences.set({
-                          key: "onboarding",
-                          value: "true",
-                        }).catch(console.error)
-
-                        setOpen(false)
-                      }}
+                      onClick={dismiss}
                     >
                       Get Started
                     </Button>

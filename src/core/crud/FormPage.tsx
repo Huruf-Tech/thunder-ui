@@ -28,6 +28,7 @@ import { forms } from "@/overrides/crud/forms"
 import { RenderFieldGroup } from "./form/RenderFieldGroup"
 import { Container } from "@/core/custom/Container"
 import { toast } from "sonner"
+import { isAxiosError } from "axios"
 
 export const fieldsFromModuleMetadata = async (
   metadata: any,
@@ -249,11 +250,19 @@ export function FormPage({ name }: IFormPageProps) {
 
       navigate(-1)
     } catch (error) {
-      toast.error(
-        isEditMode
-          ? t("Failed to update {{name}}.", { name })
-          : t("Failed to create {{name}}.", { name })
-      )
+      //! The axios interceptor already toasts whatever the server sent, so the
+      //! generic message is only useful when the response carried none. See B-39.
+      const reported = isAxiosError<{ messages?: unknown[] }>(error)
+        ? !!error.response?.data?.messages?.length
+        : false
+
+      if (!reported) {
+        toast.error(
+          isEditMode
+            ? t("Failed to update {{name}}.", { name })
+            : t("Failed to create {{name}}.", { name })
+        )
+      }
     }
   }
 

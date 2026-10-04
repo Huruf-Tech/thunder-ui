@@ -13,11 +13,14 @@ export const StringOperator = {
   "is not": "$ne",
 } as const
 
+//! The operators are inclusive, so the labels say so. Renaming the labels keeps
+//! every stored filter working; swapping the operators to $gt/$lt would silently
+//! change the meaning of filters already saved in URLs. See B-18.
 export const NumberOperator = {
   is: "$eq",
   "is not": "$ne",
-  "is greater than": "$gte",
-  "is less than": "$lte",
+  "is at least": "$gte",
+  "is at most": "$lte",
 } as const
 
 export const BooleanOperator = {
@@ -34,8 +37,8 @@ export const MultiOptionOperator = {
 export const DateOperator = {
   is: "$eq",
   "is not": "$ne",
-  "is greater than": "$gte",
-  "is less than": "$lte",
+  "is on or after": "$gte",
+  "is on or before": "$lte",
 } as const
 
 export function getDefaultOperator(field: TField, filter?: TValue) {

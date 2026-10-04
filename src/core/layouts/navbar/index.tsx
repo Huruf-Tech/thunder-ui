@@ -51,7 +51,13 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { use } from "@/core/hooks/use"
-import { getAuthUrl, getInitials, transformImage } from "@/core/lib/utils"
+import {
+  envFlag,
+  getAuthUrl,
+  getInitials,
+  getLocalPath,
+  transformImage,
+} from "@/core/lib/utils"
 import { useLogout } from "@/core/protected"
 import { SubNav } from "../shared/sub-nav"
 import { ThunderSDK } from "thunder-sdk"
@@ -254,7 +260,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                   }
                 ></DropdownMenuTrigger>
                 <DropdownMenuContent
-                  className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
+                  className="min-w-56 rounded-lg"
                   side={isMobile ? "bottom" : isRtl ? "left" : "right"}
                   align="end"
                   sideOffset={4}
@@ -299,7 +305,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
                       <IconArrowsExchange className="size-4" />
                       {t("Change tenant")}
                     </DropdownMenuItem>
-                    <DropdownMenuItem>
+                    <DropdownMenuItem
+                      render={<Link to={getLocalPath("notifications")} />}
+                    >
                       <IconNotification className="size-4" />
                       {t("Notifications")}
                     </DropdownMenuItem>
@@ -365,7 +373,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                     <NotificationPopover userId={me?._id} />
 
                     {/* Balance Toggle */}
-                    {!import.meta.env.VITE_DISABLE_WALLET &&
+                    {!envFlag(import.meta.env.VITE_DISABLE_WALLET) &&
                       ThunderSDK.isPermitted(ThunderSDK.wallets.get) && (
                         <NavBalance
                           visible={balanceVisible}
