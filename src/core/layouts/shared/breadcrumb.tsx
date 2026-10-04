@@ -52,11 +52,12 @@ export type TBreadcrumbCallback = (
 export interface BreadcrumbProps {
   className?: string
   /**
-   * Optional callback function to customize or dynamically compute breadcrumb labels.
+   * Optional callback to customize or dynamically compute breadcrumb labels.
    * Return a custom label string, or null/undefined to use the default label.
    */
-  customTitleCallback?: TBreadcrumbCallback
   resolveLabel?: TBreadcrumbCallback
+  /** @deprecated Alias of `resolveLabel`, kept for backwards compatibility. */
+  customTitleCallback?: TBreadcrumbCallback
 }
 
 /**
@@ -70,6 +71,12 @@ export function setBreadcrumbTitle(title: string | null) {
   }
 }
 
+
+/**
+ * Hook to set custom text or dynamic value in the breadcrumb from page components.
+ * Automatically cleans up when the component unmounts or title changes.
+ */
+/** @deprecated Alias of `setBreadcrumbTitle`, kept for backwards compatibility. */
 export const setBreadcrumb = setBreadcrumbTitle
 
 /**
@@ -89,12 +96,14 @@ export function useBreadcrumbTitle(title?: string | null) {
   return { setTitle: setBreadcrumbTitle, setBreadcrumb: setBreadcrumbTitle }
 }
 
+/** @deprecated Alias of `useBreadcrumbTitle`, kept for backwards compatibility. */
 export const useBreadcrumb = useBreadcrumbTitle
+
 
 export function Breadcrumb({
   className,
-  customTitleCallback,
   resolveLabel,
+  customTitleCallback,
 }: BreadcrumbProps = {}) {
   const location = useLocation()
   const { router } = useLayout()
@@ -128,7 +137,7 @@ export function Breadcrumb({
   if (parts.length <= 1) return null
   const state = location.state as TBreadcrumbState | null
 
-  const callback = customTitleCallback ?? resolveLabel
+  const callback = resolveLabel ?? customTitleCallback
   const lastPart = parts.at(-1)!
   const defaultLabel = t(segmentNameMap[lastPart] ?? lastPart)
 

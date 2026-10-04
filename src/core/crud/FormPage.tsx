@@ -50,8 +50,6 @@ export const fieldsFromModuleMetadata = async (
     resolveRef: opts.resolveRef,
   })
 
-  console.log("Fields:", results)
-
   return results
 }
 

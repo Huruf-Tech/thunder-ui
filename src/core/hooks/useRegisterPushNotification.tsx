@@ -16,7 +16,6 @@ export const useRegisterPushNotification = () => {
       }
 
       await PushNotifications.register()
-      console.log("Push registration successful")
     } catch (error) {
       console.error("Push registration failed", error)
     }

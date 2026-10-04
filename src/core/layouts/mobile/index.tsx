@@ -15,6 +15,11 @@ import { ThunderSDK } from "thunder-sdk";
 import { use } from "@/core/hooks/use";
 import { fetchUnreadCount } from "@/core/endpoints/notification";
 import { NotificationSidebar } from "@/core/pages/notifications/notification-sidebar";
+import {
+  triggersBaseUrl,
+  triggersTenantId,
+  unreadCountInterval,
+} from "@/core/lib/constants";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const { router } = useLayout();
@@ -53,19 +58,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const { data: me } = use(_me);
 
   const [unreadCount, setUnreadCount] = React.useState(0);
-  const triggersTenant = import.meta.env.VITE_TRIGGERS_TENANT_ID;
-  const triggersBaseUrl = import.meta.env.VITE_TRIGGERS_BASE_URL;
-  const unreadCountInterval = import.meta.env.VITE_UNREAD_COUNT_INTERVAL;
 
   const refreshUnread = React.useCallback(() => {
-    if (!me?._id || !triggersTenant || !triggersBaseUrl) return;
+    if (!me?._id || !triggersTenantId || !triggersBaseUrl) return;
 
-    fetchUnreadCount(triggersBaseUrl, triggersTenant, me._id)
+    fetchUnreadCount(triggersBaseUrl, triggersTenantId, me._id)
       .then((count) => setUnreadCount(count))
       .catch(() => {
         // silent fail
       });
-  }, [me?._id, triggersTenant, triggersBaseUrl]);
+  }, [me?._id]);
 
   // Instant counter decrement function at the layout level
   const decrementUnread = React.useCallback(() => {
@@ -80,7 +82,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
     }, unreadCountInterval);
 
     return () => clearInterval(intervalId);
-  }, [refreshUnread, unreadCountInterval]);
+  }, [refreshUnread]);
 
   return (
     <div className="flex h-svh w-full flex-col bg-background">
@@ -138,14 +140,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
         {subNavItems?.length
           ? (
             <Container className="flex items-center gap-3 px-4 pt-0 pb-3">
-              {/* <SubNav navMenu={subNavItems} compact /> */}
               <SubNav navMenu={subNavItems} />
             </Container>
           )
           : null}
       </header>
-
-      {/* {isHome ? <ShippingBanner /> : null} */}
 
       <main className="page-transition relative flex min-h-0 w-full flex-1 flex-col gap-3 pb-[calc(5rem+var(--spacing-safe-b))]">
         {children}

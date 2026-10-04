@@ -6,7 +6,6 @@ import { Toaster } from "sonner";
 import { Layout as NavbarLayout } from "@/core/layouts/navbar";
 import { Layout as MobileLayout } from "@/core/layouts/mobile";
 import { Layout as SidebarLayout } from "@/core/layouts/sidebar";
-// import Sheets from "@/components/globalSheet"
 
 export interface ILayoutContext {
   router: ReturnType<typeof createBrowserRouter>;
@@ -40,12 +39,6 @@ export function LayoutProvider({ children, layout, router }: ILayoutProps) {
   return (
     <LayoutContext.Provider value={{ router }}>
       <Layout>{children}</Layout>
-
-      {
-        /* Global sheet host (cart, shipping info, etc.) — mounted once here so
-          SheetRef works on every page, not just inside the store shell. */
-      }
-      {/* <Sheets /> */}
 
       <Toaster
         theme={"light"}

@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/field"
 import RenderInput from "./RenderInput"
 import { RenderFieldGroup } from "./RenderFieldGroup"
+import { findFieldError } from "./errors"
 
 export type TRenderObjectProp = {
   name: string
@@ -30,19 +31,7 @@ export default function RenderObject({ name, field }: TRenderObjectProp) {
   } = useFormContext()
 
   const getError = React.useCallback(
-    (name?: string) => {
-      if (!name) return
-
-      const parts = name.split(".")
-
-      let error: any
-
-      for (const p of parts) {
-        error = error?.[p] ?? errors[p]
-      }
-
-      return String(error?.message ?? "")
-    },
+    (name?: string) => String(findFieldError(errors, name)?.message ?? ""),
     [errors]
   )
 

@@ -11,6 +11,16 @@ import { Capacitor } from "@capacitor/core"
 import { format, formatDistanceToNow, isSameDay, subDays } from "date-fns"
 import config from "../../../capacitor.config"
 
+/**
+ * Re-exported for backwards compatibility — these now live in `lib/constants`,
+ * which is their single source of truth.
+ */
+export {
+  triggersBaseUrl,
+  triggersTenantId,
+  unreadCountInterval,
+} from "./constants"
+
 export function appName() {
   return Package.name
     .replace("-", " ")
@@ -144,6 +154,18 @@ export function formatDateForInput(
   }
 
   return `${year}-${month}-${day}`
+}
+
+/**
+ * Converts a module group name into its route path segment.
+ *
+ * !! Known defect, tracked as B-09 in docs/AUDIT.md: `replace` only substitutes
+ * !! the FIRST space, so "Human Resources Admin" becomes "human-resources admin".
+ * !! Behaviour is preserved verbatim from the four call sites this replaced;
+ * !! fixing it is a one-line change here.
+ */
+export function groupPath(group?: string) {
+  return group?.toLowerCase().replace(" ", "-")
 }
 
 export function allowDisplayRoute(display?: boolean | (() => boolean)) {
@@ -333,6 +355,3 @@ export const getDateGroup = (dateStr: string) => {
   return format(date, "MMM d, yyyy")
 }
 
-export const triggersTenantId = import.meta.env.VITE_TRIGGERS_TENANT_ID
-export const triggersBaseUrl = import.meta.env.VITE_TRIGGERS_BASE_URL
-export const unreadCountInterval = import.meta.env.VITE_UNREAD_COUNT_INTERVAL

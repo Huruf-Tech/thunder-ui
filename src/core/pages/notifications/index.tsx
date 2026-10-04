@@ -23,6 +23,7 @@ import { getDateGroup, timeAgo } from "@/core/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Pagination } from "@/components/pagination"
 import { usePagination } from "@/hooks/use-pagination"
+import { triggersBaseUrl, triggersTenantId } from "@/core/lib/constants"
 
 function NotificationCardSkeleton() {
   return (
@@ -58,9 +59,7 @@ export default function Notifications() {
   const { data: me } = use(_me)
 
   const userId = me?._id
-  const tenant = import.meta.env.VITE_TRIGGERS_TENANT_ID
-  const triggersBaseUrl = import.meta.env.VITE_TRIGGERS_BASE_URL
-
+  const tenant = triggersTenantId
 
   const unreadCount = notifications.filter((n: any) => !n.read).length
 

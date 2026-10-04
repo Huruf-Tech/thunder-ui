@@ -44,7 +44,12 @@ import {
 import { fieldsFromModuleMetadata } from "./FormPage"
 import { JSONSchemaToFields, type TField } from "../lib/jsonSchemaToFields"
 import { Checkbox } from "@/components/ui/checkbox"
-import { getLocalUrl, isMobileLayout, transformImage } from "../lib/utils"
+import {
+  getLocalUrl,
+  groupPath,
+  isMobileLayout,
+  transformImage,
+} from "../lib/utils"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Filters, type TFilterValue } from "./filters"
 import { filterToMongo } from "./filters/lib/filterToMongo"
@@ -104,11 +109,7 @@ const prepareColumns = (
                 render={
                   <Link
                     to={getLocalUrl(
-                      [
-                        group?.toLowerCase().replace(" ", "-"),
-                        field.ref,
-                        getValue(),
-                      ]
+                      [groupPath(group), field.ref, getValue()]
                         .filter(Boolean)
                         .join("/")
                     ).toString()}
@@ -299,7 +300,7 @@ export function ListPage({ group, name }: IListPageProps) {
   }, [fetchCount, query])
 
   const allowForm = React.useMemo(() => {
-    const path = `/tenant/${group?.toLowerCase().replace(" ", "-")}/${name}/form`
+    const path = `/tenant/${groupPath(group)}/${name}/form`
     return matchPath({ path, end: true }, path)
   }, [name])
 

@@ -23,4 +23,12 @@ export const HEAD = "flex items-center gap-2 px-2 py-1.5 text-left";
 
 export const triggersTenantId = import.meta.env.VITE_TRIGGERS_TENANT_ID;
 export const triggersBaseUrl = import.meta.env.VITE_TRIGGERS_BASE_URL;
-export const unreadCountInterval = import.meta.env.VITE_UNREAD_COUNT_INTERVAL
+
+/**
+ * Unread-notification poll interval, in milliseconds.
+ *
+ * Vite env values are strings, so this must be parsed before reaching
+ * `setInterval` — an unset/NaN value would otherwise poll at the 4ms minimum.
+ */
+export const unreadCountInterval =
+  Number(import.meta.env.VITE_UNREAD_COUNT_INTERVAL) || 30_000;

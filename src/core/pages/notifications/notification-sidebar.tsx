@@ -84,7 +84,6 @@ export function NotificationSidebar({
 
     const setup = async () => {
       listenerHandle = await PushNotifications.addListener("registration", async (token) => {
-        console.info("Registration token:", token.value)
         try {
           await ThunderSDK.users.addFcmToken({ body: { token: token.value } })
         } catch (err) {

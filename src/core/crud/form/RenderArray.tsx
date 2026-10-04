@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/field"
 import { Button } from "@/components/ui/button"
 import { RenderFieldGroup } from "./RenderFieldGroup"
+import { findFieldError } from "./errors"
 import { IconTrashX } from "@tabler/icons-react"
 
 export type TRenderArrayProp = {
@@ -40,19 +41,7 @@ export default function RenderArray({ name, field }: TRenderArrayProp) {
   })
 
   const getError = React.useCallback(
-    (name?: string) => {
-      if (!name) return
-
-      const parts = name.split(".")
-
-      let error: any
-
-      for (const p of parts) {
-        error = error?.[p] ?? errors[p]
-      }
-
-      return String(error?.root?.message ?? "")
-    },
+    (name?: string) => String(findFieldError(errors, name)?.root?.message ?? ""),
     [errors]
   )
 

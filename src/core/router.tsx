@@ -16,7 +16,7 @@ import { ViewPage } from "@/core/crud/ViewPage"
 import Overview from "@/pages/overview"
 import { Wallet } from "@/core/pages/wallet"
 import { lists } from "@/overrides/crud/lists"
-import { allowDisplayRoute, sortRoutes } from "./lib/utils"
+import { allowDisplayRoute, groupPath, sortRoutes } from "./lib/utils"
 import { routes as overrideRoutes } from "@/overrides/routes"
 import Notifications from "./pages/notifications"
 
@@ -140,7 +140,7 @@ export const coreRoutes = Object.entries(
   }))
 
   return {
-    path: group.toLowerCase().replace(" ", "-"),
+    path: groupPath(group),
     name: group,
     icon: icons[group],
     Component: () => <Outlet />,

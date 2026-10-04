@@ -22,12 +22,12 @@ import {
 } from "@/core/endpoints/notification"
 import { Card, CardContent } from "@/components/ui/card"
 import type { TNotification } from "@/core/types"
+import { timeAgo } from "@/core/lib/utils"
 import {
-  timeAgo,
   triggersBaseUrl,
   triggersTenantId,
   unreadCountInterval,
-} from "@/core/lib/utils"
+} from "@/core/lib/constants"
 import { SkeletonRepeater } from "@/core/custom/SkeletonRepeater"
 import { Skeleton } from "@/components/ui/skeleton"
 import { PushNotifications } from "@capacitor/push-notifications"
@@ -79,7 +79,6 @@ export function NotificationPopover({ userId }: NotificationPopoverProps) {
         listenerHandle = await PushNotifications.addListener(
           "registration",
           async (token) => {
-            console.info("Registration token:", token.value)
             try {
               await ThunderSDK.users.addFcmToken({
                 body: { token: token.value },
@@ -106,7 +105,9 @@ export function NotificationPopover({ userId }: NotificationPopoverProps) {
 
     fetchUnreadCount(triggersBaseUrl, triggersTenantId, userId)
       .then((count) => setUnreadCount(count))
-      .catch((err) => console.log("Failed to fetch unread count", err))
+      .catch(() => {
+        // Non-critical: the badge just stays at its last value
+      })
   }, [userId])
 
   React.useEffect(() => {

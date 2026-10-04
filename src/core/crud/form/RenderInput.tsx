@@ -20,6 +20,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { PhoneInput } from "@/components/reui/phone-input"
 
 import type { TField } from "@/core/lib/jsonSchemaToFields"
+import { findFieldError } from "./errors"
 import { MarkdownEditorField } from "@/core/custom/MarkdownEditor"
 import { Autocomplete } from "@/core/custom/Autocomplete"
 
@@ -55,19 +56,7 @@ export default function RenderInput({ name, field }: TRenderInputProps) {
   } = useFormContext()
 
   const getError = React.useCallback(
-    (name?: string) => {
-      if (!name) return
-
-      const parts = name.split(".")
-
-      let error: any
-
-      for (const p of parts) {
-        error = error?.[p] ?? errors[p]
-      }
-
-      return String(error?.message ?? "")
-    },
+    (name?: string) => String(findFieldError(errors, name)?.message ?? ""),
     [errors]
   )
 

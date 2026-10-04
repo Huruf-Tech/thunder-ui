@@ -18,11 +18,7 @@ import type { TRouteObject } from "@/core/router"
 import { Breadcrumb } from "@/core/layouts/shared/breadcrumb"
 import Logo from "/logo.png"
 import { Link } from "react-router"
-
-function allowDisplay(display?: boolean | (() => boolean)) {
-  if (typeof display === "function") return display()
-  return display ?? true
-}
+import { allowDisplayRoute } from "@/core/lib/utils"
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const { router } = useLayout()
@@ -45,20 +41,20 @@ export function Layout({ children }: { children: React.ReactNode }) {
         </SidebarHeader>
         <SidebarContent>
           {(router.routes as TRouteObject[])
-            .filter((route) => allowDisplay(route.display))
+            .filter((route) => allowDisplayRoute(route.display))
             .map((route) => (
               <NavMenu
                 key={route.name}
                 name={route.name ?? "Unnamed Route"}
                 items={route.children
-                  ?.filter((route) => allowDisplay(route.display ?? true))
+                  ?.filter((route) => allowDisplayRoute(route.display ?? true))
                   .map((child) => ({
                     title: child.name ?? "Unnamed Route",
                     icon: child.icon,
                     path: child.path,
                     items: child.children
                       ?.filter((subChild) =>
-                        allowDisplay(subChild.display ?? true)
+                        allowDisplayRoute(subChild.display ?? true)
                       )
                       .map((subChild) => ({
                         title: subChild.name ?? "Unnamed Route",

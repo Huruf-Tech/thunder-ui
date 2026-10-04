@@ -1,6 +1,6 @@
 import { views } from "@/overrides/crud/views"
 import { Navigate, useParams } from "react-router"
-import { getLocalUrl } from "../lib/utils"
+import { getLocalUrl, groupPath } from "../lib/utils"
 
 export interface IViewPageProps {
   group?: string
@@ -18,7 +18,7 @@ export function ViewPage({ group, name }: IViewPageProps) {
     <Navigate
       to={
         getLocalUrl(
-          [group?.toLowerCase().replace(" ", "-"), name, "form", id]
+          [groupPath(group), name, "form", id]
             .filter(Boolean)
             .join("/")
         ).pathname
