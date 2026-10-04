@@ -72,5 +72,12 @@
   "Credit": "Credit",
   "Debit": "Debit",
   "This form is unavailable": "This form is unavailable",
-  "{{name}} does not publish a schema for this action, so there is nothing to fill in.": "{{name}} does not publish a schema for this action, so there is nothing to fill in."
+  "{{name}} does not publish a schema for this action, so there is nothing to fill in.": "{{name}} does not publish a schema for this action, so there is nothing to fill in.",
+  "Must be at least {{count}} character(s).": "Must be at least {{count}} character(s).",
+  "Must be at most {{count}} character(s).": "Must be at most {{count}} character(s).",
+  "Must be {{min}} or more.": "Must be {{min}} or more.",
+  "Must be {{max}} or less.": "Must be {{max}} or less.",
+  "Select at least {{count}} item(s).": "Select at least {{count}} item(s).",
+  "Select at most {{count}} item(s).": "Select at most {{count}} item(s).",
+  "Enter valid JSON.": "Enter valid JSON."
 }

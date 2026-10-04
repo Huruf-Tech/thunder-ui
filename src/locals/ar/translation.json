@@ -76,5 +76,12 @@
   "Type {{hint}} to confirm the action.": "أكتب {{hint}} لتأكيد الإجراء",
   "please type a correct hint!": "يرجى كتابة تلميح صحيح",
   "This form is unavailable": "هذا النموذج غير متاح",
-  "{{name}} does not publish a schema for this action, so there is nothing to fill in.": "لا يوفر {{name}} مخططًا لهذا الإجراء، لذا لا يوجد ما يمكن ملؤه."
+  "{{name}} does not publish a schema for this action, so there is nothing to fill in.": "لا يوفر {{name}} مخططًا لهذا الإجراء، لذا لا يوجد ما يمكن ملؤه.",
+  "Must be at least {{count}} character(s).": "يجب ألا يقل عن {{count}} حرف.",
+  "Must be at most {{count}} character(s).": "يجب ألا يزيد عن {{count}} حرف.",
+  "Must be {{min}} or more.": "يجب أن يكون {{min}} أو أكثر.",
+  "Must be {{max}} or less.": "يجب أن يكون {{max}} أو أقل.",
+  "Select at least {{count}} item(s).": "اختر {{count}} عنصرًا على الأقل.",
+  "Select at most {{count}} item(s).": "اختر {{count}} عنصرًا على الأكثر.",
+  "Enter valid JSON.": "أدخل JSON صالحًا."
 }

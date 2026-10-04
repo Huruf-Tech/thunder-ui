@@ -11,7 +11,7 @@ Verification baseline at time of writing:
 - `vite build` → **one 8.0 MB JS chunk (1.66 MB gzip); 3.98 MB / 1.17 MB with minify on** (see P-01, P-02)
 
 Legend: **B** = bug · **F** = missing feature · **R** = refactor · **C** = cleanup / chore ·
-**S** = sync-boundary · **P** = performance · **D** = dead code
+**S** = sync-boundary · **P** = performance · **D** = dead code · **G** = form generator
 
 Checkbox states: `[ ]` open · `[x]` done · `[~]` considered and deliberately **not** actioned.
 
@@ -272,7 +272,7 @@ fully custom shell.
 - [ ] **F-06 — `src/overrides/layout.tsx`.** `LayoutProvider` accepts a `layout` prop but `App.tsx`
       never passes one, so a custom shell means editing a core-adjacent file. An override entry would
       match the existing pattern and keep `generate:app` refreshes clean.
-- [ ] **F-07 — Validation from the schema.** `minLength`/`maxLength`/`minimum`/`maximum` reach the DOM
+- [x] **F-07** **Fixed** alongside the G-series: `buildRules(field, t)` in `RenderInput` now derives `required`, `pattern`, `minLength`/`maxLength`, `min`/`max` and array `minItems`/`maxItems` from the schema, and replaces the rule literal that was spelled out at all **15** Controller call sites. — Validation from the schema.** `minLength`/`maxLength`/`minimum`/`maximum` reach the DOM
       as attributes but never enter the React Hook Form `rules`, so they are unenforced for every
       non-native control (dropdown, tag input, number input, uploads).
 - [ ] **F-08 — A `settings` page** (pairs with B-13) — the mobile layout already links to one.
@@ -572,7 +572,135 @@ test. Items marked *reverted* are recorded for the record and should not be acti
 ---
 
 
-## 9. Proposed order of work
+## 9. Form generator — JSON Schema coverage
+
+Every row below was produced by running the real `JSONSchemaToFields.toFields()` against the schema
+and walking the resulting field tree the way `RenderFieldGroup` / `RenderArray` / `RenderObject` do.
+Nothing here is inferred from reading the code.
+
+### 9.1 What works
+
+| Construct | Result |
+| --- | --- |
+| Flat object, scalars | correct types, correct `required` |
+| `object > object > object` | correct, dotted paths `a.b.c` |
+| `array > object` | correct, `items.0.sku` |
+| `array > object > array > object` | correct, `orders.0.lines.0.sku` |
+| Array of scalars | tag input (`multi`) |
+| Array of arrays of scalars | per-row tag input |
+| `required` inside array items | propagates correctly |
+| `enum` of numbers | dropdown |
+| `format`: `date-time`, `email`, `uri`, `e164` | date / email / url / phone |
+| Field grouping (`group`, `groupTitle`) | correct |
+| `fieldHint` routing, `ref` / `refLabel` / `refValue` | correct |
+
+Deep nesting is genuinely solid — that was the thing most likely to be broken, and it is not.
+
+### 9.2 Gaps
+
+- [x] **G-01** **Fixed.** `$ref` now resolves against `$defs`/`definitions` (JSON-Pointer, with escaping), `allOf` is folded into the host schema, and `oneOf`/`anyOf` collapse: `null` branches are dropped, a single branch is inlined losslessly, object branches are merged into one object, and a differing-`const` discriminator becomes an **enum** so the variant is selectable. Required is kept only where every branch agrees. Recursive `$ref` terminates via a ref stack held across the subtree walk. **Limitation:** a merged union is a superset form (every variant's fields shown, non-shared ones optional) rather than a true XOR variant picker — logged as G-01b. Original report: — Composition keywords are silently ignored: `oneOf`, `anyOf`, `allOf`, `$ref`.**
+      All four fall through to the scalar branch and render as a **plain text input**, with no warning
+      in the console or the UI. Measured:
+
+      | Schema | Produces |
+      | --- | --- |
+      | `payment: { oneOf: […card…, …cash…] }` | `payment : text` |
+      | `id: { anyOf: [string, number] }` | `id : text` |
+      | `x: { allOf: […] }` | `x : text` |
+      | `home: { $ref: "#/$defs/Addr" }` | `home : text` |
+
+      This is the most serious gap. Thunder generates schemas from zod, so `z.union`,
+      `z.discriminatedUnion`, and any reused or recursive (`z.lazy`) schema emit exactly these
+      keywords. The user gets a free-text box, and the request fails server validation.
+      **At minimum**: resolve `$ref` against `$defs`, collapse single-branch `allOf`, and render a
+      discriminated `oneOf` as a variant selector. Until then the converter should `console.warn`
+      rather than silently degrade.
+
+- [x] **G-02** **Fixed.** `_toFields` now seeds `optional: true` and only sets `false` for properties named in the parent's `required`. Original report: — `required` is inverted when a schema omits its `required` array.**
+      JSON Schema: a property is **optional** unless listed in the parent's `required`. The converter
+      only sets `optional` when a `required` array exists
+      ([jsonSchemaToFields.ts:115](../src/core/lib/jsonSchemaToFields.ts#L115)), so otherwise
+      `optional` is `undefined`, and all 15 rule sites in `RenderInput` compute
+      `required: !field.optional` → **`true`**. Measured:
+
+      ```
+      object with NO required array:
+         a : optional=undefined -> UI marks required: true   <- should be false
+         b : optional=undefined -> UI marks required: true   <- should be false
+
+      optional nested object, no inner required array:
+         bank  : optional=true      -> required: false
+           iban  : optional=undefined -> required: true      <- blocks submit
+           swift : optional=undefined -> required: true      <- blocks submit
+      ```
+
+      An optional nested object becomes **unsubmittable**: the user must fill fields the API does not
+      want. Smallest correct fix is defaulting `optional` to `true` in `_toFields`.
+
+- [x] **G-03** **Fixed.** `readType()` reads the union form and takes the first non-`null` member. Original report: — Nullable unions lose their type.** `type: ["string","null"]` and `["number","null"]`
+      both resolve to `text`, because `resolveFieldType` only accepts a `string` `type`
+      ([jsonSchemaToFields.ts:91-93](../src/core/lib/jsonSchemaToFields.ts#L91)). A nullable number
+      renders as a text input and submits a string. zod `.nullable()` emits exactly this shape.
+
+- [x] **G-04** **Fixed.** `_toFields` maps the schema's `default` onto `TField.defaultValue`, and `RenderInput` falls back to it when no query parameter is present (the query parameter still wins, so prefill links keep working). Original report: — Schema `default` values are never applied.** `_toFields` spreads the schema, so the
+      value lands on the field as **`default`**, but `TField` declares **`defaultValue`** and
+      `RenderInput` populates its `defaultValue` **only from query parameters**
+      ([RenderInput.tsx:117-119](../src/core/crud/form/RenderInput.tsx#L117-L119)). Two different
+      keys, so every schema default is dropped. Confirmed: `role: {type:"string", default:"member"}`
+      reaches the field as `default="member"` and renders empty.
+
+- [x] **G-05** **Fixed.** A `const` field now registers a hidden Controller with the constant as its value, so it is submitted and never shown as an editable box. Original report: — `const` renders as an editable, empty text input.** `RenderInput` only honours `const`
+      when `type === "hidden"` ([RenderInput.tsx:80](../src/core/crud/form/RenderInput.tsx#L80)).
+      A `{ const: "v1" }` property therefore shows a blank text box, and the constant is never
+      submitted. `const` is how discriminated-union tags are expressed, so this compounds G-01.
+
+- [x] **G-06** **Fixed.** `format: "date"` maps to the date control alongside `date-time`. Original report: — `format: "date"` renders as a text input.** Only `date-time` maps to the date control
+      ([jsonSchemaToFields.ts:72-74](../src/core/lib/jsonSchemaToFields.ts#L72)). `z.iso.date()` is
+      common. `time`, `uuid`, `ipv4`, `duration` also fall back to text — acceptable as a default,
+      but `date` is a real miss.
+
+- [x] **G-07** **Fixed.** A record renders a JSON textarea (`fieldHint: "json"`) that parses on change and blocks submit on invalid JSON, instead of a one-line text box. Original report: — Dictionaries (`additionalProperties`) render as a text input.** `{ type: "object",
+      additionalProperties: { type: "string" } }` has no `properties`, so it misses the object branch
+      and falls through to the scalar branch. zod `z.record()` produces this. Needs either a key/value
+      editor or an explicit unsupported-field notice.
+
+- [~] **G-08** *(works as-is; documented rather than changed)* — Tuples (`prefixItems`) flatten into sibling fields.** `point: {prefixItems:[number,
+      number]}` yields two top-level fields `point.0` and `point.1` rather than an array container.
+      It happens to submit correctly because react-hook-form treats a numeric path segment as an array
+      index, but there is no array wrapper, so `minItems`/`maxItems` and add/remove do not apply.
+      Works today; fragile and undocumented.
+
+- [x] **G-09** **Fixed.** `FormPage` now requires the root field to be an object, so a root-level array degrades to the empty state. Original report: — A root-level array schema produces unnamed fields.** `{type:"array", items:{...}}` at
+      the root yields item fields whose `name` is `undefined`, so `RenderFieldGroup` passes
+      `name={undefined}` into `RenderInput`. Unusual for CRUD modules, but it should degrade to the
+      empty state rather than render broken inputs.
+
+- [x] **G-10** **Fixed.** `JSONSchemaToFields.warn()` reports every lossy or unsupported construct once (deduped), and can be silenced with `JSONSchemaToFields.silent = true`. Original report: — Unsupported constructs fail silently.** Every gap above degrades to a text input with
+      no console warning and no UI hint. For a schema-driven framework this is the worst failure mode:
+      the form looks fine and the API rejects it. A single `console.warn` in the fallback branch of
+      `_toFields` would make all of these diagnosable in seconds.
+
+### 9.3 Follow-up
+
+- [ ] **G-01b — A true variant picker for `oneOf`/`anyOf`.** The merge above produces a working,
+      submittable form but shows every variant's fields at once. A proper implementation would show
+      only the selected variant's fields. The existing `requirementKey` mechanism is close but
+      compares the watched value against the field's **own name**
+      ([RenderInput.tsx](../src/core/crud/form/RenderInput.tsx)), which forces a nested
+      `{ kind, card: {...} }` shape rather than the flat union shape, so it cannot be reused as-is.
+
+### 9.4 Original suggested order
+
+`G-02` (smallest, worst consequence) → `G-10` (makes the rest visible) → `G-04`, `G-05`, `G-06`,
+`G-03` (small, independent) → `G-01` (largest; `$ref` + `allOf` first, `oneOf` variant picker after)
+→ `G-07`, `G-09` → `G-08` (document only).
+
+Note `F-07` (schema `minLength`/`maximum`/`minItems` never reach the react-hook-form rules) belongs
+to this cluster and should be folded into whichever pass touches the rule construction.
+
+---
+
+## 10. Proposed order of work
 
 Each phase is independently shippable. We confirm scope at the start of each one.
 
@@ -586,6 +714,7 @@ Each phase is independently shippable. We confirm scope at the start of each one
 | **6** | **Performance** | P-01, P-02, P-03, P-04, P-05, P-06, P-07, P-08, P-09, P-11 |
 | **7** | **List & form UX gaps** | B-04 + F-03, B-31 + F-04, F-05, B-16, F-07 |
 | **8** | **Filters** | B-17, B-18 |
+| **8.5** | **Form generator coverage** | G-02, G-10, G-04, G-05, G-06, G-03, G-01, G-07, G-09, F-07 — see §9.3 |
 | **9** | **Platform & shell** | B-13 + F-08, B-14, B-15, B-20, B-21, B-22, B-23, B-24, B-25, B-26, B-28, B-29, B-30, C-07 + S-07, C-08, C-10, C-11, C-12 |
 | **10** | **Boilerplate hygiene** | C-01 + D-11, F-13 (env-gate `users` / `notifications` per D1) |
 | **11** | **Refactors for contributor onboarding** | R-01, R-09, R-12, R-13, R-14 |
@@ -598,7 +727,7 @@ unnoticed.
 
 ---
 
-## 10. Open questions
+## 11. Open questions
 
 1. **C-05 / P-02** — Was `minify: false` deliberate? It costs 4 MB raw / 0.5 MB gzip.
 2. **B-38** — Should `fallbackLng` become `en`, and should browser-language detection run ahead of

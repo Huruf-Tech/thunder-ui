@@ -2,7 +2,12 @@
 /* eslint-disable react-refresh/only-export-components */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react"
-import { Controller, useFormContext, type Control } from "react-hook-form"
+import {
+  Controller,
+  useFormContext,
+  type Control,
+  type RegisterOptions,
+} from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import type { TFunction } from "i18next"
 import { useSearchParams } from "react-router"
@@ -66,7 +71,21 @@ export default function RenderInput({ name, field }: TRenderInputProps) {
     if (value !== name) return
   }
 
-  if (field.type === "hidden" && (field.optional || !!field.const)) return null
+  //! A `const` property has exactly one legal value. It used to render as an
+  //! editable, empty text box whose value was never submitted. Register it so it
+  //! is sent, and show nothing. See G-05.
+  if (field.const !== undefined) {
+    return (
+      <Controller
+        name={name}
+        control={control}
+        defaultValue={field.const}
+        render={() => <input type="hidden" />}
+      />
+    )
+  }
+
+  if (field.type === "hidden" && field.optional) return null
 
   return (
     <Field className={field.className} style={field.style}>
@@ -97,6 +116,86 @@ function resolveValueType(field: TField, value: any) {
   return value
 }
 
+/**
+ * Builds the react-hook-form rules for a field from its schema constraints.
+ *
+ * Previously only `required` and `pattern` were applied, and they were spelled
+ * out at all fifteen Controller call sites. The length/range limits reached the
+ * DOM as attributes but were never validated, so they did nothing for any
+ * non-native control (dropdown, tag input, upload). See F-07.
+ */
+export function buildRules(field: TField, t: TFunction) {
+  const rules: RegisterOptions = {
+    required: !field.optional && t("This field is required!"),
+  }
+
+  if (field.pattern) rules.pattern = new RegExp(field.pattern)
+
+  const isText = !["number", "boolean", "date"].includes(field.type)
+
+  if (field.multi || field.type === "array") {
+    if (typeof field.minItems === "number") {
+      rules.validate = {
+        ...(rules.validate as object),
+        minItems: (value: unknown) =>
+          !Array.isArray(value) ||
+          value.length >= field.minItems! ||
+          t("Select at least {{count}} item(s).", { count: field.minItems }),
+      }
+    }
+
+    if (typeof field.maxItems === "number") {
+      rules.validate = {
+        ...(rules.validate as object),
+        maxItems: (value: unknown) =>
+          !Array.isArray(value) ||
+          value.length <= field.maxItems! ||
+          t("Select at most {{count}} item(s).", { count: field.maxItems }),
+      }
+    }
+
+    return rules
+  }
+
+  if (isText) {
+    if (typeof field.minLength === "number") {
+      rules.minLength = {
+        value: field.minLength,
+        message: t("Must be at least {{count}} character(s).", {
+          count: field.minLength,
+        }),
+      }
+    }
+
+    if (typeof field.maxLength === "number") {
+      rules.maxLength = {
+        value: field.maxLength,
+        message: t("Must be at most {{count}} character(s).", {
+          count: field.maxLength,
+        }),
+      }
+    }
+  }
+
+  if (field.type === "number") {
+    if (typeof field.minimum === "number") {
+      rules.min = {
+        value: field.minimum,
+        message: t("Must be {{min}} or more.", { min: field.minimum }),
+      }
+    }
+
+    if (typeof field.maximum === "number") {
+      rules.max = {
+        value: field.maximum,
+        message: t("Must be {{max}} or less.", { max: field.maximum }),
+      }
+    }
+  }
+
+  return rules
+}
+
 export type TRenderFieldProps = {
   id: string
   name: string
@@ -114,10 +213,18 @@ export const RenderField = ({
 }: TRenderFieldProps) => {
   const [query] = useSearchParams()
 
-  const defaultValue = !field.ignoreQueryValue
-    ? resolveValueType(field, query.get(field.queryValue ?? name) ?? undefined)
-    : undefined
-  const pattern = field.pattern ? new RegExp(field.pattern) : undefined
+  const queryValue = !field.ignoreQueryValue
+    ? query.get(field.queryValue ?? name)
+    : null
+
+  //! A query parameter wins so a link can prefill the form; otherwise fall back
+  //! to the schema's own `default`, which used to be dropped entirely. See G-04.
+  const defaultValue =
+    queryValue !== null
+      ? resolveValueType(field, queryValue)
+      : field.defaultValue
+
+  const rules = buildRules(field, t)
 
   if (
     field.type === "text" &&
@@ -128,10 +235,7 @@ export const RenderField = ({
       <Controller
         name={name}
         control={control}
-        rules={{
-          required: !field.optional && t("This field is required!"),
-          pattern,
-        }}
+        rules={rules}
         defaultValue={defaultValue}
         render={(def) => (
           <MongoFilters
@@ -146,15 +250,68 @@ export const RenderField = ({
     )
   }
 
-  if (field.type === "text" && field.fieldHint === "markdown") {
+  //! A record/dictionary (`additionalProperties`, i.e. zod's `z.record()`) has no
+  //! fixed keys, so there is no field list to render. Edit it as JSON rather than
+  //! silently degrading to a one-line text box. See G-07.
+  if (field.type === "text" && field.fieldHint === "json") {
     return (
       <Controller
         name={name}
         control={control}
         rules={{
-          required: !field.optional && t("This field is required!"),
-          pattern,
+          ...rules,
+          validate: {
+            ...(rules.validate as object),
+            json: (value: unknown) => {
+              if (value === undefined || value === null || value === "")
+                return true
+
+              if (typeof value === "object") return true
+
+              try {
+                JSON.parse(String(value))
+                return true
+              } catch {
+                return t("Enter valid JSON.")
+              }
+            },
+          },
         }}
+        defaultValue={defaultValue}
+        render={(def) => (
+          <Textarea
+            id={id}
+            className="font-mono text-xs"
+            rows={6}
+            placeholder={field.example ?? "{}"}
+            defaultValue={
+              typeof def.field.value === "object" && def.field.value !== null
+                ? JSON.stringify(def.field.value, null, 2)
+                : (def.field.value ?? "")
+            }
+            onChange={(e) => {
+              const raw = e.target.value
+
+              try {
+                def.field.onChange(raw === "" ? undefined : JSON.parse(raw))
+              } catch {
+                // Keep the raw text so the user can finish typing; the `json`
+                // rule above is what blocks an invalid submit.
+                def.field.onChange(raw)
+              }
+            }}
+          />
+        )}
+      />
+    )
+  }
+
+  if (field.type === "text" && field.fieldHint === "markdown") {
+    return (
+      <Controller
+        name={name}
+        control={control}
+        rules={rules}
         defaultValue={defaultValue}
         render={(def) => (
           <MarkdownEditorField
@@ -171,10 +328,7 @@ export const RenderField = ({
       <Controller
         name={name}
         control={control}
-        rules={{
-          required: !field.optional && t("This field is required!"),
-          pattern,
-        }}
+        rules={rules}
         defaultValue={defaultValue}
         render={(def) => (
           <AvatarUpload
@@ -210,10 +364,7 @@ export const RenderField = ({
       <Controller
         name={name}
         control={control}
-        rules={{
-          required: !field.optional && t("This field is required!"),
-          pattern,
-        }}
+        rules={rules}
         defaultValue={defaultValue}
         render={(def) => {
           return (
@@ -256,10 +407,7 @@ export const RenderField = ({
       <Controller
         name={name}
         control={control}
-        rules={{
-          required: !field.optional && t("This field is required!"),
-          pattern,
-        }}
+        rules={rules}
         defaultValue={defaultValue}
         render={(def) => (
           <Switch
@@ -276,10 +424,7 @@ export const RenderField = ({
       <Controller
         name={name}
         control={control}
-        rules={{
-          required: !field.optional && t("This field is required!"),
-          pattern,
-        }}
+        rules={rules}
         defaultValue={defaultValue}
         render={(def) => (
           <Multiselect
@@ -296,10 +441,7 @@ export const RenderField = ({
       <Controller
         name={name}
         control={control}
-        rules={{
-          required: !field.optional && t("This field is required!"),
-          pattern,
-        }}
+        rules={rules}
         defaultValue={defaultValue}
         render={(def) => {
           return (
@@ -320,10 +462,7 @@ export const RenderField = ({
       <Controller
         name={name}
         control={control}
-        rules={{
-          required: !field.optional && t("This field is required!"),
-          pattern,
-        }}
+        rules={rules}
         defaultValue={defaultValue}
         render={(def) => (
           <Dropdown
@@ -346,10 +485,7 @@ export const RenderField = ({
       <Controller
         name={name}
         control={control}
-        rules={{
-          required: !field.optional && t("This field is required!"),
-          pattern,
-        }}
+        rules={rules}
         defaultValue={defaultValue}
         render={(def) => (
           <PhoneInput
@@ -367,10 +503,7 @@ export const RenderField = ({
       <Controller
         name={name}
         control={control}
-        rules={{
-          required: !field.optional && t("This field is required!"),
-          pattern,
-        }}
+        rules={rules}
         defaultValue={defaultValue}
         render={(def) => (
           <NumberInput
@@ -394,10 +527,7 @@ export const RenderField = ({
         <Controller
           name={name}
           control={control}
-          rules={{
-            required: !field.optional && t("This field is required!"),
-            pattern,
-          }}
+          rules={rules}
           defaultValue={defaultValue}
           render={(def) => (
             <Tag
@@ -418,10 +548,7 @@ export const RenderField = ({
         <Controller
           name={name}
           control={control}
-          rules={{
-            required: !field.optional && t("This field is required!"),
-            pattern,
-          }}
+          rules={rules}
           defaultValue={defaultValue}
           render={(def) => (
             <Textarea
@@ -444,10 +571,7 @@ export const RenderField = ({
         <Controller
           name={name}
           control={control}
-          rules={{
-            required: !field.optional && t("This field is required!"),
-            pattern,
-          }}
+          rules={rules}
           defaultValue={defaultValue}
           render={(def) => (
             <Input
@@ -466,10 +590,7 @@ export const RenderField = ({
       <Controller
         name={name}
         control={control}
-        rules={{
-          required: !field.optional && t("This field is required!"),
-          pattern,
-        }}
+        rules={rules}
         defaultValue={defaultValue}
         render={(def) => (
           <Input
@@ -488,10 +609,7 @@ export const RenderField = ({
     <Controller
       name={name}
       control={control}
-      rules={{
-        required: !field.optional && t("This field is required!"),
-        pattern,
-      }}
+      rules={rules}
       defaultValue={defaultValue}
       render={(def) => (
         <Input

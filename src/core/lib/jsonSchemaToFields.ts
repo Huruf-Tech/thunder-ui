@@ -53,13 +53,40 @@ export type TField = {
   queryValue?: string
 }
 
+/** A JSON Schema node. Schemas are open records, so every key is permitted. */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type TSchema = Record<string, any>
+
+/** Threaded through the recursion so `$ref` can be resolved against the root. */
+type TSchemaContext = {
+  root: TSchema
+  refs: Set<string>
+}
+
 export class JSONSchemaToFields {
+  /**
+   * Schemas are plain JSON Schema documents, so every node is an open record.
+   */
+  protected static warned = new Set<string>()
+
+  /** Set to true to silence unsupported-construct warnings. */
+  static silent = false
+
+  protected static warn(message: string) {
+    if (this.silent || this.warned.has(message)) return
+
+    this.warned.add(message)
+
+    console.warn(`[JSONSchemaToFields] ${message}`)
+  }
+
   protected static resolveFieldType(type: string, format?: string): TFieldType {
     switch (format) {
       case "uri": {
         return "url"
       }
 
+      case "date":
       case "date-time": {
         return "date"
       }
@@ -82,101 +109,400 @@ export class JSONSchemaToFields {
     }
   }
 
+  /**
+   * Reads a node's `type`, tolerating the union form JSON Schema allows
+   * (`type: ["string", "null"]`, which is what a nullable field compiles to).
+   * The first non-null member wins.
+   */
+  protected static readType(schema: TSchema): string {
+    const type = schema.type
+
+    if (Array.isArray(type)) {
+      return type.find((entry) => entry !== "null") ?? "string"
+    }
+
+    return typeof type === "string" ? type : "string"
+  }
+
+  /** Resolves a local JSON Pointer ref (`#/$defs/Address`) against the root. */
+  protected static resolvePointer(
+    ref: string,
+    ctx: TSchemaContext
+  ): TSchema | undefined {
+    if (!ref.startsWith("#")) {
+      this.warn(`Cannot resolve external $ref "${ref}" — rendered as text.`)
+      return
+    }
+
+    let node: unknown = ctx.root
+
+    for (const segment of ref.slice(1).split("/").filter(Boolean)) {
+      const key = segment.replace(/~1/g, "/").replace(/~0/g, "~")
+
+      node = (node as TSchema | undefined)?.[key]
+
+      if (node === undefined) {
+        this.warn(`Could not resolve $ref "${ref}" — rendered as text.`)
+        return
+      }
+    }
+
+    return typeof node === "object" && node !== null
+      ? (node as TSchema)
+      : undefined
+  }
+
+  /** Folds `allOf` members into the host schema (last member wins on conflict). */
+  protected static mergeAllOf(
+    schema: TSchema,
+    members: unknown[],
+    ctx: TSchemaContext,
+    chain: Set<string>
+  ): TSchema {
+    const { allOf: _allOf, ...rest } = schema
+
+    const merged: TSchema = { ...rest }
+    const properties: TSchema = { ...(rest.properties ?? {}) }
+    const required = new Set<string>(
+      Array.isArray(rest.required) ? rest.required : []
+    )
+
+    for (const raw of members) {
+      const member = this.normalize(raw, ctx, chain)
+
+      if (!member) continue
+
+      Object.assign(properties, member.properties ?? {})
+
+      for (const key of member.required ?? []) required.add(key)
+
+      for (const [key, value] of Object.entries(member)) {
+        if (["properties", "required", "allOf"].includes(key)) continue
+
+        merged[key] = value
+      }
+    }
+
+    if (Object.keys(properties).length) {
+      merged.type = "object"
+      merged.properties = properties
+    }
+
+    if (required.size) merged.required = [...required]
+
+    return merged
+  }
+
+  /**
+   * Collapses `oneOf` / `anyOf` into something renderable.
+   *
+   * - `null` branches are dropped, so `z.nullable()` resolves to its real type.
+   * - A single surviving branch is inlined losslessly.
+   * - Several object branches are merged into one object; a property keeps
+   *   `required` only if every branch requires it. This is a superset form:
+   *   submittable, but it cannot express "these fields XOR those fields".
+   *   A true variant picker is tracked as G-01b.
+   * - Several scalar branches fall back to the first one's type.
+   */
+  protected static collapseUnion(
+    schema: TSchema,
+    branches: unknown[],
+    keyword: "oneOf" | "anyOf",
+    ctx: TSchemaContext,
+    chain: Set<string>
+  ): TSchema {
+    const rest = { ...schema }
+    delete rest[keyword]
+
+    const resolved = branches
+      .map((branch) => this.normalize(branch, ctx, chain))
+      .filter((branch): branch is TSchema => !!branch)
+      .filter((branch) => this.readTypeRaw(branch) !== "null")
+
+    if (resolved.length === 0) return { ...rest, type: "string" }
+
+    if (resolved.length === 1) return { ...rest, ...resolved[0] }
+
+    const objects = resolved.filter(
+      (branch) => branch.properties && typeof branch.properties === "object"
+    )
+
+    if (objects.length === resolved.length) {
+      const properties: TSchema = { ...(rest.properties ?? {}) }
+
+      for (const branch of objects) {
+        Object.assign(properties, branch.properties)
+      }
+
+      //! The discriminator of a tagged union appears in every branch with a
+      //! different `const`. Merging would keep only the last one, leaving the
+      //! user no way to pick a variant, so collect the constants into an enum
+      //! instead. See G-01.
+      for (const key of Object.keys(properties)) {
+        const constants = objects
+          .map((branch) => branch.properties?.[key])
+          .filter((prop) => prop && prop.const !== undefined)
+          .map((prop) => prop.const)
+
+        const distinct = [...new Set(constants)]
+
+        if (distinct.length > 1) {
+          const { const: _const, ...prop } = properties[key]
+
+          properties[key] = { ...prop, enum: distinct }
+        }
+      }
+
+      // Required only where every branch agrees — otherwise a user picking one
+      // variant would be blocked by another variant's mandatory fields.
+      const required = (objects[0].required ?? []).filter((key: string) =>
+        objects.every((branch) => (branch.required ?? []).includes(key))
+      )
+
+      this.warn(
+        `${keyword} of objects was merged into a single form showing every variant's fields. ` +
+          `Pick one variant's values; the others can be left blank.`
+      )
+
+      return {
+        ...rest,
+        type: "object",
+        properties,
+        ...(required.length ? { required } : {}),
+      }
+    }
+
+    this.warn(
+      `${keyword} of differing scalar types fell back to "${this.readType(resolved[0])}".`
+    )
+
+    return { ...rest, ...resolved[0] }
+  }
+
+  /** Raw `type` read used only to spot `null` union members. */
+  protected static readTypeRaw(schema: TSchema): unknown {
+    return schema.type
+  }
+
+  /**
+   * Rewrites a schema node into the plain shape `_toFields` understands by
+   * resolving `$ref` and folding `allOf` / `oneOf` / `anyOf`.
+   */
+  protected static normalize(
+    schema: unknown,
+    ctx: TSchemaContext,
+    chain: Set<string> = new Set()
+  ): TSchema | undefined {
+    if (typeof schema !== "object" || schema === null) return
+
+    let node = schema as TSchema
+
+    if (typeof node.$ref === "string") {
+      const ref = node.$ref
+      const { $ref: _ref, ...siblings } = node
+
+      //! Guards a pure resolution cycle (A -> B -> A). A ref that merely recurs
+      //! deeper in the tree is handled by the stack kept in `_toFields`.
+      if (chain.has(ref)) {
+        this.warn(`Cyclic $ref "${ref}" — rendered as text.`)
+        return { ...siblings, type: "string" }
+      }
+
+      const target = this.resolvePointer(ref, ctx)
+
+      if (!target) return { ...siblings, type: "string" }
+
+      chain.add(ref)
+
+      const resolved = this.normalize({ ...target, ...siblings }, ctx, chain)
+
+      chain.delete(ref)
+
+      return resolved
+    }
+
+    if (Array.isArray(node.allOf)) {
+      node = this.mergeAllOf(node, node.allOf, ctx, chain)
+    }
+
+    for (const keyword of ["oneOf", "anyOf"] as const) {
+      if (Array.isArray(node[keyword])) {
+        node = this.collapseUnion(node, node[keyword], keyword, ctx, chain)
+      }
+    }
+
+    return node
+  }
+
   protected static _toFields(
     name: string | undefined,
     schema: unknown,
-    hints?: Partial<TField>
+    hints?: Partial<TField>,
+    ctx?: TSchemaContext
   ): TField[] {
     if (typeof schema !== "object" || schema === null) {
       throw new Error("Cannot construct form fields from an invalid schema!")
     }
 
-    const type =
-      "type" in schema && typeof schema.type === "string"
-        ? schema.type
-        : "string"
+    const context: TSchemaContext = ctx ?? {
+      root: schema as TSchema,
+      refs: new Set(),
+    }
+
+    //! A `$ref` that reappears beneath itself (a tree/linked-list shape) would
+    //! recurse forever, because resolving it yields the same node again. Keep it
+    //! on a stack for the whole subtree so the nested occurrence stops. See G-01.
+    const followed =
+      typeof (schema as TSchema).$ref === "string"
+        ? ((schema as TSchema).$ref as string)
+        : undefined
+
+    if (followed && context.refs.has(followed)) {
+      this.warn(
+        `Recursive $ref "${followed}" — nested occurrence rendered as text.`
+      )
+
+      return [{ optional: true, ...hints, name, type: "text" } as TField]
+    }
+
+    if (followed) context.refs.add(followed)
+
+    try {
+      return this.buildFields(name, schema, hints, context)
+    } finally {
+      if (followed) context.refs.delete(followed)
+    }
+  }
+
+  protected static buildFields(
+    name: string | undefined,
+    schema: unknown,
+    hints: Partial<TField> | undefined,
+    context: TSchemaContext
+  ): TField[] {
+    const node = this.normalize(schema, context)
+
+    if (!node) {
+      throw new Error("Cannot construct form fields from an invalid schema!")
+    }
+
+    const type = this.readType(node)
+
+    //! JSON Schema default: a property is OPTIONAL unless its parent lists it in
+    //! `required`. Callers pass `optional` down through hints; anything that
+    //! arrives without it is optional, never mandatory. See G-02.
+    const base: Partial<TField> = {
+      optional: true,
+      ...hints,
+      ...(node.default !== undefined ? { defaultValue: node.default } : {}),
+    }
 
     if (
       type === "object" &&
-      "properties" in schema &&
-      typeof schema.properties === "object" &&
-      schema.properties !== null
+      typeof node.properties === "object" &&
+      node.properties !== null
     ) {
+      const required: string[] = Array.isArray(node.required)
+        ? node.required
+        : []
+
       return [
         {
-          ...hints,
-          ...schema,
+          ...base,
+          ...node,
           name,
           type: "object",
-          fields: Object.entries(schema.properties).flatMap(([prop, def]) =>
-            this._toFields(prop, def, {
-              parentName: name,
-              ...("required" in schema && schema.required instanceof Array
-                ? { optional: !schema.required.includes(prop) }
-                : {}),
-            })
+          optional: base.optional,
+          fields: Object.entries(node.properties).flatMap(([prop, def]) =>
+            this._toFields(
+              prop,
+              def,
+              { parentName: name, optional: !required.includes(prop) },
+              context
+            )
           ),
         },
       ]
     }
 
+    //! An object with no `properties` but an `additionalProperties` schema is a
+    //! dictionary/record. There is no per-key UI for that, so it is edited as
+    //! JSON rather than silently rendered as a one-line text box. See G-07.
+    if (
+      type === "object" &&
+      node.additionalProperties !== undefined &&
+      node.additionalProperties !== false
+    ) {
+      return [
+        {
+          ...base,
+          ...node,
+          name,
+          type: "text",
+          fieldHint: "json",
+        },
+      ]
+    }
+
     if (type === "array") {
-      if (
-        "items" in schema &&
-        typeof schema.items === "object" &&
-        schema.items !== null
-      ) {
-        if (
-          "type" in schema.items &&
-          ["object", "array"].includes(schema.items.type as string)
-        ) {
+      const items = this.normalize(node.items, context)
+
+      if (items) {
+        if (["object", "array"].includes(this.readType(items))) {
           return [
             {
-              ...hints,
-              ...schema,
+              ...base,
+              ...node,
               name,
               type: "array",
-              fields: this._toFields(undefined, schema.items, {
-                parentName: name,
-              }),
+              optional: base.optional,
+              fields: this._toFields(
+                undefined,
+                items,
+                { parentName: name },
+                context
+              ),
             },
           ]
         }
 
-        return this._toFields(name, schema.items, {
-          ...hints,
-          ...schema,
-          multi: true,
-        })
+        return this._toFields(
+          name,
+          items,
+          { ...base, ...node, multi: true },
+          context
+        )
       }
 
-      if (
-        "prefixItems" in schema &&
-        typeof schema.prefixItems === "object" &&
-        schema.prefixItems !== null &&
-        schema.prefixItems instanceof Array
-      ) {
-        return schema.prefixItems.flatMap((items, index) =>
-          this._toFields(`${name}.${index}`, items, {
-            parentName: name,
-          })
+      if (Array.isArray(node.prefixItems)) {
+        return node.prefixItems.flatMap((entry: unknown, index: number) =>
+          this._toFields(
+            `${name}.${index}`,
+            entry,
+            { ...base, parentName: name },
+            context
+          )
         )
       }
     }
 
+    if (type === "object") {
+      this.warn(
+        `Object field "${name ?? "(root)"}" has no properties — skipped.`
+      )
+    }
+
     const field = {
-      ...hints,
-      ...schema,
+      ...base,
+      ...node,
       name,
       type: this.resolveFieldType(
         type,
-        "format" in schema && typeof schema.format === "string"
-          ? schema.format
-          : undefined
+        typeof node.format === "string" ? node.format : undefined
       ),
     }
 
-    return [field]
+    return [field as TField]
   }
 
   static resolveRef?: (
@@ -217,7 +543,10 @@ export class JSONSchemaToFields {
       resolveRef?: boolean
     }
   ): Promise<TField[]> {
-    const fields = this._toFields(name, schema)
+    const fields = this._toFields(name, schema, undefined, {
+      root: (schema ?? {}) as TSchema,
+      refs: new Set(),
+    })
 
     if (!opts?.resolveRef) return fields
 
