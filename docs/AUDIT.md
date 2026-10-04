@@ -106,11 +106,25 @@ fully custom shell.
       [FormPage.tsx:254](../src/core/crud/FormPage.tsx#L254) does `fields[0].fields ?? []`, but
       `fieldsFromModuleMetadata` returns `[]` when `typeof metadata.crud !== "object"`
       ([FormPage.tsx:33](../src/core/crud/FormPage.tsx#L33)) → `Cannot read properties of undefined`.
-- [ ] **B-03 — Error toasts are not registered on first load.** The axios response interceptor that
+- [x] **B-03 — Server error messages never reached the user.** **Fixed.** Worse than first reported:
+      the interceptor lived in `refreshThunder()`, whose only caller is `useLogout()`
+      ([protected.tsx:273](../src/core/protected.tsx#L273)) — which then sets
+      `window.location.href`, so it was torn down by the page reload a moment later. The toast-on-
+      server-error path had **never run in a live session**. Fix: registration moved into
+      `initThunder()` so every SDK instance gets it, made idempotent via an eject handle so repeated
+      init cannot duplicate toasts, and cancellation now checks `code === "ERR_CANCELED"` as well as
+      the message (every list page aborts in flight, and a regression here would toast on every
+      navigation). Verified against real axios: abort → silent, server `messages` → one toast each,
+      plain error → its message, re-registration → no duplicates. Also switched SDK `logs: true` to
+      `import.meta.env.DEV`. Original report: The axios response interceptor that
       surfaces server messages is only installed in `refreshThunder()`
       ([thunder.ts:33](../src/core/lib/thunder.ts#L33)), never in `initThunder()` — which is what
       `main.tsx` calls. Users see no server error detail until after a logout/refresh cycle.
       Compounded by [FormPage.tsx:217](../src/core/crud/FormPage.tsx#L217) swallowing the caught error.
+- [ ] **B-39 — A failed form submit now raises up to three toasts.** With B-03 fixed, a validation
+      failure shows each server message *plus* `FormPage`'s generic "Failed to create {{name}}."
+      ([FormPage.tsx](../src/core/crud/FormPage.tsx)). Informative but noisy — the generic toast
+      should probably be suppressed when the response carried its own messages.
 - [ ] **B-04 — Table list view has no pagination.** `offset`/`limit` are only added to the query when
       `isCard` is true ([ListPage.tsx:216-221](../src/core/crud/ListPage.tsx#L216-L221)), and the
       `<Pagination>` is only rendered in the card branch
