@@ -138,20 +138,30 @@ export const filterToMongo = (
       if (operator === "$bt") {
         mongoFilter[key] = rangeQuery;
       } else {
-        mongoFilter.$or ??= [];
+        /**
+         * "not between" is `value < from OR value > to`, so each field needs its
+         * own `$or`. Pushing every field's branches into one shared
+         * `mongoFilter.$or` turned an AND of two exclusions into a single OR, so
+         * adding a second "is not between" filter *widened* the result set
+         * instead of narrowing it. Nesting each one under `$and` keeps the
+         * fields independent. See B-17.
+         */
+        mongoFilter.$and ??= [];
 
-        mongoFilter.$or.push(
-          {
-            [key]: {
-              $lt: valueWithType(type, from),
+        mongoFilter.$and.push({
+          $or: [
+            {
+              [key]: {
+                $lt: valueWithType(type, from),
+              },
             },
-          },
-          {
-            [key]: {
-              $gt: valueWithType(type, to),
+            {
+              [key]: {
+                $gt: valueWithType(type, to),
+              },
             },
-          },
-        );
+          ],
+        });
       }
 
       continue;

@@ -185,6 +185,40 @@ export function envFlag(value: unknown, fallback = false) {
   return !["0", "false", "off", "no"].includes(String(value).toLowerCase())
 }
 
+/**
+ * Parses the value of an `<input type="date">` or `type="datetime-local">`.
+ *
+ * `new Date("2024-01-15")` is parsed as UTC midnight per spec, while
+ * `formatDateForInput` reads the date back with *local* getters. In any negative
+ * UTC offset that round-trips to the previous day, so a record edited in the
+ * Americas would shift every date back by one on each save. Building the Date
+ * from local parts makes the round-trip offset-independent. Empty input yields
+ * `null` rather than `Invalid Date`. See B-07.
+ */
+export function parseDateInput(value: string): Date | null {
+  if (!value) return null
+
+  const [datePart, timePart] = value.split("T")
+  const [year, month, day] = datePart.split("-").map(Number)
+
+  if (!year || !month || !day) return null
+
+  const [hour, minute] = (timePart ?? "").split(":").map(Number)
+
+  const date = new Date(year, month - 1, day, hour || 0, minute || 0)
+
+  if (Number.isNaN(date.getTime())) return null
+
+  // `new Date(2024, 12, 45)` silently rolls over into 2025-02-13 rather than
+  // failing, so confirm the parts survived instead of returning a different day.
+  const rolledOver =
+    date.getFullYear() !== year ||
+    date.getMonth() !== month - 1 ||
+    date.getDate() !== day
+
+  return rolledOver ? null : date
+}
+
 export function allowDisplayRoute(display?: boolean | (() => boolean)) {
   if (typeof display === "function") return display()
   return display ?? true

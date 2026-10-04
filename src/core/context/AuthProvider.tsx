@@ -113,11 +113,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   )
 
   React.useEffect(() => {
+    let cancelled = false
+
+    //! `App.addListener` returns a handle that was never kept, so every remount
+    //! added another `appUrlOpen` listener and the old ones stayed alive for the
+    //! life of the app — each one re-running the login callback. See B-25.
+    let listener: { remove: () => Promise<void> } | undefined
+
     setLoading(true)
 
-    userManager
+    void userManager
       .getUser()
-      .then((user) => {
+      .then(async (user) => {
+        if (cancelled) return
+
         if (!user || user.expired) {
           throw new Error("User not authenticated or session expired")
         }
@@ -126,24 +135,47 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         setLoading(false)
         setError(null)
       })
-      .catch(() => {
+      .catch(async () => {
+        if (cancelled) return
+
         setLoading(false)
 
         if (Capacitor.isNativePlatform()) {
-          App.addListener("appUrlOpen", async ({ url }) => {
-            if (!url.startsWith(callbackUri)) return
+          const handle = await App.addListener(
+            "appUrlOpen",
+            async ({ url }) => {
+              if (!url.startsWith(callbackUri)) return
 
-            await Browser.close()
+              await Browser.close()
 
-            await handleLogin(url)
-          })
+              await handleLogin(url)
+            }
+          )
+
+          // The effect may have been torn down while we were awaiting.
+          if (cancelled) {
+            await handle.remove()
+
+            return
+          }
+
+          listener = handle
         } else if (!_href) {
           _href = window.location.href
 
-          handleLogin(window.location.href)
+          void handleLogin(window.location.href)
         }
       })
-  }, [])
+
+    return () => {
+      cancelled = true
+
+      void listener?.remove()
+    }
+    //! `callbackUri`, `handleLogin` and `userManager` are all stable for the
+    //! lifetime of the provider (a `useMemo`/`useCallback`/`useState` initialiser
+    //! respectively), so listing them cannot re-trigger the login flow.
+  }, [callbackUri, handleLogin, userManager])
 
   return (
     <authContext.Provider

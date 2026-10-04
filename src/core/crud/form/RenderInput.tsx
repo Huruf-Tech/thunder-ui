@@ -33,7 +33,11 @@ import { Dropdown } from "../../custom/Dropdown"
 import { Multiselect } from "../../custom/Multiselect"
 import { Tag, TagInput } from "../../custom/TagInput"
 import { AvatarUpload } from "../../custom/AvatarUpload"
-import { formatDateForInput, handleUpload } from "../../lib/utils"
+import {
+  formatDateForInput,
+  handleUpload,
+  parseDateInput,
+} from "../../lib/utils"
 import RenderArray from "./RenderArray"
 import RenderObject from "./RenderObject"
 import {
@@ -578,8 +582,10 @@ export const RenderField = ({
               id={id}
               type="datetime-local"
               placeholder={field.example ?? field.name}
-              defaultValue={formatDateForInput(def.field.value, true)}
-              onChange={(e) => def.field.onChange(new Date(e.target.value))}
+              //! `defaultValue` made this uncontrolled, so a value arriving from
+              //! `methods.reset()` after first paint never appeared. See B-07.
+              value={formatDateForInput(def.field.value, true)}
+              onChange={(e) => def.field.onChange(parseDateInput(e.target.value))}
             />
           )}
         />
@@ -597,8 +603,8 @@ export const RenderField = ({
             id={id}
             type={field.type}
             placeholder={field.example ?? field.name}
-            defaultValue={formatDateForInput(def.field.value)}
-            onChange={(e) => def.field.onChange(new Date(e.target.value))}
+            value={formatDateForInput(def.field.value)}
+            onChange={(e) => def.field.onChange(parseDateInput(e.target.value))}
           />
         )}
       />

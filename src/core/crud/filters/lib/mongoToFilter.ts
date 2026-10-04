@@ -104,9 +104,29 @@ export const _mongoToFilter = (
      *   }
      * }
      */
-    const orConditions = mongoFilter.$or;
+    /**
+     * `filterToMongo` nests each "not between" under `$and` so two of them stay
+     * independent (see B-17). Older links still carry a single flat `$or`, so
+     * both shapes are read here. See B-17.
+     */
+    const orGroups: unknown[][] = [];
 
-    if (Array.isArray(orConditions)) {
+    if (Array.isArray(mongoFilter.$or)) orGroups.push(mongoFilter.$or);
+
+    if (Array.isArray(mongoFilter.$and)) {
+        for (const clause of mongoFilter.$and) {
+            if (
+                clause && typeof clause === "object" &&
+                Array.isArray((clause as Record<string, unknown>).$or)
+            ) {
+                orGroups.push(
+                    (clause as Record<string, unknown[]>).$or,
+                );
+            }
+        }
+    }
+
+    for (const orConditions of orGroups) {
         const usedIndexes = new Set<number>();
 
         for (let index = 0; index < orConditions.length; index++) {
@@ -156,7 +176,7 @@ export const _mongoToFilter = (
     }
 
     for (const [key, query] of Object.entries(mongoFilter)) {
-        if (key === "$or") continue;
+        if (key === "$or" || key === "$and") continue;
 
         /**
          * Support direct Mongo equality:

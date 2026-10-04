@@ -160,17 +160,19 @@ export function FormPage({ name }: IFormPageProps) {
   const [isRecordLoading, setIsRecordLoading] = React.useState(true)
 
   React.useEffect(() => {
-    if (isEditMode) {
-      void (async () => {
-        setIsRecordLoading(true)
+    if (!isEditMode) return
 
-        const { results } = (await ThunderSDK.getModule(name)
-          .get({
-            params: { id },
-          })
-          .finally(() => {
-            setIsRecordLoading(false)
-          })) as { results: any[] }
+    let cancelled = false
+
+    void (async () => {
+      setIsRecordLoading(true)
+
+      try {
+        const { results } = (await ThunderSDK.getModule(name).get({
+          params: { id },
+        })) as { results: any[] }
+
+        if (cancelled) return
 
         if (results.length === 0) {
           toast.error(t("Record not found."))
@@ -179,9 +181,20 @@ export function FormPage({ name }: IFormPageProps) {
         }
 
         methods.reset(results[0])
-      })()
+      } catch (error) {
+        console.error("Failed to load record:", error)
+      } finally {
+        //! This used to run in `.finally()` on the fetch itself, i.e. *before*
+        //! `reset()`. The form rendered once with empty values, and any
+        //! uncontrolled input latched that blank. See B-07.
+        if (!cancelled) setIsRecordLoading(false)
+      }
+    })()
+
+    return () => {
+      cancelled = true
     }
-  }, [id, isEditMode, methods, name, navigate])
+  }, [id, isEditMode, methods, name, navigate, t])
 
   const metadata = React.useMemo(() => ThunderSDK.getMetadata(name), [name])
 

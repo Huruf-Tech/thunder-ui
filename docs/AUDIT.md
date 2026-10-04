@@ -148,7 +148,19 @@ fully custom shell.
       [wallet.ts:9](../src/core/endpoints/wallet.ts#L9) hashes `query` into the cache key but then calls
       `ThunderSDK.wallets.get({params:{}, query:{}})`. Any filtered wallet fetch silently returns
       unfiltered data under a distinct cache key. `invalidateWallets()` then only clears the `{}` entry.
-- [ ] **B-07 — Date inputs lose their value in edit mode.** Date controls use `defaultValue`
+- [x] **B-07 — Date inputs lose their value in edit mode.** **Fixed — three defects, one of them
+      silent data loss in half the world.** (1) *Ordering:* `setIsRecordLoading(false)` ran inside
+      `.finally()` on the fetch, i.e. **before** `methods.reset()`, so the form rendered once with
+      empty values. (2) *Uncontrolled:* the two date inputs used `defaultValue`, so they latched that
+      blank and never saw the reset — opening a record for edit showed empty dates, and saving wrote
+      the blanks back. Both are now `value=`, controlled. (3) *Timezone, surfaced by fixing (2):*
+      `new Date("2024-01-15")` parses as **UTC** midnight while `formatDateForInput` reads **local**
+      parts, so once the field round-tripped, every save in a negative UTC offset shifted the date
+      back a day — proven at UTC-10/-8/-5, correct at UTC+0/+5/+9. A new `parseDateInput()` builds
+      the Date from local parts, returns `null` for empty input (`new Date("")` was submitting
+      `Invalid Date`), and rejects rollovers like `2024-13-45`, which `Date` would otherwise accept
+      as 2025-02-13. The record effect also gained a cancellation guard and a `catch`, so a failed
+      load no longer hangs on the skeleton. Original report: Date controls use `defaultValue`
       (uncontrolled — [RenderInput.tsx:468](../src/core/crud/form/RenderInput.tsx#L468) and
       [:490](../src/core/crud/form/RenderInput.tsx#L490)), while `FormPage` flips `isRecordLoading`
       to `false` inside `.finally()` *before* calling `methods.reset(results[0])`
@@ -190,7 +202,13 @@ fully custom shell.
 - [x] **B-16** **Fixed.** Clamps to `totalPages - 1`. Verified page 999 of a 5-page list resolves to 4. Original report: — Pagination page clamp uses the item count.**
       [pagination.tsx:81](../src/components/pagination.tsx#L81) clamps to `total` (number of records)
       instead of `totalPages - 1`.
-- [ ] **B-17 — Multiple "is not between" filters collapse into one `$or`.**
+- [x] **B-17** **Fixed.** Each `$nbt` now gets its own `$or` nested under `$and`, so two "not between"
+      filters stay independent — the shared `mongoFilter.$or` turned an AND of two exclusions into a
+      single OR, meaning a second such filter *widened* the results instead of narrowing them.
+      **`mongoToFilter` had to change with it**: it reverse-maps `$or` pairs back into filter chips,
+      so the new shape would have been unreadable. It now reads both, which keeps links already saved
+      with the flat `$or` working. Verified: two filters stay independent, both round-trip to chips,
+      legacy flat-`$or` links still decode, `$bt` untouched. Original report: — Multiple "is not between" filters collapse into one `$or`.**
       [filterToMongo.ts:141-154](../src/core/crud/filters/lib/filterToMongo.ts#L141-L154) pushes every
       `$nbt` into one shared `mongoFilter.$or`, turning an AND of two exclusions into a single OR.
 - [x] **B-18** **Fixed** by renaming the labels to match the inclusive operators (`is at least` / `is at most`, `is on or after` / `is on or before`). Swapping the operators to `$gt`/`$lt` would silently change the meaning of filters already saved in URLs. Original report: — "is greater than" maps to `$gte`, "is less than" maps to `$lte`.**
@@ -213,7 +231,12 @@ fully custom shell.
 - [x] **B-24** **Fixed** with an `envFlag()` reader treating `0`/`false`/`off`/`no` as disabled; applied at both `VITE_DISABLE_WALLET` sites. Original report: — `VITE_DISABLE_WALLET` can never be falsy.** Vite env values are strings, so
       `VITE_DISABLE_WALLET=0` still disables the wallet.
       [router.tsx:179](../src/core/router.tsx#L179), [navbar/index.tsx:368](../src/core/layouts/navbar/index.tsx#L368).
-- [ ] **B-25 — `AuthProvider` leaks its native URL listener and has a stale-closure effect.**
+- [x] **B-25** **Fixed.** The `App.addListener` handle is kept and removed on cleanup — previously every
+      remount added another `appUrlOpen` listener and the old ones lived for the life of the app, each
+      re-running the login callback. The effect also gained a `cancelled` guard (including for a
+      teardown that happens while `addListener` is still awaiting) and now lists its real
+      dependencies, which is safe because `callbackUri`, `handleLogin` and `userManager` are each
+      stable for the provider's lifetime. Original report: — `AuthProvider` leaks its native URL listener and has a stale-closure effect.**
       [AuthProvider.tsx:133](../src/core/context/AuthProvider.tsx#L133) never removes the `appUrlOpen`
       listener; the effect at [:146](../src/core/context/AuthProvider.tsx#L146) declares `[]` deps while
       using `callbackUri`, `handleLogin` and `userManager`.
