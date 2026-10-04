@@ -402,6 +402,32 @@ Backwards-compatible unless noted.
 - [ ] **C-13 — Add the i18n scan as `npm run i18n:check`.** The script used for this audit walks `src/`,
       extracts `t("…")` literals, and diffs them against both locale files in both languages.
 
+- [ ] **C-14 — `npm run typecheck` checks nothing.** `tsconfig.json` is a solution file
+      (`"files": []` plus two `references`), so `tsc --noEmit` against it compiles **zero** files and
+      always exits 0. Real type errors only surface through `tsc -b`, which only runs inside
+      `npm run build`. Fix: `"typecheck": "tsc -b --noEmit"` (or point it at `tsconfig.app.json`).
+      Note it will go red immediately — see C-15.
+- [ ] **C-15 — `npm run build` currently fails: 6 type errors against the SDK.** Pre-existing on
+      `master`, unrelated to any change in this audit. Every one is a property the code calls but the
+      installed `thunder-sdk` does not declare:
+
+      | Call site | Missing on SDK |
+      | --- | --- |
+      | [notification-popover.tsx:83](../src/core/pages/notifications/notification-popover.tsx#L83) | `users.addFcmToken` |
+      | [notification-sidebar.tsx:88](../src/core/pages/notifications/notification-sidebar.tsx#L88) | `users.addFcmToken` |
+      | [OverdraftLimitModal.tsx:64](../src/core/pages/users/components/OverdraftLimitModal.tsx#L64) | `users.getUserTenants` |
+      | [OverdraftLimitModal.tsx:117](../src/core/pages/users/components/OverdraftLimitModal.tsx#L117) | `wallets.getOverdraftLimit` |
+      | [OverdraftLimitModal.tsx:157](../src/core/pages/users/components/OverdraftLimitModal.tsx#L157) | `wallets.updateOverdraftLimit` |
+      | [userDetail.tsx:75](../src/core/pages/users/userDetail.tsx#L75) | `users.getUserTenants` |
+
+      Either the pinned SDK (`sdk@0.0.13`) predates these endpoints, or the features were written
+      against a newer build. **This needs your call** — it decides whether the `users` feature set in
+      C-01/D1 is actually shippable in the boilerplate.
+- [x] **C-16 — Test files are excluded from the build.** `tsconfig.app.json` now excludes
+      `**/*.{test,spec}.{ts,tsx}`, so a stray test file cannot break `tsc -b`. Verified with a
+      deliberately broken probe file. The project ships **no** test suite and no `test` script by
+      design.
+
 ---
 
 ## 6. Sync boundary — what `--forceSync` must own

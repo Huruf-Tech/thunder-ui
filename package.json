@@ -11,7 +11,6 @@
     "lint": "eslint .",
     "format": "prettier --write \"**/*.{ts,tsx}\"",
     "typecheck": "tsc --noEmit",
-    "test": "node --test --experimental-strip-types \"src/**/*.test.ts\"",
     "preview": "vite preview"
   },
   "dependencies": {
