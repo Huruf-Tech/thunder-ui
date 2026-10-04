@@ -49,7 +49,7 @@ export function SendForm({ open, onOpenChange }: { open: boolean; onOpenChange: 
         hideListener = await Keyboard.addListener("keyboardWillHide", () => {
           setKbHeight(0);
         });
-      } catch (e) {
+      } catch {
         // Ignore if plugin not available on web
       }
     };

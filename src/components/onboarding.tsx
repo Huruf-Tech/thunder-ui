@@ -6,6 +6,7 @@ import React from "react"
 import { cn } from "@/lib/utils"
 import { Preferences } from "@capacitor/preferences"
 import { resolveUrl } from "@/core/lib/utils"
+import { useTranslation } from "react-i18next"
 
 const Screens = [
   {
@@ -26,6 +27,7 @@ const Screens = [
 ]
 
 export function Onboarding() {
+  const { t } = useTranslation()
   const [open, setOpen] = React.useState(false)
   const [current, setCurrent] = React.useState(0)
 
@@ -87,7 +89,7 @@ export function Onboarding() {
                 onClick={dismiss}
                 className={!isLastScreen ? "visible" : "invisible"}
               >
-                Skip <IconChevronsRight />
+                {t("Skip")} <IconChevronsRight />
               </Button>
             </div>
           </div>
@@ -133,20 +135,20 @@ export function Onboarding() {
                     zIndex,
                   }}
                 >
-                  <h2 className="text-2xl font-medium">{screen.title}</h2>
+                  <h2 className="text-2xl font-medium">{t(screen.title)}</h2>
 
-                  <p className="text-sm opacity-90">{screen.description}</p>
+                  <p className="text-sm opacity-90">{t(screen.description)}</p>
 
                   {current + 1 === Screens.length ? (
                     <Button
                       className="mt-2 w-full"
                       onClick={dismiss}
                     >
-                      Get Started
+                      {t("Get Started")}
                     </Button>
                   ) : (
                     <Button className="mt-2 w-full" onClick={handleNext}>
-                      Continue <IconArrowRight />
+                      {t("Continue")} <IconArrowRight />
                     </Button>
                   )}
                 </div>

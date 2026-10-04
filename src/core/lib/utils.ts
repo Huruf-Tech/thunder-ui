@@ -9,6 +9,8 @@ import axios from "axios"
 import { toast } from "sonner"
 import { Capacitor } from "@capacitor/core"
 import { format, formatDistanceToNow, isSameDay, subDays } from "date-fns"
+import { ar, enUS } from "date-fns/locale"
+import i18next from "i18next"
 import config from "../../../capacitor.config"
 
 /**
@@ -395,14 +397,25 @@ export const printDocument = async <T>(
   }
 }
 
+/**
+ * date-fns needs the locale passed explicitly; without it every relative time
+ * and month name rendered in English even in the Arabic UI. See B-36.
+ */
+const dateLocale = () => (i18next.language?.startsWith("ar") ? ar : enUS)
+
 export const timeAgo = (dateStr: string | number | Date) =>
-  formatDistanceToNow(new Date(dateStr), { addSuffix: true })
+  formatDistanceToNow(new Date(dateStr), {
+    addSuffix: true,
+    locale: dateLocale(),
+  })
 
 export const getDateGroup = (dateStr: string) => {
   const date = new Date(dateStr)
   const now = new Date()
-  if (isSameDay(date, now)) return "Today"
-  if (isSameDay(date, subDays(now, 1))) return "Yesterday"
-  return format(date, "MMM d, yyyy")
+
+  if (isSameDay(date, now)) return i18next.t("Today")
+  if (isSameDay(date, subDays(now, 1))) return i18next.t("Yesterday")
+
+  return format(date, "MMM d, yyyy", { locale: dateLocale() })
 }
 

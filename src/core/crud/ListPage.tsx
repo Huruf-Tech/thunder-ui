@@ -125,7 +125,7 @@ const prepareColumns = (
             return (
               <Avatar>
                 <AvatarImage src={transformImage(getValue())} />
-                <AvatarFallback>AV</AvatarFallback>
+                <AvatarFallback>{t("N/A")}</AvatarFallback>
               </Avatar>
             )
           }
@@ -274,7 +274,7 @@ export function ListPage({ group, name }: IListPageProps) {
   })
 
   const error = countError || getError
-  const isLoading = !!!getData?.results.length && getLoading
+  const isLoading = !getData?.results.length && getLoading
   const isRefetching = getLoading
 
   const fetcher = React.useCallback(
@@ -327,7 +327,7 @@ export function ListPage({ group, name }: IListPageProps) {
                 onCheckedChange={(value) => {
                   table.toggleAllPageRowsSelected(!!value)
                 }}
-                aria-label="Select all"
+                aria-label={t("Select all")}
               />
             ),
             cell: ({ row }) => (
@@ -338,7 +338,7 @@ export function ListPage({ group, name }: IListPageProps) {
                   row.toggleSelected(!!value)
                 }}
                 onClick={(event) => event.stopPropagation()}
-                aria-label="Select row"
+                aria-label={t("Select row")}
               />
             ),
             size: 30,
@@ -670,7 +670,7 @@ export function ListPage({ group, name }: IListPageProps) {
                 size="icon-sm"
                 variant="outline"
                 onClick={() => table.resetRowSelection()}
-                aria-label="Clear selection"
+                aria-label={t("Clear selection")}
               >
                 <IconX />
               </Button>

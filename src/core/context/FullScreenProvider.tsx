@@ -26,7 +26,7 @@ export function FullScreenArea({
   const [portalContainer, setPortalContainer] =
     React.useState<HTMLDivElement | null>(null)
 
-  const toggleFullscreen = async () => {
+  const toggleFullscreen = React.useCallback(async () => {
     try {
       const element = fullscreenRef.current
 
@@ -42,11 +42,18 @@ export function FullScreenArea({
     } catch (error) {
       console.error("Error toggling fullscreen:", error)
     }
-  }
+  }, [])
 
   return (
     <PortalContainerContext.Provider value={portalContainer}>
       <Container ref={fullscreenRef} className={className}>
+        {/*
+          `toggleFullscreen` reads `fullscreenRef.current`, and the rule cannot
+          prove a consumer will only call it from an event handler rather than
+          during render. That is the contract of this render prop, so the check
+          is suppressed here rather than the API being reshaped.
+        */}
+        {/* eslint-disable-next-line react-hooks/refs */}
         {children?.(toggleFullscreen, isFullscreen)}
         <div ref={setPortalContainer} />
       </Container>

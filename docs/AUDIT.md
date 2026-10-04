@@ -91,7 +91,15 @@ fully custom shell.
 
 ### 2.1 Blocking / correctness
 
-- [ ] **B-01 — `npm run lint` is dead.** `eslint.config.js` was deleted in commit `e867b3a`, but the
+- [x] **B-01** **Fixed.** `eslint.config.js` restored from `e867b3a^` rather than rewritten, then two
+      corrections: `globalIgnores` listed only `dist`, but vite builds to `www`, so the **committed
+      build output was being linted as source**; and `react-hooks/rules-of-hooks` is disabled for
+      `src/core/endpoints/**`, where it only fires because `ThunderSDK.useCaching` starts with `use`.
+      `npm run lint` now reports **0 errors, 71 warnings**. Three noisy rules
+      (`no-explicit-any`, `only-export-components`, `set-state-in-effect`) are demoted to warnings
+      rather than silenced — the existing code leans on all three, and a permanently red lint is one
+      nobody runs. They remain visible as a backlog. **Restoring lint immediately found real bugs —
+      see B-40 to B-44.** Original report: — `npm run lint` is dead.** `eslint.config.js` was deleted in commit `e867b3a`, but the
       script, all eslint devDependencies, and ~35 `eslint-disable` comments across 24 files remain.
       No lint runs in CI or locally. *Decide: restore the config or drop the tooling.*
 - [x] **B-02 — `FormPage` breaks on a module with no usable schema.** **Fixed.** Investigation found
@@ -125,7 +133,8 @@ fully custom shell.
       failure shows each server message *plus* `FormPage`'s generic "Failed to create {{name}}."
       ([FormPage.tsx](../src/core/crud/FormPage.tsx)). Informative but noisy — the generic toast
       should probably be suppressed when the response carried its own messages.
-- [ ] **B-04 — Table list view has no pagination.** `offset`/`limit` are only added to the query when
+- [~] **B-04** *(by design — confirmed with the team; pagination for the table view may be added
+      later. The card view keeps its own pagination.)* — Table list view has no pagination. `offset`/`limit` are only added to the query when
       `isCard` is true ([ListPage.tsx:216-221](../src/core/crud/ListPage.tsx#L216-L221)), and the
       `<Pagination>` is only rendered in the card branch
       ([ListPage.tsx:534](../src/core/crud/ListPage.tsx#L534)). The default table view fetches the
@@ -240,7 +249,13 @@ fully custom shell.
       [AuthProvider.tsx:133](../src/core/context/AuthProvider.tsx#L133) never removes the `appUrlOpen`
       listener; the effect at [:146](../src/core/context/AuthProvider.tsx#L146) declares `[]` deps while
       using `callbackUri`, `handleLogin` and `userManager`.
-- [ ] **B-26 — Notification endpoints bypass the SDK.**
+- [x] **B-26** **Fixed.** One configured axios client per base URL replaces the bare `axios` calls:
+      `baseURL` with trailing slashes stripped (a `VITE_TRIGGERS_BASE_URL` ending in `/` produced a
+      double slash), a 15s timeout, `AbortSignal` support on all three calls, and path segments
+      escaped. **Deliberately not changed:** the requests still send no credentials, because enabling
+      them needs the triggers service to return `Access-Control-Allow-Credentials`. No toast
+      interceptor either: the unread count polls every 30s, so a failing poll would spam. Callers
+      already catch, and `markNotificationAsRead` surfaces its error. Original report: — Notification endpoints bypass the SDK.**
       [notification.ts](../src/core/endpoints/notification.ts) uses bare `axios`, so no auth
       interceptors, no `withCredentials`, no error toasts; `baseUrl` is concatenated without trailing-slash
       normalisation.
@@ -253,22 +268,35 @@ fully custom shell.
       `w-(--radix-dropdown-menu-trigger-width)`, which never resolves in this stack.
 - [x] **B-30** **Fixed.** `type="image/png"`. Original report: — `index.html` favicon MIME type is `image/svg+xm+png`.**
       [index.html:5](../index.html#L5) — typo; the file is a PNG.
-- [ ] **B-31 — Ref dropdowns fetch the entire referenced collection.**
+- [x] **B-31** **Fixed** together with F-04. `FormPage` no longer resolves refs at all
+      (`resolveRef: false`) - it was downloading every referenced collection before the form could
+      paint. `ref` fields now render `RefSelect`. The one remaining consumer, the list filter
+      dropdowns, is capped at `REF_OPTIONS_LIMIT = 100`. Original report: — Ref dropdowns fetch the entire referenced collection.**
       `JSONSchemaToFields.resolveRef` ([FormPage.tsx:69-83](../src/core/crud/FormPage.tsx#L69-L83))
       issues a `get` with no `limit`. A `ref` to a large module loads every record into a `<select>`.
 
 ### 2.2 Missing translations
 
-- [ ] **B-32 — `src/core/locals/{en,ar}/translation.json` are both empty (`{}`).** All 72/76 existing keys
+- [x] **B-32** **Fixed.** All 227 strings now live in `src/core/locals/{en,ar}`, and `src/locals/{en,ar}`
+      ship empty as the developer's override layer. `i18n.ts` merges app **over** core, so a
+      developer overrides any framework string by redefining that key — and `--forceSync` can now
+      actually deliver translation updates, which it never could while the strings sat in the
+      app-owned file (S-02). Original report: — `src/core/locals/{en,ar}/translation.json` are both empty (`{}`).** All 72/76 existing keys
       live in `src/locals/`, which is the *app override* layer. For a boilerplate this is backwards:
       every generated app inherits the framework's strings in its own project-level file, and a `deno task
       generate:app` refresh will fight the developer's edits. **Move core strings into `core/locals`.**
-- [ ] **B-33 — 118 `t()` keys missing from `en`, 114 from `ar`.** Full list reproducible with the scan
+- [x] **B-33** **Fixed.** Coverage is now **227 / 227 in both languages, zero missing, zero
+      untranslated**. 125 keys were missing from `en` and 121 from `ar` at the start of this pass. Original report: — 118 `t()` keys missing from `en`, 114 from `ar`.** Full list reproducible with the scan
       in §5. Arabic users currently see ~114 strings in English, including the entire auth flow
       (`"Sign in to continue"`, `"Getting things ready!"`, `"We are loading your permissions..."`),
       all form chrome (`"Submit"`, `"Cancel"`, `"Update"`, `"This field is required!"`,
       `"Record not found."`), pagination, notifications and the markdown editor.
-- [ ] **B-34 — Hardcoded English in JSX, not wrapped in `t()` at all:**
+- [x] **B-34** **Fixed.** Wrapped the hardcoded JSX in `overview.tsx` (the whole page), `not-found.tsx`
+      (which already imported `t` but never used it for its copy), the navbar's `Toggle theme` /
+      `Logout` / `Unnamed` / `N/A`, `protected.tsx`'s `Sign In` / `Logout` / `Go to Account` and both
+      unexpected-error fallbacks, the onboarding `Skip` / `Continue` / `Get Started` plus its screen
+      copy, the sidebar brand (now `appName()` rather than a literal `Thunder UI`), and the
+      `ListPage` screen-reader labels. Original report: — Hardcoded English in JSX, not wrapped in `t()` at all:**
       - [overview.tsx:21-30](../src/pages/overview.tsx#L21-L30) — the entire welcome page
       - [not-found.tsx:22-26](../src/core/layouts/shared/not-found.tsx#L22-L26) — title and description
         (the file already imports `t`)
@@ -284,21 +312,51 @@ fully custom shell.
       - [pagination.tsx:120](../src/components/pagination.tsx#L120) — `Pages`
       - [ListPage.tsx](../src/core/crud/ListPage.tsx) — `aria-label` on select-all / select-row /
         clear-selection; `AvatarFallback` literal `AV`
-- [ ] **B-35 — Duplicate keys differing only in case** in `src/locals/en`: `"Error Occurred!"` vs
+- [x] **B-35** **Fixed.** Dropped `"Error Occurred!"` and `"adjust or clear filters to reveal
+      issues."`, the stale miscased twins of keys actually in use. Three same-meaning pairs remain by
+      design — `all`/`All` (filter operator vs. notifications tab) and
+      `Insert image`/`Insert Image`, `Insert link`/`Insert Link` (tooltip vs. dialog title). Original report: — Duplicate keys differing only in case** in `src/locals/en`: `"Error Occurred!"` vs
       `"Error occurred!"`, `"adjust or clear filters to reveal issues."` vs the capitalised variant.
       4 keys exist in `ar` but not `en`.
-- [ ] **B-36 — Dates and relative times are not localised.** `timeAgo` and `getDateGroup`
+- [x] **B-36** **Fixed.** `timeAgo` and `getDateGroup` now pass a date-fns locale chosen from
+      `i18next.language`, and the hardcoded `"Today"`/`"Yesterday"` go through `i18next.t`. Original report: — Dates and relative times are not localised.** `timeAgo` and `getDateGroup`
       ([utils.ts:325-334](../src/core/lib/utils.ts#L325-L334)) call `date-fns` with no `locale`, and
       return hardcoded `"Today"` / `"Yesterday"`. `ListPage` *does* use `Intl.DateTimeFormat(i18next.language)`
       for table cells — the two are inconsistent.
-- [ ] **B-37 — `field.label` is never translated.**
+- [x] **B-37** **Fixed.** `t(field.label ?? name)` replaces `field.label ?? t(name)`, which translated
+      the raw field name but left a schema-supplied label untranslated. `field.description` is
+      translated too, and the same applies to the `RenderArray` / `RenderObject` legends. Original report: — `field.label` is never translated.**
       [RenderInput.tsx:86](../src/core/crud/form/RenderInput.tsx#L86) does `field.label ?? t(name)` — the
       schema-provided label bypasses i18n entirely, while the raw field name gets translated.
       `field.description` ([:92](../src/core/crud/form/RenderInput.tsx#L92)) is never translated either.
       Same in `RenderArray`/`RenderObject` legends.
-- [ ] **B-38 — `fallbackLng: "ar"`** ([i18n.ts:37](../src/i18n.ts#L37)) with `detection.order:
+- [x] **B-38** **Fixed** per your decision: `fallbackLng: "en"` with
+      `detection.order: ["localStorage", "navigator"]`. An Arabic browser still resolves to Arabic
+      automatically; everyone else gets English instead of Arabic. The inline comment claimed browser
+      settings were consulted when they were not — now they are. Original report: — `fallbackLng: "ar"`** ([i18n.ts:37](../src/i18n.ts#L37)) with `detection.order:
       ["localStorage"]` only. A first-time visitor with no stored preference gets Arabic regardless of
       browser language, and the inline comment ("then browser settings") does not match the config.
+
+- [x] **B-40 — Hooks called conditionally in `NotificationPopover`.** **Fixed.**
+      `useRegisterPushNotification()` and a `useEffect` sat inside
+      `if (Capacitor.getPlatform() !== "web")`. The platform never changes at runtime so it did not
+      crash in practice, but any refactor could have turned it into a hook-order violation. The hook
+      holds no state, so it is now called unconditionally and the platform check moved into the
+      effect body.
+- [x] **B-41 — The layout component was resolved by an inline factory during render.** **Fixed.**
+      `LayoutProvider` computed `Layout` from an immediately-invoked arrow in the render body, which
+      React (and `react-hooks/static-components`) reads as creating a component per render — the risk
+      being that the entire subtree remounts and loses state. Hoisted to module scope.
+- [x] **B-42 — Undated notifications were grouped under the literal string "undefined".** **Fixed.**
+      `groups[n?.dateGroup!]` combined an optional chain with a non-null assertion; entries without a
+      `dateGroup` are now skipped.
+- [x] **B-43 — JSX built inside `try/catch` in `FilterValueDateDisplay`.** **Fixed.** React renders
+      children *after* the function returns, so the `catch` never protected rendering — it only
+      happened to catch `format()` throwing on an unresolved relative date. Only the formatting is
+      guarded now, and the JSX is returned once outside.
+- [x] **B-44 — Unused catch bindings and stale `eslint-disable` directives.** **Fixed.** Two
+      `catch (e)` with unused bindings, three `eslint-disable` comments for rules that no longer fire
+      (left behind by the earlier dedup), and a triple negation `!!!` in `ListPage`.
 
 ---
 
@@ -310,9 +368,18 @@ fully custom shell.
 - [ ] **F-02 — `ViewPage` never fetches the record.** It renders `<View data={{}} />`
       ([ViewPage.tsx:15](../src/core/crud/ViewPage.tsx#L15)) — every custom detail view has to refetch
       by id itself. The `TViewProps.data` contract is a lie.
-- [ ] **F-03 — Table pagination + page-size control** (pairs with B-04). `usePagination` already
+- [~] **F-03** *(deferred with B-04)* — Table pagination + page-size control** (pairs with B-04). `usePagination` already
       exposes `setPageSize`; nothing uses it.
-- [ ] **F-04 — Searchable / paginated reference picker.** Required to fix B-31 without a regression on
+- [x] **F-04** **Built:** [`src/core/custom/RefSelect.tsx`](../src/core/custom/RefSelect.tsx) - a
+      searchable, server-paginated reference picker. Popover + cmdk `Command` with
+      `shouldFilter={false}` so filtering happens server-side; 25 records per page with *Load more*;
+      300ms debounced search as a typed case-insensitive `$regex` `$or` across the field's
+      `refLabel` fields; every request abortable, with the previous one cancelled on each keystroke
+      and on unmount; a label cache so a chosen item still reads correctly once the list is filtered
+      or paged past it; a separate `$in` lookup (objectId-typed, matching the list filter convention)
+      to resolve labels for values arriving with the record in edit mode; single and `multi`
+      selection, clear button, and an inline error state with Retry. Honours `refFilters`,
+      `refLabel` (string or array) and `refValue`. Original report: — Searchable / paginated reference picker.** Required to fix B-31 without a regression on
       large collections.
 - [ ] **F-05 — Table sorting from column headers.** `sort` state exists in `ListPage` but is only ever
       set by a card override's `fetcher`.
@@ -344,9 +411,9 @@ Backwards-compatible unless noted.
       the same `control` / `rules` / `defaultValue` triple; ~525 lines would drop to roughly half. This is
       the single biggest barrier to a new contributor adding a field type. **Do this before writing the
       "how to add a custom field type" doc.**
-- [ ] **R-02 — Extract one `getFieldError(errors, name)` helper** and delete the three copies (fixes B-08
+- [x] **R-02** **Done** during the dedup pass: `findFieldError` in `src/core/crud/form/errors.ts` replaced all three copies, and B-08 was then fixed once, in it. Original report: — Extract one `getFieldError(errors, name)` helper** and delete the three copies (fixes B-08
       in one place).
-- [ ] **R-03 — Extract one `groupPath(group)` helper** for `toLowerCase() + space→dash` and use it at all
+- [x] **R-03** **Done** during the dedup pass: `groupPath()` in `lib/utils.ts` replaced all four call sites, and B-09 was then fixed once, in it. Original report: — Extract one `groupPath(group)` helper** for `toLowerCase() + space→dash` and use it at all
       four sites (fixes B-09 in one place).
 - [~] **R-04** *(reverted per D6 — see D-03)* — Delete the unused half of `cssVars.ts`.** `configureCssVars`, `getCssVar`, `setCssVar`,
       `removeCssVar`, `subscribeCssVars`, `refreshCssVars` and the module-level listener set are
@@ -436,7 +503,7 @@ Backwards-compatible unless noted.
       `appName: 'thunder-ui'` ([capacitor.config.ts](../capacitor.config.ts)); the generated `android/`
       and `ios/` projects carry `com.huruf.thunderui` too. A per-project rename step is needed (and must
       be documented).
-- [ ] **C-08 — `"Doze"` is a leftover brand name** in the mobile layout's logo `aria-label` and `alt`
+- [x] **C-08** **Fixed.** The mobile logo's `aria-label`/`alt` now use `appName()`; the `"Doze"` key is deleted. — `"Doze"` is a leftover brand name** in the mobile layout's logo `aria-label` and `alt`
       ([mobile/index.tsx:109,112](../src/core/layouts/mobile/index.tsx#L109)). Should be `appName()`.
 - [ ] **C-09 — `README.md` is the stock Vite + shadcn template.** It says nothing about Thunder.
 - [ ] **C-10 — No theme/direction flash prevention.** `index.html` has no inline script, so the theme
@@ -449,12 +516,30 @@ Backwards-compatible unless noted.
 - [ ] **C-13 — Add the i18n scan as `npm run i18n:check`.** The script used for this audit walks `src/`,
       extracts `t("…")` literals, and diffs them against both locale files in both languages.
 
-- [ ] **C-14 — `npm run typecheck` checks nothing.** `tsconfig.json` is a solution file
+- [x] **C-14** **Fixed.** `"typecheck": "tsc -b"`. The script pointed at the solution `tsconfig.json`
+      (`"files": []` + references), so `tsc --noEmit` compiled **zero files and always exited 0**.
+      It now reports the real state — which is currently **red**, because of C-15. Original report: — `npm run typecheck` checks nothing.** `tsconfig.json` is a solution file
       (`"files": []` plus two `references`), so `tsc --noEmit` against it compiles **zero** files and
       always exits 0. Real type errors only surface through `tsc -b`, which only runs inside
       `npm run build`. Fix: `"typecheck": "tsc -b --noEmit"` (or point it at `tsconfig.app.json`).
       Note it will go red immediately — see C-15.
-- [ ] **C-15 — `npm run build` currently fails: 6 type errors against the SDK.** Pre-existing on
+- [x] **C-15** **Diagnosed; needs your decision.** These are not type-only errors. The four methods
+      are **absent from the installed SDK entirely** — not in the `.d.ts`, not in the shipped
+      JavaScript:
+
+      | Module | Methods the SDK actually exposes |
+      | --- | --- |
+      | `ThunderSDK.users` | `ban`, `count`, `create`, `get`, `update` |
+      | `ThunderSDK.wallets` | `count`, `get`, `metadata`, `signTransfer`, `transfer` |
+
+      So `users.addFcmToken`, `users.getUserTenants`, `wallets.getOverdraftLimit` and
+      `wallets.updateOverdraftLimit` would each throw `TypeError: ... is not a function` **at
+      runtime**, not merely fail to compile. Affected today: push-token registration on native
+      (both notification components), the tenant list in `userDetail`, and the whole
+      `OverdraftLimitModal`. Note the wallet *type* does carry an `overdraftLimit` field, so the
+      concept exists in the data model but the endpoints are not in `sdk@0.0.13`. Options: bump the
+      SDK, remove the features from the boilerplate, or feature-detect so they degrade instead of
+      crashing. Original report: — `npm run build` currently fails: 6 type errors against the SDK.** Pre-existing on
       `master`, unrelated to any change in this audit. Every one is a property the code calls but the
       installed `thunder-sdk` does not declare:
 
@@ -510,7 +595,7 @@ files that will be overwritten, and core depends on files developers are told to
       and **silently deletes the developer's routes**, or it skips the file and **framework routing
       fixes never reach existing apps**. `src/overrides/routes.tsx` already exists for exactly this.
       Delete the comment and point it at the override.
-- [ ] **S-02 — Core translations live in the app-owned file.** This is B-32 re-weighted: because
+- [x] **S-02** **Resolved by B-32** — all 227 strings now live in `src/core/locals`, so `--forceSync` can deliver translation updates; `src/locals` is the developer's override layer. Original report: — Core translations live in the app-owned file.** This is B-32 re-weighted: because
       `src/core/locals/{en,ar}` are empty and all 72/76 keys sit in `src/locals/`, `--forceSync`
       **can never ship a translation fix or a new core string** to an existing project, and every
       developer's own strings are tangled with the framework's in one file. Fixing B-32 is a
@@ -589,7 +674,7 @@ Measured, not estimated — `npx vite build` on the current tree.
 - [ ] **P-09 — 300 ms artificial delay on every navigation.**
       [navbar/index.tsx:180](../src/core/layouts/navbar/index.tsx#L180) wraps `navigate()` in a
       `setTimeout`. If it is waiting for the sidebar close animation, tie it to the animation instead.
-- [ ] **P-10 — Unbounded fetches** — the full-collection list query (B-04) and the full-collection ref
+- [~] **P-10** *(half done, half by design: the unbounded ref dropdown is fixed by B-31/F-04; the unbounded table query is B-04, which the team keeps deliberately.)* — Unbounded fetches** — the full-collection list query (B-04) and the full-collection ref
       dropdown (B-31) are the two largest runtime costs and are tracked as bugs.
 - [ ] **P-11 — Unread-count polling is implemented twice**, once in
       [mobile/index.tsx:60-83](../src/core/layouts/mobile/index.tsx#L60-L83) and once in

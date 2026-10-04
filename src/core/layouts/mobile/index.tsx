@@ -5,7 +5,7 @@ import { IconArrowLeft, IconSettings } from "@tabler/icons-react";
 
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/components/theme-provider";
-import { getNavRoutes } from "@/core/lib/utils";
+import { appName, getNavRoutes } from "@/core/lib/utils";
 import { BottomTabs } from "./bottom-tabs";
 import { SubNav } from "../shared/sub-nav";
 import { useLayout } from "../layout-provider";
@@ -111,10 +111,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
           {/* centered logo */}
           <Link
             to="overview"
-            aria-label={t("Doze")}
+            aria-label={appName()}
             className="absolute start-1/2 -translate-x-1/2 rtl:translate-x-1/2"
           >
-            <img src={logoSrc} alt={t("Doze")} className="h-7 w-auto" />
+            <img src={logoSrc} alt={appName()} className="h-7 w-auto" />
           </Link>
 
           <div className="flex items-center gap-1">

@@ -46,6 +46,7 @@ import {
   urlsFromFiles,
 } from "@/core/custom/TableUpload"
 import { MongoFilters } from "@/core/custom/MongoFilters"
+import { RefSelect } from "@/core/custom/RefSelect"
 
 export type TRenderInputProps = {
   name: string
@@ -95,13 +96,17 @@ export default function RenderInput({ name, field }: TRenderInputProps) {
     <Field className={field.className} style={field.style}>
       {field.type === "hidden" ? null : (
         <FieldLabel htmlFor={id}>
-          {field.label ?? t(name)}
+          {/* `field.label ?? t(name)` translated the raw field name but left a
+              schema-supplied label untranslated. See B-37. */}
+          {t(field.label ?? name)}
           {field.optional ? ` (${t("optional")})` : ""}
         </FieldLabel>
       )}
       <RenderField id={id} name={name} field={field} control={control} t={t} />
       {field.type === "hidden" ? null : (
-        <FieldDescription>{field.description}</FieldDescription>
+        <FieldDescription>
+          {field.description ? t(field.description) : null}
+        </FieldDescription>
       )}
       <FieldError>{getError(name)}</FieldError>
     </Field>
@@ -422,6 +427,29 @@ export const RenderField = ({
         )}
       />
     )
+
+  //! A `ref` field is backed by another module, which may hold more records than
+  //! can sensibly be downloaded. It gets a searchable, server-paginated picker
+  //! rather than an enum materialised up-front. See B-31 / F-04.
+  if (field.ref) {
+    return (
+      <Controller
+        name={name}
+        control={control}
+        rules={rules}
+        defaultValue={defaultValue}
+        render={(def) => (
+          <RefSelect
+            id={id}
+            field={field}
+            multiple={field.multi}
+            value={def.field.value}
+            onValueChange={def.field.onChange}
+          />
+        )}
+      />
+    )
+  }
 
   if (field.enum) {
     return field.multi ? (

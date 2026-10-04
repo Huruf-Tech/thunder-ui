@@ -34,10 +34,15 @@ i18n
                 },
             },
         },
-        fallbackLng: "ar",
+        //! Was `"ar"` with localStorage-only detection, so every first-time
+        //! visitor started in Arabic whatever their browser said — and the
+        //! comment claimed browser settings were consulted when they were not.
+        //! An Arabic browser still resolves to Arabic via `navigator`. See B-38.
+        fallbackLng: "en",
         supportedLngs: ["en", "ar"],
         detection: {
-            order: ["localStorage"], // First check localStorage, then browser settings
+            // Stored preference first, then the browser's own language.
+            order: ["localStorage", "navigator"],
             lookupLocalStorage: "i18nextLng",
         },
         interpolation: {

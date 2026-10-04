@@ -22,22 +22,28 @@ export interface ILayoutProps {
   children: React.ReactNode;
 }
 
+//! Resolved at module scope: an inline factory call in the render body reads to
+//! React (and to eslint) as a component created during render, which would reset
+//! the subtree's state on every render. See B-01.
+function resolveLayout() {
+  switch (import.meta.env.VITE_APP_LAYOUT) {
+    case "mobile":
+      return MobileLayout;
+
+    case "sidebar":
+      return SidebarLayout;
+
+    default:
+      return NavbarLayout;
+  }
+}
+
+const ConfiguredLayout = resolveLayout();
+
 export function LayoutProvider({ children, layout, router }: ILayoutProps) {
   const { resolvedTheme } = useTheme();
 
-  const Layout = layout ??
-    (() => {
-      switch (import.meta.env.VITE_APP_LAYOUT) {
-        case "mobile":
-          return MobileLayout;
-
-        case "sidebar":
-          return SidebarLayout;
-
-        default:
-          return NavbarLayout;
-      }
-    })();
+  const Layout = layout ?? ConfiguredLayout;
 
   return (
     <LayoutContext.Provider value={{ router }}>

@@ -1,8 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/rules-of-hooks */
 import React from "react"
 import type { TField } from "@/core/lib/jsonSchemaToFields"
 import { useFormContext } from "react-hook-form"
+import { useTranslation } from "react-i18next"
 import {
   FieldDescription,
   FieldError,
@@ -25,6 +25,7 @@ export default function RenderObject({ name, field }: TRenderObjectProp) {
 
   if (!field.fields?.length) return
 
+  const { t } = useTranslation()
   const {
     formState: { errors },
     watch,
@@ -45,9 +46,9 @@ export default function RenderObject({ name, field }: TRenderObjectProp) {
     <FieldGroup>
       <FieldSeparator />
       <FieldSet>
-        <FieldLegend>{field.label ?? field.name}</FieldLegend>
+        <FieldLegend>{t(field.label ?? field.name ?? "")}</FieldLegend>
         {field.description && (
-          <FieldDescription>{field.description}</FieldDescription>
+          <FieldDescription>{t(field.description)}</FieldDescription>
         )}
         <FieldError>{getError(name)}</FieldError>
       </FieldSet>

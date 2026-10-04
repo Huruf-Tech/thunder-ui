@@ -55,7 +55,7 @@ export function ReceiveForm({
         hideListener = await Keyboard.addListener("keyboardWillHide", () => {
           setKbHeight(0);
         });
-      } catch (e) {
+      } catch {
         // Ignore if plugin not available on web
       }
     };

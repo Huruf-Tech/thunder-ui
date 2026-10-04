@@ -67,38 +67,44 @@ export function NotificationPopover({ userId }: NotificationPopoverProps) {
 
   const [unreadCount, setUnreadCount] = React.useState(0)
 
-  if (Capacitor.getPlatform() !== "web") {
-    const { registerPushNotification } = useRegisterPushNotification()
+  //! `useRegisterPushNotification` and `useEffect` used to sit inside
+  //! `if (Capacitor.getPlatform() !== "web")`. The platform never changes at
+  //! runtime so it did not crash in practice, but it is a hook-order violation
+  //! that any refactor could turn into one. The hook itself holds no state, so
+  //! calling it unconditionally is free; the platform check moved into the
+  //! effect body. Found by restoring eslint — see B-01.
+  const { registerPushNotification } = useRegisterPushNotification()
 
-    React.useEffect(() => {
-      let listenerHandle: Awaited<
-        ReturnType<typeof PushNotifications.addListener>
-      > | null = null
+  React.useEffect(() => {
+    if (Capacitor.getPlatform() === "web") return
 
-      const setup = async () => {
-        listenerHandle = await PushNotifications.addListener(
-          "registration",
-          async (token) => {
-            try {
-              await ThunderSDK.users.addFcmToken({
-                body: { token: token.value },
-              })
-            } catch (err) {
-              console.error("Failed to save FCM token", err)
-            }
+    let listenerHandle: Awaited<
+      ReturnType<typeof PushNotifications.addListener>
+    > | null = null
+
+    const setup = async () => {
+      listenerHandle = await PushNotifications.addListener(
+        "registration",
+        async (token) => {
+          try {
+            await ThunderSDK.users.addFcmToken({
+              body: { token: token.value },
+            })
+          } catch (err) {
+            console.error("Failed to save FCM token", err)
           }
-        )
+        }
+      )
 
-        await registerPushNotification()
-      }
+      await registerPushNotification()
+    }
 
-      setup()
+    void setup()
 
-      return () => {
-        listenerHandle?.remove()
-      }
-    }, [])
-  }
+    return () => {
+      void listenerHandle?.remove()
+    }
+  }, [registerPushNotification])
 
   const refreshUnreadCount = React.useCallback(() => {
     if (!userId || !triggersTenantId || !triggersBaseUrl) return

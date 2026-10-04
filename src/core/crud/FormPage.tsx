@@ -71,6 +71,9 @@ export const fieldsFromModuleMetadata = async (
   return results
 }
 
+/** Upper bound on options materialised for the list filter dropdowns. */
+const REF_OPTIONS_LIMIT = 100
+
 JSONSchemaToFields.resolveRef = async (ref, field) => {
   const createProjection = () => {
     const fields =
@@ -88,6 +91,10 @@ JSONSchemaToFields.resolveRef = async (ref, field) => {
           query: {
             filters: field.refFilters,
             project: createProjection(),
+            //! Still unbounded in spirit, but capped so a `ref` to a large module
+            //! cannot stall the page. The list filter UI is the only caller left;
+            //! form fields use `RefSelect`. See B-31.
+            limit: REF_OPTIONS_LIMIT,
           },
         })) as {
           results: any[]
@@ -210,7 +217,10 @@ export function FormPage({ name }: IFormPageProps) {
       try {
         const fields = await fieldsFromModuleMetadata(metadata, {
           type: isEditMode ? "update" : "insert",
-          resolveRef: true,
+          //! `ref` fields are rendered by `RefSelect`, which queries on demand.
+          //! Resolving here would download every referenced collection before the
+          //! form could paint. See B-31.
+          resolveRef: false,
         })
 
         if (!cancelled) setFields(fields)

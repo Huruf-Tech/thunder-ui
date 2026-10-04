@@ -229,7 +229,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 ) : (
                   <IconMoon className="size-4" />
                 )}
-                <p className="font-medium">Toggle theme</p>
+                <p className="font-medium">{t("Toggle theme")}</p>
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
@@ -279,10 +279,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
                         </Avatar>
                         <div className="grid flex-1 text-start text-sm leading-tight">
                           <span className="truncate font-medium">
-                            {me?.name ?? "Unamed"}
+                            {me?.name ?? t("Unnamed")}
                           </span>
                           <span className="truncate text-xs text-muted-foreground">
-                            {me?.email ?? "N/A"}
+                            {me?.email ?? t("N/A")}
                           </span>
                         </div>
                       </div>
@@ -352,7 +352,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 className="bg-destructive-foreground/10 text-destructive"
               >
                 <IconLogout className="size-4" />
-                <p className="font-medium">Logout</p>
+                <p className="font-medium">{t("Logout")}</p>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>

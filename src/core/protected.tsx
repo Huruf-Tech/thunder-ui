@@ -81,7 +81,7 @@ function ProtectedWithOAuth({ children }: { children: React.ReactNode }) {
       >
         <Button onClick={handleSignIn}>
           {isLoading && <Spinner />}
-          Sign In
+          {t("Sign In")}
         </Button>
       </LoadingScreen>
     )
@@ -94,11 +94,11 @@ function ProtectedWithOAuth({ children }: { children: React.ReactNode }) {
         icon={IconBug}
         description={
           systemError?.message ??
-          "An unexpected error has been encountered! Please contact support."
+          t("An unexpected error has been encountered! Please contact support.")
         }
       >
         <Button variant="outline" onClick={handleSignInAgain}>
-          {isLoading && <Spinner />} Sign in again?
+          {isLoading && <Spinner />} {t("Sign in again?")}
         </Button>
         <Button onClick={handleRefresh}>{t("Retry")}</Button>
       </LoadingScreen>
@@ -113,7 +113,7 @@ function ProtectedWithOAuth({ children }: { children: React.ReactNode }) {
         description={t("We are loading your permissions...")}
       >
         <Button variant="outline" onClick={handleLogout}>
-          Logout
+          {t("Logout")}
         </Button>
       </LoadingScreen>
     )
@@ -182,7 +182,7 @@ function ProtectedWithSession({ children }: { children: React.ReactNode }) {
               "/auth?redirect=" + (import.meta.env.BASE_URL || "/")
           }}
         >
-          Sign In
+            {t("Sign In")}
         </Button>
       </LoadingScreen>
     )
@@ -204,11 +204,11 @@ function ProtectedWithSession({ children }: { children: React.ReactNode }) {
         icon={IconBug}
         description={
           error?.message ??
-          "An unexpected error has been encountered! Please contact support."
+          t("An unexpected error has been encountered! Please contact support.")
         }
       >
         <Button variant="outline" onClick={gotoAccount}>
-          Goto Account
+          {t("Go to Account")}
         </Button>
         <Button onClick={handleRefresh}>{t("Retry")}</Button>
       </LoadingScreen>

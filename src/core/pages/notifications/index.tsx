@@ -129,7 +129,13 @@ export default function Notifications() {
   const grouped = React.useMemo(() => {
     const groups: Record<string, TNotification[]> = {}
     for (const n of paginated) {
-      ; (groups[n?.dateGroup!] ??= []).push(n)
+      // `groups[n?.dateGroup!]` keyed everything undated under the literal
+      // string "undefined"; skip those instead.
+      const group = n?.dateGroup
+
+      if (!group) continue
+
+      ;(groups[group] ??= []).push(n)
     }
     return Object.entries(groups)
   }, [paginated])

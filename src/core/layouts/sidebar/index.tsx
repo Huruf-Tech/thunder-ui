@@ -18,6 +18,7 @@ import type { TRouteObject } from "@/core/router"
 import { Breadcrumb } from "@/core/layouts/shared/breadcrumb"
 import Logo from "/logo.png"
 import { Link } from "react-router"
+import { appName } from "@/core/lib/utils"
 import { allowDisplayRoute } from "@/core/lib/utils"
 
 export function Layout({ children }: { children: React.ReactNode }) {
@@ -34,7 +35,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 render={<Link to="/" />}
               >
                 <img src={Logo} alt="Logo" className="h-5 w-auto shrink-0" />
-                <span className="text-base font-semibold">Thunder UI</span>
+                <span className="text-base font-semibold capitalize">
+                  {appName()}
+                </span>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>

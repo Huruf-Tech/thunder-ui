@@ -162,33 +162,36 @@ function formatDateRange(start: Date, end: Date) {
 }
 
 export function FilterValueDateDisplay({ filter }: { filter?: TValue }) {
-  try {
-    if (!filter?.value) return <span>N/A</span>
+  const value = filter?.value
 
-    if (Array.isArray(filter?.value) && filter?.value.length === 0)
-      return <IconDots className="size-4" />
+  if (!value) return <span>N/A</span>
 
-    if (
-      filter?.value instanceof Date ||
-      (Array.isArray(filter?.value) && filter?.value.length === 1)
-    ) {
-      const value =
-        filter?.value instanceof Date ? filter?.value : filter?.value[0]
+  if (Array.isArray(value) && value.length === 0)
+    return <IconDots className="size-4" />
 
-      const formattedDateStr = format(value, "MMM d, yyyy")
+  /**
+   * `format` throws on an unparseable value (a relative date such as
+   * `nldate:tomorrow` reaches here before it is resolved), so only the
+   * formatting is guarded. The JSX used to be built *inside* the try block,
+   * which does not actually protect rendering — React renders children later,
+   * outside the catch. See B-01.
+   */
+  const formatted = (() => {
+    try {
+      if (value instanceof Date || (Array.isArray(value) && value.length === 1)) {
+        return format(value instanceof Date ? value : value[0], "MMM d, yyyy")
+      }
 
-      return <span>{formattedDateStr}</span>
+      return formatDateRange(
+        (value as unknown[])[0] as Date,
+        (value as unknown[])[1] as Date
+      )
+    } catch {
+      return String(value).replace(/^nldate:/, "")
     }
+  })()
 
-    const formattedRangeStr = formatDateRange(
-      filter?.value[0],
-      filter?.value[1]
-    )
-
-    return <span>{formattedRangeStr}</span>
-  } catch {
-    return <span>{String(filter?.value).replace(/^nldate:/, "")}</span>
-  }
+  return <span>{formatted}</span>
 }
 
 export function FilterValueTextDisplay({ filter }: { filter?: TValue }) {

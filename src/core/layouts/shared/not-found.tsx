@@ -19,10 +19,11 @@ export function NotFound() {
           <EmptyMedia variant="icon">
             <IconMoodPuzzled />
           </EmptyMedia>
-          <EmptyTitle>Not Found - 404</EmptyTitle>
+          <EmptyTitle>{t("Not Found - 404")}</EmptyTitle>
           <EmptyDescription>
-            The page you are looking for does not exist. It might have been
-            moved or deleted.
+            {t(
+              "The page you are looking for does not exist. It might have been moved or deleted."
+            )}
           </EmptyDescription>
         </EmptyHeader>
         <EmptyContent className="flex-row justify-center gap-2">

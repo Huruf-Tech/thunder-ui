@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/rules-of-hooks */
 import React from "react"
 import type { TField } from "@/core/lib/jsonSchemaToFields"
@@ -55,9 +54,9 @@ export default function RenderArray({ name, field }: TRenderArrayProp) {
     <FieldGroup>
       <FieldSeparator />
       <FieldSet>
-        <FieldLegend>{field.label ?? field.name}</FieldLegend>
+        <FieldLegend>{t(field.label ?? field.name ?? "")}</FieldLegend>
         {field.description && (
-          <FieldDescription>{field.description}</FieldDescription>
+          <FieldDescription>{t(field.description)}</FieldDescription>
         )}
         <FieldError>{getError(name)}</FieldError>
       </FieldSet>
