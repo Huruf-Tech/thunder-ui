@@ -235,11 +235,7 @@ export const RenderField = ({
 
   const rules = buildRules(field, t)
 
-  if (
-    field.type === "text" &&
-    field.fieldHint === "filters" &&
-    field.filterSchema
-  ) {
+  if (field.fieldHint === "filters") {
     return (
       <Controller
         name={name}
@@ -248,7 +244,7 @@ export const RenderField = ({
         defaultValue={defaultValue}
         render={(def) => (
           <MongoFilters
-            schema={field.filterSchema!}
+            schema={field.filterSchema ?? name}
             filters={def.field.value}
             onChange={(value) => {
               def.field.onChange(value ?? null)
@@ -262,7 +258,7 @@ export const RenderField = ({
   //! A record/dictionary (`additionalProperties`, i.e. zod's `z.record()`) has no
   //! fixed keys, so there is no field list to render. Edit it as JSON rather than
   //! silently degrading to a one-line text box. See G-07.
-  if (field.type === "text" && field.fieldHint === "json") {
+  if (field.fieldHint === "json") {
     return (
       <Controller
         name={name}
@@ -613,7 +609,9 @@ export const RenderField = ({
               //! `defaultValue` made this uncontrolled, so a value arriving from
               //! `methods.reset()` after first paint never appeared. See B-07.
               value={formatDateForInput(def.field.value, true)}
-              onChange={(e) => def.field.onChange(parseDateInput(e.target.value))}
+              onChange={(e) =>
+                def.field.onChange(parseDateInput(e.target.value))
+              }
             />
           )}
         />
