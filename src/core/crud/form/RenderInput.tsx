@@ -54,8 +54,11 @@ export type TRenderInputProps = {
 }
 
 export default function RenderInput({ name, field }: TRenderInputProps) {
-  if (field.type === "array") return <RenderArray name={name} field={field} />
-  if (field.type === "object") return <RenderObject name={name} field={field} />
+  if (!field.fieldHint) {
+    if (field.type === "array") return <RenderArray name={name} field={field} />
+    if (field.type === "object")
+      return <RenderObject name={name} field={field} />
+  }
 
   const { t } = useTranslation()
   const id = React.useMemo(() => crypto.randomUUID(), [])
@@ -235,7 +238,7 @@ export const RenderField = ({
 
   const rules = buildRules(field, t)
 
-  if (field.fieldHint === "filters") {
+  if (field.type === "object" && field.fieldHint === "filters") {
     return (
       <Controller
         name={name}
@@ -258,7 +261,7 @@ export const RenderField = ({
   //! A record/dictionary (`additionalProperties`, i.e. zod's `z.record()`) has no
   //! fixed keys, so there is no field list to render. Edit it as JSON rather than
   //! silently degrading to a one-line text box. See G-07.
-  if (field.fieldHint === "json") {
+  if (field.type === "text" && field.fieldHint === "json") {
     return (
       <Controller
         name={name}

@@ -435,11 +435,11 @@ export class JSONSchemaToFields {
     ) {
       return [
         {
-          ...base,
-          ...node,
           name,
           type: "text",
           fieldHint: "json",
+          ...base,
+          ...node,
         },
       ]
     }
