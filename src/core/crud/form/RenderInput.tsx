@@ -6,6 +6,7 @@ import {
   Controller,
   useFormContext,
   type Control,
+  type ControllerProps,
   type RegisterOptions,
 } from "react-hook-form"
 import { useTranslation } from "react-i18next"
@@ -264,434 +265,311 @@ export const RenderField = ({
 
   const rules = buildRules(field, t)
 
-  if (field.type === "object" && field.fieldHint === "filters") {
-    return (
-      <Controller
-        name={name}
-        control={control}
-        rules={rules}
-        defaultValue={defaultValue}
-        render={(def) => (
-          <MongoFilters
-            schema={field.filterSchema ?? name}
-            filters={def.field.value}
-            onChange={(value) => {
-              def.field.onChange(value ?? null)
-            }}
-          />
-        )}
-      />
+  /**
+   * Binds the four props every control needs, so each branch below is just its
+   * control. These were spelled out at all fifteen call sites, which made the
+   * file read as boilerplate and buried the one branch that needs different
+   * rules. See R-01.
+   *
+   * Deliberately a plain function rather than a component: a component declared
+   * here would get a new identity on every render and remount its subtree.
+   */
+  const controlled = (
+    render: ControllerProps<any>["render"],
+    overrideRules?: RegisterOptions
+  ) => (
+    <Controller
+      name={name}
+      control={control}
+      rules={overrideRules ?? rules}
+      defaultValue={defaultValue}
+      render={render}
+    />
+  )
+
+  /** `enum` entries may be bare values or `{ label, value }` pairs. */
+  const enumItems = () =>
+    (field.enum ?? []).map((value) =>
+      typeof value === "object" && value ? value : { value, label: value }
     )
+
+  if (field.type === "object" && field.fieldHint === "filters") {
+    return controlled((def) => (
+      <MongoFilters
+        schema={field.filterSchema ?? name}
+        filters={def.field.value}
+        onChange={(value) => {
+          def.field.onChange(value ?? null)
+        }}
+      />
+    ))
   }
 
   //! A record/dictionary (`additionalProperties`, i.e. zod's `z.record()`) has no
   //! fixed keys, so there is no field list to render. Edit it as JSON rather than
   //! silently degrading to a one-line text box. See G-07.
   if (field.type === "text" && field.fieldHint === "json") {
-    return (
-      <Controller
-        name={name}
-        control={control}
-        rules={{
-          ...rules,
-          validate: {
-            ...(rules.validate as object),
-            json: (value: unknown) => {
-              if (value === undefined || value === null || value === "")
-                return true
+    return controlled(
+      (def) => (
+        <Textarea
+          id={id}
+          className="font-mono text-xs"
+          rows={6}
+          placeholder={field.example ?? "{}"}
+          defaultValue={
+            typeof def.field.value === "object" && def.field.value !== null
+              ? JSON.stringify(def.field.value, null, 2)
+              : (def.field.value ?? "")
+          }
+          onChange={(e) => {
+            const raw = e.target.value
 
-              if (typeof value === "object") return true
-
-              try {
-                JSON.parse(String(value))
-                return true
-              } catch {
-                return t("Enter valid JSON.")
-              }
-            },
-          },
-        }}
-        defaultValue={defaultValue}
-        render={(def) => (
-          <Textarea
-            id={id}
-            className="font-mono text-xs"
-            rows={6}
-            placeholder={field.example ?? "{}"}
-            defaultValue={
-              typeof def.field.value === "object" && def.field.value !== null
-                ? JSON.stringify(def.field.value, null, 2)
-                : (def.field.value ?? "")
+            try {
+              def.field.onChange(raw === "" ? undefined : JSON.parse(raw))
+            } catch {
+              // Keep the raw text so the user can finish typing; the `json`
+              // rule below is what blocks an invalid submit.
+              def.field.onChange(raw)
             }
-            onChange={(e) => {
-              const raw = e.target.value
+          }}
+        />
+      ),
+      {
+        ...rules,
+        validate: {
+          ...(rules.validate as object),
+          json: (value: unknown) => {
+            if (value === undefined || value === null || value === "")
+              return true
 
-              try {
-                def.field.onChange(raw === "" ? undefined : JSON.parse(raw))
-              } catch {
-                // Keep the raw text so the user can finish typing; the `json`
-                // rule above is what blocks an invalid submit.
-                def.field.onChange(raw)
-              }
-            }}
-          />
-        )}
-      />
+            if (typeof value === "object") return true
+
+            try {
+              JSON.parse(String(value))
+              return true
+            } catch {
+              return t("Enter valid JSON.")
+            }
+          },
+        },
+      }
     )
   }
 
   if (field.type === "text" && field.fieldHint === "markdown") {
-    return (
-      <Controller
-        name={name}
-        control={control}
-        rules={rules}
-        defaultValue={defaultValue}
-        render={(def) => (
-          <React.Suspense fallback={<ControlFallback />}>
-            <MarkdownEditorField
-              value={def.field.value}
-              onChange={def.field.onChange}
-            />
-          </React.Suspense>
-        )}
-      />
-    )
+    return controlled((def) => (
+      <React.Suspense fallback={<ControlFallback />}>
+        <MarkdownEditorField
+          value={def.field.value}
+          onChange={def.field.onChange}
+        />
+      </React.Suspense>
+    ))
   }
 
   if (field.type === "url" && !field.multi && field.fieldHint === "avatar") {
-    return (
-      <Controller
-        name={name}
-        control={control}
-        rules={rules}
-        defaultValue={defaultValue}
-        render={(def) => (
-          <AvatarUpload
-            id={id}
-            initialFile={
-              def.field.value && typeof def.field.value === "string"
-                ? {
-                    id: def.field.value,
-                    type: "avatar",
-                    name: def.field.value,
-                    url: def.field.value,
-                    size: 0,
-                  }
-                : undefined
-            }
-            onUpload={async ({ file }, signal) => {
-              if (file instanceof File) {
-                const res = await handleUpload(file, { signal })
-                def.field.onChange(res.url)
+    return controlled((def) => (
+      <AvatarUpload
+        id={id}
+        initialFile={
+          def.field.value && typeof def.field.value === "string"
+            ? {
+                id: def.field.value,
+                type: "avatar",
+                name: def.field.value,
+                url: def.field.value,
+                size: 0,
               }
-            }}
-            onRemove={() => {
-              def.field.onChange(null)
-            }}
-          />
-        )}
+            : undefined
+        }
+        onUpload={async ({ file }, signal) => {
+          if (file instanceof File) {
+            const res = await handleUpload(file, { signal })
+            def.field.onChange(res.url)
+          }
+        }}
+        onRemove={() => {
+          def.field.onChange(null)
+        }}
       />
-    )
+    ))
   }
 
   if (field.type === "url" && field.fieldHint === "upload") {
-    return (
-      <Controller
-        name={name}
-        control={control}
-        rules={rules}
-        defaultValue={defaultValue}
-        render={(def) => {
-          return (
-            <TableUpload
-              accept={field.fileType}
-              maxSize={field.fileSize}
-              maxFiles={field.maxItems}
-              initialFiles={filesFromUrls(def.field.value)}
-              onFilesChange={async (files) => {
-                const filesWithUrls = await Promise.all(
-                  files.map(async (file) => {
-                    if (
-                      file.file instanceof File &&
-                      file.status === "uploading"
-                    ) {
-                      const res = await handleUpload(file.file)
+    return controlled((def) => (
+      <TableUpload
+        accept={field.fileType}
+        maxSize={field.fileSize}
+        maxFiles={field.maxItems}
+        initialFiles={filesFromUrls(def.field.value)}
+        onFilesChange={async (files) => {
+          const filesWithUrls = await Promise.all(
+            files.map(async (file) => {
+              if (file.file instanceof File && file.status === "uploading") {
+                const res = await handleUpload(file.file)
 
-                      return {
-                        ...file,
-                        preview: res.url,
-                      }
-                    }
+                return {
+                  ...file,
+                  preview: res.url,
+                }
+              }
 
-                    return file
-                  })
-                )
-
-                const urls = urlsFromFiles(filesWithUrls)
-                def.field.onChange(field.multi ? urls : urls[0])
-              }}
-            />
+              return file
+            })
           )
+
+          const urls = urlsFromFiles(filesWithUrls)
+          def.field.onChange(field.multi ? urls : urls[0])
         }}
       />
-    )
+    ))
   }
 
-  if (field.type === "boolean")
-    return (
-      <Controller
-        name={name}
-        control={control}
-        rules={rules}
-        defaultValue={defaultValue}
-        render={(def) => (
-          <Switch
-            id={id}
-            checked={def.field.value ?? false}
-            onCheckedChange={def.field.onChange}
-          />
-        )}
+  if (field.type === "boolean") {
+    return controlled((def) => (
+      <Switch
+        id={id}
+        checked={def.field.value ?? false}
+        onCheckedChange={def.field.onChange}
       />
-    )
+    ))
+  }
 
   //! A `ref` field is backed by another module, which may hold more records than
   //! can sensibly be downloaded. It gets a searchable, server-paginated picker
   //! rather than an enum materialised up-front. See B-31 / F-04.
   if (field.ref) {
-    return (
-      <Controller
-        name={name}
-        control={control}
-        rules={rules}
-        defaultValue={defaultValue}
-        render={(def) => (
-          <RefSelect
-            id={id}
-            field={field}
-            multiple={field.multi}
-            value={def.field.value}
-            onValueChange={def.field.onChange}
-          />
-        )}
+    return controlled((def) => (
+      <RefSelect
+        id={id}
+        field={field}
+        multiple={field.multi}
+        value={def.field.value}
+        onValueChange={def.field.onChange}
       />
-    )
+    ))
   }
 
   if (field.enum) {
-    return field.multi ? (
-      <Controller
-        name={name}
-        control={control}
-        rules={rules}
-        defaultValue={defaultValue}
-        render={(def) => (
-          <Multiselect
-            id={id}
-            multiple
-            autoHighlight
-            items={field.enum}
-            value={def.field.value}
-            onValueChange={def.field.onChange}
-          />
-        )}
+    if (field.multi) {
+      return controlled((def) => (
+        <Multiselect
+          id={id}
+          multiple
+          autoHighlight
+          items={field.enum}
+          value={def.field.value}
+          onValueChange={def.field.onChange}
+        />
+      ))
+    }
+
+    if (field.fieldHint === "autocomplete") {
+      return controlled((def) => (
+        <Autocomplete
+          id={id}
+          items={enumItems()}
+          value={def.field.value ?? ""}
+          onValueChange={def.field.onChange}
+        />
+      ))
+    }
+
+    return controlled((def) => (
+      <Dropdown
+        id={id}
+        items={enumItems()}
+        value={def.field.value ?? ""}
+        onValueChange={def.field.onChange}
       />
-    ) : field.fieldHint === "autocomplete" ? (
-      <Controller
-        name={name}
-        control={control}
-        rules={rules}
-        defaultValue={defaultValue}
-        render={(def) => {
-          return (
-            <Autocomplete
-              id={id}
-              items={(field.enum ?? []).map((value) =>
-                typeof value === "object" && value
-                  ? value
-                  : { value, label: value }
-              )}
-              value={def.field.value ?? ""}
-              onValueChange={def.field.onChange}
-            />
-          )
-        }}
-      />
-    ) : (
-      <Controller
-        name={name}
-        control={control}
-        rules={rules}
-        defaultValue={defaultValue}
-        render={(def) => (
-          <Dropdown
-            id={id}
-            items={(field.enum ?? []).map((value) =>
-              typeof value === "object" && value
-                ? value
-                : { value, label: value }
-            )}
-            value={def.field.value ?? ""}
-            onValueChange={def.field.onChange}
-          />
-        )}
-      />
-    )
+    ))
   }
 
   if (field.type === "phone" && !field.multi) {
-    return (
-      <Controller
-        name={name}
-        control={control}
-        rules={rules}
-        defaultValue={defaultValue}
-        render={(def) => (
-          <React.Suspense fallback={<ControlFallback />}>
-            <PhoneInput
-              id={id}
-              value={def.field.value}
-              onChange={def.field.onChange}
-            />
-          </React.Suspense>
-        )}
-      />
-    )
+    return controlled((def) => (
+      <React.Suspense fallback={<ControlFallback />}>
+        <PhoneInput
+          id={id}
+          value={def.field.value}
+          onChange={def.field.onChange}
+        />
+      </React.Suspense>
+    ))
   }
 
   if (field.type === "number" && field.fieldHint === "amount") {
-    return (
-      <Controller
-        name={name}
-        control={control}
-        rules={rules}
-        defaultValue={defaultValue}
-        render={(def) => (
-          <NumberInput
-            id={id}
-            type={field.type}
-            placeholder={field.example ?? field.name}
-            minLength={field.minLength}
-            maxLength={field.maxLength}
-            pattern={field.pattern}
-            value={def.field.value ?? ""}
-            onChange={(e) => def.field.onChange(e.target.valueAsNumber)}
-          />
-        )}
+    return controlled((def) => (
+      <NumberInput
+        id={id}
+        type={field.type}
+        placeholder={field.example ?? field.name}
+        minLength={field.minLength}
+        maxLength={field.maxLength}
+        pattern={field.pattern}
+        value={def.field.value ?? ""}
+        onChange={(e) => def.field.onChange(e.target.valueAsNumber)}
       />
-    )
+    ))
   }
 
   if (["text", "number", "url", "email", "phone"].includes(field.type)) {
     if (field.multi) {
-      return (
-        <Controller
-          name={name}
-          control={control}
-          rules={rules}
-          defaultValue={defaultValue}
-          render={(def) => (
-            <Tag
-              id={id}
-              values={def.field.value}
-              onValueChange={def.field.onChange}
-              type={field.type}
-            >
-              <TagInput />
-            </Tag>
-          )}
-        />
-      )
+      return controlled((def) => (
+        <Tag
+          id={id}
+          values={def.field.value}
+          onValueChange={def.field.onChange}
+          type={field.type}
+        >
+          <TagInput />
+        </Tag>
+      ))
     }
 
     if (field.type === "text" && (!field.maxLength || field.maxLength > 100)) {
-      return (
-        <Controller
-          name={name}
-          control={control}
-          rules={rules}
-          defaultValue={defaultValue}
-          render={(def) => (
-            <Textarea
-              id={id}
-              placeholder={field.example ?? field.name}
-              minLength={field.minLength}
-              maxLength={field.maxLength}
-              value={def.field.value ?? ""}
-              onChange={(e) => def.field.onChange(e.target.value)}
-            />
-          )}
+      return controlled((def) => (
+        <Textarea
+          id={id}
+          placeholder={field.example ?? field.name}
+          minLength={field.minLength}
+          maxLength={field.maxLength}
+          value={def.field.value ?? ""}
+          onChange={(e) => def.field.onChange(e.target.value)}
         />
-      )
+      ))
     }
   }
 
   if (field.type === "date") {
-    if (field.fieldHint === "datetime-local") {
-      return (
-        <Controller
-          name={name}
-          control={control}
-          rules={rules}
-          defaultValue={defaultValue}
-          render={(def) => (
-            <Input
-              id={id}
-              type="datetime-local"
-              placeholder={field.example ?? field.name}
-              //! `defaultValue` made this uncontrolled, so a value arriving from
-              //! `methods.reset()` after first paint never appeared. See B-07.
-              value={formatDateForInput(def.field.value, true)}
-              onChange={(e) =>
-                def.field.onChange(parseDateInput(e.target.value))
-              }
-            />
-          )}
-        />
-      )
-    }
+    const withTime = field.fieldHint === "datetime-local"
 
-    return (
-      <Controller
-        name={name}
-        control={control}
-        rules={rules}
-        defaultValue={defaultValue}
-        render={(def) => (
-          <Input
-            id={id}
-            type={field.type}
-            placeholder={field.example ?? field.name}
-            value={formatDateForInput(def.field.value)}
-            onChange={(e) => def.field.onChange(parseDateInput(e.target.value))}
-          />
-        )}
+    return controlled((def) => (
+      <Input
+        id={id}
+        type={withTime ? "datetime-local" : "date"}
+        placeholder={field.example ?? field.name}
+        //! `defaultValue` made this uncontrolled, so a value arriving from
+        //! `methods.reset()` after first paint never appeared. See B-07.
+        value={formatDateForInput(def.field.value, withTime)}
+        onChange={(e) => def.field.onChange(parseDateInput(e.target.value))}
       />
-    )
+    ))
   }
 
-  return (
-    <Controller
-      name={name}
-      control={control}
-      rules={rules}
-      defaultValue={defaultValue}
-      render={(def) => (
-        <Input
-          id={id}
-          type={field.type}
-          placeholder={field.example ?? field.name}
-          minLength={field.minLength}
-          maxLength={field.maxLength}
-          pattern={field.pattern}
-          value={def.field.value ?? ""}
-          onChange={(e) =>
-            def.field.onChange(
-              field.type === "number" ? e.target.valueAsNumber : e.target.value
-            )
-          }
-        />
-      )}
+  return controlled((def) => (
+    <Input
+      id={id}
+      type={field.type}
+      placeholder={field.example ?? field.name}
+      minLength={field.minLength}
+      maxLength={field.maxLength}
+      pattern={field.pattern}
+      value={def.field.value ?? ""}
+      onChange={(e) =>
+        def.field.onChange(
+          field.type === "number" ? e.target.valueAsNumber : e.target.value
+        )
+      }
     />
-  )
+  ))
 }

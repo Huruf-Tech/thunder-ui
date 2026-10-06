@@ -409,7 +409,24 @@ fully custom shell.
 
 Backwards-compatible unless noted.
 
-- [ ] **R-01 — Collapse the 15 duplicated `<Controller>` blocks in `RenderInput`.** Every branch repeats
+- [x] **R-01** **Done. `RenderInput.tsx` 697 → 575 lines; `<Controller>` usages 18 → 2.** A single
+      `controlled(render, overrideRules?)` helper binds `name`, `control`, `rules` and `defaultValue`,
+      so each branch is now just its control — the shape a contributor has to copy to add a field
+      type. Two related cleanups fell out: the duplicated `enum` item-mapping became one
+      `enumItems()`, and the two date branches collapsed into one (they differed only in
+      `type` and the `withTime` flag).
+
+      `controlled` is deliberately a **plain function, not a component** — a component declared
+      inside the render body would get a new identity every render and remount its subtree, which is
+      exactly the defect B-41 fixed in `LayoutProvider`.
+
+      **Verified mechanically**, because an omitted optional prop is the failure mode of a
+      15-branch rewrite and typecheck would not catch it: a script extracted the prop list of every
+      control before and after and diffed them. Three reported differences were regex artifacts (a
+      `=>` inside `items={...}` truncated the old match) and one was index-shift from merging the date
+      branches; the merged date input and the fallback input were then compared line by line and are
+      equivalent. `eslint` now reports **zero problems** for the file, and the lazy `phone-input` and
+      `MarkdownEditor` chunks still split correctly. Original report: — Collapse the 15 duplicated `<Controller>` blocks in `RenderInput`.** Every branch repeats
       the same `control` / `rules` / `defaultValue` triple; ~525 lines would drop to roughly half. This is
       the single biggest barrier to a new contributor adding a field type. **Do this before writing the
       "how to add a custom field type" doc.**
