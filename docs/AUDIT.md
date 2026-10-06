@@ -21,6 +21,8 @@ Recorded so they do not get re-litigated.
 
 | # | Decision |
 | --- | --- |
+| D7 | **`www/` and the committed `.env` files are tracked deliberately.** `AttendanceCard` stays deleted — it is not part of Thunder UI. Capacitor identity (`com.huruf.thunderui`) stays as-is. |
+| D8 | **Built-in feature pages are opt-in and off by default**, flag names at my discretion: `VITE_ENABLE_WALLET`, `VITE_ENABLE_USERS`, `VITE_ENABLE_NOTIFICATIONS`. |
 | D6 | **"Unused in this repo" does not mean dead.** Thunder UI is a boilerplate: utilities, hooks, components, design tokens and types exported from `src/core/` are API for the apps built on it, and must be kept even with no in-repo caller. Only remove something that is (a) internal plumbing with no coherent standalone use, (b) broken or incoherent as an API, or (c) one project's domain code that leaked in. Removing or renaming a public export is a breaking change — keep a deprecated alias. |
 | D0 | **Only `src/core/` is read-only.** Everything outside it is the developer's to customise. Note the consequence: core imports `@/components` 168×, `@/lib` 26×, `@/hooks` 3× and `@/pages/overview` once — so core depends on mutable app files. S-04 is a confirmed bug, not an open question. |
 | D1 | **`wallet`, `users` and `notifications` stay** in `src/core/pages/` as framework features, **gated behind env flags**. Only `VITE_DISABLE_WALLET` exists today — `users` and `notifications` need equivalents. See F-13. |
@@ -396,7 +398,7 @@ fully custom shell.
 - [x] **F-11** **Fixed.** `.env.example` documents all 13 `VITE_` variables used in the code, grouped by concern, with the unit or accepted values for each. Verified mechanically that no variable read in `src/` is undocumented. Original report: — `.env.example`** (see C-02).
 - [x] **F-12** **Done** as C-13. Original report: — A translation-key extraction script** wired as an npm script, so missing keys
       are caught before review.
-- [ ] **F-13 — Env flags for the built-in feature pages** (per D1). Only `VITE_DISABLE_WALLET` exists;
+- [x] **F-13** **Done** (D8). `src/core/lib/features.ts` exposes `features.wallet` / `.users` / `.notifications`, read through `envFlag` so `0`/`false`/`off`/`no` all disable. Gated: the wallet route and the navbar balance widget; the users card view; the notifications route (which now redirects when off, so `/notifications` cannot render a page polling a disabled service), the navbar bell and the mobile bell. Original report: — Env flags for the built-in feature pages** (per D1). Only `VITE_DISABLE_WALLET` exists;
       `users` and `notifications` have no equivalent, so every generated app ships them. Needs a shared
       boolean-env helper too — the current `!import.meta.env.VITE_DISABLE_WALLET` test treats the string
       `"0"` as truthy (B-24).
@@ -474,7 +476,7 @@ Backwards-compatible unless noted.
 
 ## 5. Chores / repo hygiene
 
-- [ ] **C-01 — Project-specific code is shipped in the boilerplate.** *Scoped by D1:* `wallet`, `users`
+- [x] **C-01** **Closed.** `AttendanceCard` stays deleted (D7 — not part of Thunder UI). The squatted registrations are gone from the developer's `overrides/crud/cards.tsx`, which now ships empty as intended; `users: UserCardView` moved to core's own `src/core/crud/builtins.ts`, gated by `VITE_ENABLE_USERS`. `ListPage` merges built-ins **under** the overrides, so a developer registering the same key still wins. Original report: — Project-specific code is shipped in the boilerplate.** *Scoped by D1:* `wallet`, `users`
       and `notifications` stay as framework features. What remains to remove is
       [components/AttendanceCard.tsx](../src/components/AttendanceCard.tsx) (an attendance-tracking card
       with `employeeCode` / `punchAt` / `timezone` — clearly one project's domain) and the two default
@@ -483,7 +485,7 @@ Backwards-compatible unless noted.
       — the comment directly above those entries says "Add your custom cards components here" — so they
       must ship empty. If the user card view is a framework feature, `core` should register it itself,
       not squat in the developer's override map.
-- [ ] **C-02 — Real credentials and infrastructure are committed.** `.env`, `.env.development`,
+- [~] **C-02** *(tracked deliberately per D7. `.env.example` is added as documentation; the real files stay committed. Worth revisiting if the repo ever goes public — it carries a live OAuth client id and tenant id.)* — Real credentials and infrastructure are committed.** `.env`, `.env.development`,
       `.env.production` and `.env.mobile` are all tracked and contain
       `VITE_OAUTH_CLIENT_ID=69f0a39b9f909d61a04356c9`, `VITE_TRIGGERS_TENANT_ID=6a0f0dc1216c36e813000c98`
       and `https://erp.huruftech.com` / `https://triggers.huruftech.com`. Every cloned app starts
@@ -494,12 +496,12 @@ Backwards-compatible unless noted.
       everywhere. Add it to `.env.example` with a sensible default and document the unit.
 - [~] **C-04** *(by design — the team tracks `www/` deliberately.)* — Build output is committed.** 22 files under `www/` are tracked, and `.gitignore` does not
       list `www` even though `vite.config.ts` sets `outDir: "./www"`.
-- [ ] **C-05 — `minify: false` in the production build**
+- [x] **C-05** **Fixed.** `minify: false` removed. Measured on this tree: **8,135 KB → 4,068 KB raw, 1,672 KB → 1,186 KB gzip.** Sourcemaps left off so the committed `www/` stays small; flip `sourcemap` on temporarily to debug a built bundle. **`www/` needs a rebuild to pick this up.** Original report: — `minify: false` in the production build**
       ([vite.config.ts:9](../vite.config.ts#L9)). Intentional for debugging? It ships unminified JS to
       every generated app.
 - [x] **C-06** **Fixed.** `"include": ["src"]` — the phantom root `i18n.ts` is gone; the real file at `src/i18n.ts` was already covered. Original report: — `tsconfig.app.json` includes a non-existent root `i18n.ts`**
       ([tsconfig.app.json](../tsconfig.app.json)) — the file is at `src/i18n.ts`.
-- [ ] **C-07 — Capacitor identity is hardcoded to Huruf.** `appId: 'com.huruf.thunderui'`,
+- [~] **C-07** *(by design — kept as-is per D7)* — Capacitor identity is hardcoded to Huruf.** `appId: 'com.huruf.thunderui'`,
       `appName: 'thunder-ui'` ([capacitor.config.ts](../capacitor.config.ts)); the generated `android/`
       and `ios/` projects carry `com.huruf.thunderui` too. A per-project rename step is needed (and must
       be documented).
@@ -508,7 +510,7 @@ Backwards-compatible unless noted.
 - [ ] **C-09 — `README.md` is the stock Vite + shadcn template.** It says nothing about Thunder.
 - [ ] **C-10 — No theme/direction flash prevention.** `index.html` has no inline script, so the theme
       class and `dir` attribute are only applied in an effect — light-mode and LTR flash on every load.
-- [ ] **C-11 — Onboarding placeholder content ships enabled.** `<Onboarding />` is mounted
+- [x] **C-11** **Fixed.** `Screens` ships **empty**, with the type and a worked example in a doc comment, and `Onboarding` returns `null` (and skips the `Preferences` lookup) when there is nothing to show. The three placeholder “Thunder UI” slides no longer appear in every generated app, but the helper is intact — adding one screen turns the flow back on. Original report: — Onboarding placeholder content ships enabled.** `<Onboarding />` is mounted
       unconditionally in [App.tsx:91](../src/App.tsx#L91) and shows three auto-advancing
       "Thunder UI / Thunder UI 2 / Thunder UI 3" screens to every first-time user of every generated app.
 - [x] **C-12** **Fixed.** One env-backed `defaultCurrency` in `lib/constants.ts` (`VITE_DEFAULT_CURRENCY`, default `LYD`) replaces the literal at four sites — one of which was lowercase `"lyd"` immediately after an `.toUpperCase()` branch. The `LYD -> د.ل` symbol maps stay: those are data, not fallbacks. Original report: — Hardcoded `"lyd"` currency fallback** in
@@ -588,7 +590,12 @@ files that will be overwritten, and core depends on files developers are told to
 
 ### 6.2 Findings
 
-- [ ] **S-01 — `App.tsx` invites developers to edit a core-owned file.**
+- [x] **S-01 — Re-diagnosed; the original reading was wrong.** `App.tsx` is **not** in `src/core/`,
+      so `--forceSync` never touches it and a developer's custom routes there are safe. The real
+      problem is the mirror image: **core improvements to `App.tsx` can never reach an existing app.**
+      That generalises into the finding below (S-09), which is the one that matters. Documented as
+      §6 of [docs/SYNC.md](SYNC.md): keep the wiring thin and add routes via
+      `src/overrides/routes.tsx`. Original (incorrect) report:
       [App.tsx:56](../src/App.tsx#L56) says *"You can add your custom routes here, they will not be
       affected by the core routes"*. But `App.tsx` defines the root `Protected` wrapper, the
       `/:tenant` branch and `coreRoutes` — it is unambiguously core. Either `--forceSync` overwrites it
@@ -609,7 +616,12 @@ files that will be overwritten, and core depends on files developers are told to
       developers to run it. A developer who customises `button.tsx` loses it on the next sync; a
       framework fix to `button.tsx` that is *not* synced leaves apps broken. **Needs an explicit rule**,
       plus a sanctioned place for developer UI components (e.g. `src/components/custom/`).
-- [ ] **S-04 — Core imports an app-owned page.**
+- [x] **S-04** **Fixed.** `src/pages/overview.tsx` moved to `src/core/pages/overview.tsx`, so core
+      owns its default. The developer replaces it by registering `overview` in
+      `src/overrides/routes.tsx`, which is merged **over** core's definition (keeping the icon,
+      priority and permission checks). `wallet` and `notifications` got the same slot for
+      consistency, and the three keys are excluded from SDK module-name resolution.
+      **Core now has zero imports from `@/pages/*`.** Original report: — Core imports an app-owned page.**
       [router.tsx:16](../src/core/router.tsx#L16) does `import Overview from "@/pages/overview"`.
       If a developer deletes or renames their own overview page — a file explicitly meant to be theirs
       ("You can customize this page…") — **the core router fails to build**. Overview should come
@@ -618,18 +630,48 @@ files that will be overwritten, and core depends on files developers are told to
       they are app-owned; core simply depends on them. Same trade-off as S-03. Original report: `usePagination`,
       `useIsMobile` and `cn` are imported by core from paths that, by every naming convention in this
       repo, read as the developer's. Either move them under `src/core/` or declare them.
-- [ ] **S-06 — There is no machine-readable manifest of the boundary.** Nothing in this repo tells
+- [x] **S-06** **Done:** [docs/SYNC.md](SYNC.md). The boundary turned out to be simpler than the
+      audit assumed — `--forceSync` replaces **`src/core/` wholesale** and touches nothing else — so
+      the doc states that rule, lists what the developer owns, documents every extension point, and
+      ends with a pre-release checklist. Its central section is the dependency risk below, and every
+      figure in it was verified mechanically. Original report: — There is no machine-readable manifest of the boundary.** Nothing in this repo tells
       `--forceSync` (or a developer) which paths are replaced. A `sync.json` / `SYNC.md` listing
       core-owned globs, committed here and read by the framework command, would make the contract
       checkable instead of folkloric. **This is the single highest-value item for onboarding new devs.**
-- [ ] **S-07 — Root config carries the framework author's identity.** `capacitor.config.ts`
+- [~] **S-07** *(by design — kept as-is per D7)* — Root config carries the framework author's identity.** `capacitor.config.ts`
       (`com.huruf.thunderui`), `package.json` (`"name": "thunder-ui"`, which `appName()` derives the
       visible app name from), `index.html` (`<title>Thunder UI</title>`) and the committed `android/` /
       `ios/` projects are app-owned but ship Huruf's values. A documented rename step is needed, and
       `--forceSync` must not revert it. Ties to C-07.
-- [ ] **S-08 — The one boundary that *is* right should be the model.** `src/index.css` (developer:
+- [x] **S-08** **Done** — written up as §4 of [docs/SYNC.md](SYNC.md), the boundary the rest of the
+      codebase should copy. Verified: `src/index.css` holds 62 `oklch` token declarations,
+      `src/core/styles/index.css` holds **zero** — mechanics only. Original report: — The one boundary that *is* right should be the model.** `src/index.css` (developer:
       theme tokens) importing `src/core/styles/index.css` (core: mechanics only, zero tokens) is a clean
       split. Document it as the pattern the other boundaries should follow.
+
+- [ ] **S-09 — Core depends on 193 import sites it can never update.** Measured: `src/core/`
+      imports **199 times** from outside itself, of which only **6** are the intended
+      `src/overrides/` registries.
+
+      | Imported by core | Sites | Deliverable by `--forceSync`? |
+      | --- | --- | --- |
+      | `@/components/ui/*`, `@/components/reui/*` | 160 | **no** |
+      | `@/lib/utils` (`cn`) | 21 | **no** |
+      | `@/components/theme-provider` | 5 | **no** |
+      | `@/components/refresher`, `@/components/pagination` | 4 | **no** |
+      | `@/hooks/use-pagination`, `@/hooks/use-mobile` | 3 | **no** |
+      | `@/overrides/*` | 6 | n/a — intended |
+
+      Two consequences for the stated purpose of `--forceSync` (shipping security patches and minor
+      fixes): a patch that needs to change any of those files **cannot ship through sync at all**, and
+      a core patch that *depends* on a newer version of one of them **breaks on sync**, because core
+      moves forward while its dependency stays pinned to whatever the developer has.
+
+      This is partly deliberate — developers are meant to theme the shadcn primitives, which only
+      works because those files are theirs. §5 of [docs/SYNC.md](SYNC.md) therefore documents them as
+      a frozen API for core, and requires any release touching them to be flagged as needing manual
+      steps. **Whether that is enough, or whether core should carry its own copy of the primitives it
+      depends on, is an open architectural decision.**
 
 ---
 
@@ -642,7 +684,7 @@ Measured, not estimated — `npx vite build` on the current tree.
       layouts, the markdown editor, the Handlebars compiler and the whole wallet print pipeline are parsed
       before first paint. For a Capacitor app on a mid-range phone this is the dominant startup cost.
       Route-level `lazy` in `router.tsx` is the obvious first cut.
-- [ ] **P-02 — `minify: false` in the production build doubles the bundle.**
+- [x] **P-02** **Fixed with C-05** — minification enabled; raw bundle halved. — `minify: false` in the production build doubles the bundle.**
       [vite.config.ts:9](../vite.config.ts#L9). Measured: **8.0 MB → 3.98 MB raw, 1.66 MB → 1.17 MB
       gzip** from that one line. Confirm it was deliberate; if it was for debugging, `sourcemap: true`
       is the right tool.

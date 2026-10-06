@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 import { ThunderSDK } from "thunder-sdk";
 import { use } from "@/core/hooks/use";
 import { useUnreadCount } from "@/core/hooks/useUnreadCount";
+import { features } from "@/core/lib/features";
 import { NotificationSidebar } from "@/core/pages/notifications/notification-sidebar";
 
 /** Flip to true once a `settings` route exists. See F-08. */
@@ -92,14 +93,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
           </Link>
 
           <div className="flex items-center gap-1">
-            {activeParent === "settings" ? <span className="size-9" /> : (
-            <NotificationSidebar
-              userId={me?._id}
-              unreadCount={unreadCount}
-              onRefreshUnread={refreshUnread}
-              onItemMarkedRead={decrementUnread}
-            />
-            )}
+            {features.notifications && activeParent !== "settings" ? (
+              <NotificationSidebar
+                userId={me?._id}
+                unreadCount={unreadCount}
+                onRefreshUnread={refreshUnread}
+                onItemMarkedRead={decrementUnread}
+              />
+            ) : <span className="size-9" />}
             {/*
               There is no `settings` route in coreRoutes, so this button used to
               navigate straight to a 404. It stays hidden until the page exists;

@@ -52,12 +52,12 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { use } from "@/core/hooks/use"
 import {
-  envFlag,
   getAuthUrl,
   getInitials,
   getLocalPath,
   transformImage,
 } from "@/core/lib/utils"
+import { features } from "@/core/lib/features"
 import { useLogout } from "@/core/protected"
 import { SubNav } from "../shared/sub-nav"
 import { ThunderSDK } from "thunder-sdk"
@@ -387,10 +387,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
                   {/* Right Actions */}
                   <div className="ms-auto flex items-center gap-3">
                     {/* Notifications */}
-                    <NotificationPopover userId={me?._id} />
+                    {features.notifications && (
+                      <NotificationPopover userId={me?._id} />
+                    )}
 
                     {/* Balance Toggle */}
-                    {!envFlag(import.meta.env.VITE_DISABLE_WALLET) &&
+                    {features.wallet &&
                       ThunderSDK.isPermitted(ThunderSDK.wallets.get) && (
                         <NavBalance
                           visible={balanceVisible}

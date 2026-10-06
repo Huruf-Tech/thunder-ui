@@ -13,15 +13,11 @@ import { ListPage } from "@/core/crud/ListPage"
 import { FormPage } from "@/core/crud/FormPage"
 import { ViewPage } from "@/core/crud/ViewPage"
 
-import Overview from "@/pages/overview"
+import Overview from "./pages/overview"
 import { Wallet } from "@/core/pages/wallet"
 import { lists } from "@/overrides/crud/lists"
-import {
-  allowDisplayRoute,
-  envFlag,
-  groupPath,
-  sortRoutes,
-} from "./lib/utils"
+import { allowDisplayRoute, groupPath, sortRoutes } from "./lib/utils"
+import { features } from "./lib/features"
 import { routes as overrideRoutes } from "@/overrides/routes"
 import Notifications from "./pages/notifications"
 
@@ -35,10 +31,16 @@ export type TRouteObject = {
   button?: React.ComponentType
 } & RouteObject
 
+/** Override keys that target a built-in route rather than an SDK module. */
+const BUILTIN_ROUTE_KEYS = ["overview", "wallet", "notifications"]
+
 const moduleNames = Array.from(
   new Set([
     ...ThunderSDK.getModuleNames(),
-    ...Object.keys(overrideRoutes).filter((name) => !ThunderSDK.hasGroup(name)),
+    ...Object.keys(overrideRoutes).filter(
+      (name) =>
+        !ThunderSDK.hasGroup(name) && !BUILTIN_ROUTE_KEYS.includes(name),
+    ),
   ])
 )
 
@@ -169,10 +171,15 @@ coreRoutes.unshift(
     display: false,
   },
   {
+    //! Core used to import this from `@/pages/overview`, a file the developer
+    //! owns and is told to customise — deleting or renaming it broke the core
+    //! router. The default now lives in core, and the developer replaces it by
+    //! registering an `overview` entry in `src/overrides/routes.tsx`. See S-04.
     name: "Overview",
     path: "overview",
     icon: IconLayoutGrid,
     Component: () => <Overview />,
+    ...overrideRoutes.overview,
   },
   {
     name: "Wallet",
@@ -181,17 +188,22 @@ coreRoutes.unshift(
     priority: 50,
     Component: () => <Wallet />,
     display: () =>
-      !envFlag(import.meta.env.VITE_DISABLE_WALLET) &&
+      features.wallet &&
       (ThunderSDK.isPermitted(ThunderSDK.wallets.get) ||
         ThunderSDK.isPermitted(ThunderSDK.walletLedgers.get) ||
         ThunderSDK.isPermitted(ThunderSDK.wallets.signTransfer)),
+    ...overrideRoutes.wallet,
   },
   {
     name: "Notifications",
     path: "notifications",
     icon: IconNotification,
+    //! Hidden from navigation by design (reached from the bell), but the route
+    //! must also stop resolving when the feature is off. See F-13.
     display: false,
     priority: 7,
-    Component: () => <Notifications />,
+    Component: () =>
+      features.notifications ? <Notifications /> : <Navigate to="overview" />,
+    ...overrideRoutes.notifications,
   }
 )

@@ -5,6 +5,7 @@ import { ThunderSDK } from "thunder-sdk"
 import type { TFilters } from "thunder-sdk/types"
 import { DataTable } from "../custom/Datatable"
 import { cards } from "@/overrides/crud/cards"
+import { builtinCards } from "./builtins"
 import {
   type ColumnDef,
   getCoreRowModel,
@@ -215,7 +216,8 @@ export function ListPage({ group, name }: IListPageProps) {
 
   const [fields, setFields] = React.useState<TField[]>([])
 
-  const Cards = cards[name as keyof typeof cards]
+  //! A developer's registration wins over the built-in one. See C-01.
+  const Cards = cards[name as keyof typeof cards] ?? builtinCards[name]
   const [view, setView] = React.useState(Cards ? "cards" : "table")
 
   const isCard = view === "cards" && !!Cards

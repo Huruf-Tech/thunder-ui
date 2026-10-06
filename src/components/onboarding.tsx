@@ -8,23 +8,31 @@ import { Preferences } from "@capacitor/preferences"
 import { resolveUrl } from "@/core/lib/utils"
 import { useTranslation } from "react-i18next"
 
-const Screens = [
-  {
-    title: "Thunder UI",
-    description: "Connect with thunder ui to fasten your UI process.",
-    image: "/logo.png",
-  },
-  {
-    title: "Thunder UI 2",
-    description: "Connect with thunder ui to fasten your UI process.",
-    image: "/logo.png",
-  },
-  {
-    title: "Thunder UI 3",
-    description: "Connect with thunder ui to fasten your UI process.",
-    image: "/logo.png",
-  },
-]
+type Screen = {
+  /** Passed through `t()`, so a translation key works here. */
+  title: string
+  description: string
+  /** Resolved against the app's base URL. */
+  image: string
+}
+
+/**
+ * Onboarding screens, shown once on first launch.
+ *
+ * Empty by default: the boilerplate used to ship three placeholder "Thunder UI"
+ * slides that every generated app showed to every first-time user. Add your own
+ * screens here to switch the flow on. See C-11.
+ *
+ * @example
+ * const Screens: Screen[] = [
+ *   {
+ *     title: "Welcome",
+ *     description: "A short line about what this app does.",
+ *     image: "/logo.png",
+ *   },
+ * ]
+ */
+const Screens: Screen[] = []
 
 export function Onboarding() {
   const { t } = useTranslation()
@@ -50,11 +58,16 @@ export function Onboarding() {
   }
 
   React.useLayoutEffect(() => {
-    ;(async () => {
+    if (!Screens.length) return
+
+    void (async () => {
       const { value } = await Preferences.get({ key: "onboarding" })
+
       if (!value) setOpen(true)
     })()
   }, [])
+
+  if (!Screens.length) return null
 
   return (
     <Dialog open={open}>
