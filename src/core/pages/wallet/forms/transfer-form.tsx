@@ -15,13 +15,14 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
 import { getInitials } from "@/core/lib/utils";
 import { invalidateWallets } from "@/core/endpoints/wallet";
+import { defaultCurrency } from "@/core/lib/constants";
 
 const CURRENCY_LABELS_AR: Record<string, string> = {
   LYD: "د.ل",
 };
 
 function getCurrencyLabel(currency: string, lang: string) {
-  const code = (currency || "LYD").toUpperCase();
+  const code = (currency || defaultCurrency).toUpperCase();
   if (lang?.startsWith("ar")) {
     return CURRENCY_LABELS_AR[code] ?? code;
   }

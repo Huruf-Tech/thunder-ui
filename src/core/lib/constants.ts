@@ -30,5 +30,15 @@ export const triggersBaseUrl = import.meta.env.VITE_TRIGGERS_BASE_URL;
  * Vite env values are strings, so this must be parsed before reaching
  * `setInterval` — an unset/NaN value would otherwise poll at the 4ms minimum.
  */
+/**
+ * Currency code used when a wallet does not report one.
+ *
+ * Was hardcoded as a literal at four sites, one of them lowercase `"lyd"` right
+ * after an `.toUpperCase()` branch. See C-12.
+ */
+export const defaultCurrency = (
+  import.meta.env.VITE_DEFAULT_CURRENCY || "LYD"
+).toUpperCase();
+
 export const unreadCountInterval =
   Number(import.meta.env.VITE_UNREAD_COUNT_INTERVAL) || 30_000;

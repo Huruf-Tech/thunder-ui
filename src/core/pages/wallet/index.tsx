@@ -18,6 +18,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next"
 import { ThunderSDK } from "thunder-sdk";
+import { defaultCurrency } from "@/core/lib/constants";
 
 // Unicode bidi isolate marks — تمنع المتصفح من قلب ترتيب الأرقام/الحروف
 // اللاتينية لما تكون جوه container اتجاهه rtl (Arabic UI).
@@ -74,7 +75,10 @@ export function Wallet() {
   const previousBalance = (wallet?.previousBalance ?? 0) / 100;
   const defaultChange = balance - previousBalance;
 
-  const currencyLabel = getCurrencyLabel(wallet?.currency ?? "LYD", i18n.language);
+  const currencyLabel = getCurrencyLabel(
+    wallet?.currency ?? defaultCurrency,
+    i18n.language,
+  );
   const shownAmount = formatNumberOnly(balance);
   const maskedBalance = "*".repeat(5);
   const amountClassName = cn(

@@ -17,17 +17,13 @@ import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
 import {
   fetchNotifications,
-  fetchUnreadCount,
   markNotificationAsRead,
 } from "@/core/endpoints/notification"
 import { Card, CardContent } from "@/components/ui/card"
 import type { TNotification } from "@/core/types"
 import { timeAgo } from "@/core/lib/utils"
-import {
-  triggersBaseUrl,
-  triggersTenantId,
-  unreadCountInterval,
-} from "@/core/lib/constants"
+import { triggersBaseUrl, triggersTenantId } from "@/core/lib/constants"
+import { useUnreadCount } from "@/core/hooks/useUnreadCount"
 import { SkeletonRepeater } from "@/core/custom/SkeletonRepeater"
 import { Skeleton } from "@/components/ui/skeleton"
 import { PushNotifications } from "@capacitor/push-notifications"
@@ -64,8 +60,6 @@ export function NotificationPopover({ userId }: NotificationPopoverProps) {
   const [notifications, setNotifications] = React.useState<TNotification[]>([])
   const [loading, setLoading] = React.useState(false)
   const [open, setOpen] = React.useState(false)
-
-  const [unreadCount, setUnreadCount] = React.useState(0)
 
   //! `useRegisterPushNotification` and `useEffect` used to sit inside
   //! `if (Capacitor.getPlatform() !== "web")`. The platform never changes at
@@ -106,25 +100,8 @@ export function NotificationPopover({ userId }: NotificationPopoverProps) {
     }
   }, [registerPushNotification])
 
-  const refreshUnreadCount = React.useCallback(() => {
-    if (!userId || !triggersTenantId || !triggersBaseUrl) return
-
-    fetchUnreadCount(triggersBaseUrl, triggersTenantId, userId)
-      .then((count) => setUnreadCount(count))
-      .catch(() => {
-        // Non-critical: the badge just stays at its last value
-      })
-  }, [userId])
-
-  React.useEffect(() => {
-    refreshUnreadCount()
-
-    const intervalId = setInterval(() => {
-      refreshUnreadCount()
-    }, unreadCountInterval)
-
-    return () => clearInterval(intervalId)
-  }, [refreshUnreadCount, unreadCountInterval])
+  const { count: unreadCount, refresh: refreshUnreadCount } =
+    useUnreadCount(userId)
 
   /*
   const markAllRead = () => {

@@ -12,6 +12,7 @@ import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Field, FieldLabel, FieldError, FieldGroup } from "@/components/ui/field";
+import { defaultCurrency } from "@/core/lib/constants";
 
 type TReceiveForm = { amount: string };
 
@@ -32,7 +33,7 @@ type ReceiveQrPayload = { requestId: string; amount: number; currency: string };
 export function ReceiveForm({
   open,
   onOpenChange,
-  currency = "LYD",
+  currency = defaultCurrency,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;

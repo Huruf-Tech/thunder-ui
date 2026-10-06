@@ -13,13 +13,8 @@ import { Container } from "@/core/custom/Container";
 import { cn } from "@/lib/utils";
 import { ThunderSDK } from "thunder-sdk";
 import { use } from "@/core/hooks/use";
-import { fetchUnreadCount } from "@/core/endpoints/notification";
+import { useUnreadCount } from "@/core/hooks/useUnreadCount";
 import { NotificationSidebar } from "@/core/pages/notifications/notification-sidebar";
-import {
-  triggersBaseUrl,
-  triggersTenantId,
-  unreadCountInterval,
-} from "@/core/lib/constants";
 
 /** Flip to true once a `settings` route exists. See F-08. */
 const HAS_SETTINGS_ROUTE = false
@@ -60,32 +55,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
   const { data: me } = use(_me);
 
-  const [unreadCount, setUnreadCount] = React.useState(0);
-
-  const refreshUnread = React.useCallback(() => {
-    if (!me?._id || !triggersTenantId || !triggersBaseUrl) return;
-
-    fetchUnreadCount(triggersBaseUrl, triggersTenantId, me._id)
-      .then((count) => setUnreadCount(count))
-      .catch(() => {
-        // silent fail
-      });
-  }, [me?._id]);
-
-  // Instant counter decrement function at the layout level
-  const decrementUnread = React.useCallback(() => {
-    setUnreadCount((prev) => Math.max(0, prev - 1));
-  }, []);
-
-  React.useEffect(() => {
-    refreshUnread();
-
-    const intervalId = setInterval(() => {
-      refreshUnread();
-    }, unreadCountInterval);
-
-    return () => clearInterval(intervalId);
-  }, [refreshUnread]);
+  const {
+    count: unreadCount,
+    refresh: refreshUnread,
+    decrement: decrementUnread,
+  } = useUnreadCount(me?._id);
 
   return (
     <div className="flex h-svh w-full flex-col bg-background">

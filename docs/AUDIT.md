@@ -393,8 +393,8 @@ fully custom shell.
 - [ ] **F-09 — Error boundary.** `errorElement: <NotFound />` is set only on the root route
       ([App.tsx:31](../src/App.tsx#L31)); a render error inside a module page has no boundary.
 - [ ] **F-10 — Export / bulk actions beyond delete.** The action bar only offers edit (single) and delete.
-- [ ] **F-11 — `.env.example`** (see C-02).
-- [ ] **F-12 — A translation-key extraction script** wired as an npm script, so missing keys
+- [x] **F-11** **Fixed.** `.env.example` documents all 13 `VITE_` variables used in the code, grouped by concern, with the unit or accepted values for each. Verified mechanically that no variable read in `src/` is undocumented. Original report: — `.env.example`** (see C-02).
+- [x] **F-12** **Done** as C-13. Original report: — A translation-key extraction script** wired as an npm script, so missing keys
       are caught before review.
 - [ ] **F-13 — Env flags for the built-in feature pages** (per D1). Only `VITE_DISABLE_WALLET` exists;
       `users` and `notifications` have no equivalent, so every generated app ships them. Needs a shared
@@ -449,7 +449,7 @@ Backwards-compatible unless noted.
       `document.body` — which makes the five `core/custom/overrides/*Content.tsx` wrappers
       ([DropdownMenuContent](../src/core/custom/overrides/DropdownMenuContent.tsx) et al.) pure
       pass-throughs today. Either wire fullscreen up or drop the indirection.
-- [ ] **R-12 — Remove the double fetch in `ListPage`'s field effect.**
+- [x] **R-12** **Fixed.** The two metadata passes are now sequential with a cancellation guard: columns render from the unresolved pass, then upgrade when the `ref` option lists arrive. Previously both ran unconditionally, so the schema walk and every `resolveRef` request happened twice per mount. Original report: — Remove the double fetch in `ListPage`'s field effect.**
       [ListPage.tsx:364-369](../src/core/crud/ListPage.tsx#L364-L369) calls
       `columnFromModuleMetadata` twice (once without refs, once with) and sets state twice, with no
       cancellation if `metadata` changes mid-flight.
@@ -488,16 +488,16 @@ Backwards-compatible unless noted.
       `VITE_OAUTH_CLIENT_ID=69f0a39b9f909d61a04356c9`, `VITE_TRIGGERS_TENANT_ID=6a0f0dc1216c36e813000c98`
       and `https://erp.huruftech.com` / `https://triggers.huruftech.com`. Every cloned app starts
       pointed at Huruf's production ERP. Replace with `.env.example` + gitignore the real ones.
-- [ ] **C-03 — `VITE_DEFAULT_CACHE_TTL` is read in four places but defined in none of the env files**
+- [x] **C-03** **Fixed.** `VITE_DEFAULT_CACHE_TTL` is now declared in `.env` and documented in `.env.example`, with the unit (**seconds**) stated. Left at `1` so behaviour is unchanged — raising it is what actually enables the SDK cache. Original report: — `VITE_DEFAULT_CACHE_TTL` is read in four places but defined in none of the env files**
       (`ListPage`, `FormPage`, `endpoints/wallet.ts`, `endpoints/user.ts`). Every call therefore falls
       back to `"1"` — a **1-second** stale time (D4), which effectively disables the SDK cache
       everywhere. Add it to `.env.example` with a sensible default and document the unit.
-- [ ] **C-04 — Build output is committed.** 22 files under `www/` are tracked, and `.gitignore` does not
+- [~] **C-04** *(by design — the team tracks `www/` deliberately.)* — Build output is committed.** 22 files under `www/` are tracked, and `.gitignore` does not
       list `www` even though `vite.config.ts` sets `outDir: "./www"`.
 - [ ] **C-05 — `minify: false` in the production build**
       ([vite.config.ts:9](../vite.config.ts#L9)). Intentional for debugging? It ships unminified JS to
       every generated app.
-- [ ] **C-06 — `tsconfig.app.json` includes a non-existent root `i18n.ts`**
+- [x] **C-06** **Fixed.** `"include": ["src"]` — the phantom root `i18n.ts` is gone; the real file at `src/i18n.ts` was already covered. Original report: — `tsconfig.app.json` includes a non-existent root `i18n.ts`**
       ([tsconfig.app.json](../tsconfig.app.json)) — the file is at `src/i18n.ts`.
 - [ ] **C-07 — Capacitor identity is hardcoded to Huruf.** `appId: 'com.huruf.thunderui'`,
       `appName: 'thunder-ui'` ([capacitor.config.ts](../capacitor.config.ts)); the generated `android/`
@@ -511,9 +511,9 @@ Backwards-compatible unless noted.
 - [ ] **C-11 — Onboarding placeholder content ships enabled.** `<Onboarding />` is mounted
       unconditionally in [App.tsx:91](../src/App.tsx#L91) and shows three auto-advancing
       "Thunder UI / Thunder UI 2 / Thunder UI 3" screens to every first-time user of every generated app.
-- [ ] **C-12 — Hardcoded `"lyd"` currency fallback** in
+- [x] **C-12** **Fixed.** One env-backed `defaultCurrency` in `lib/constants.ts` (`VITE_DEFAULT_CURRENCY`, default `LYD`) replaces the literal at four sites — one of which was lowercase `"lyd"` immediately after an `.toUpperCase()` branch. The `LYD -> د.ل` symbol maps stay: those are data, not fallbacks. Original report: — Hardcoded `"lyd"` currency fallback** in
       [navbar/index.tsx:81](../src/core/layouts/navbar/index.tsx#L81) (lowercase, after an `.toUpperCase()` branch).
-- [ ] **C-13 — Add the i18n scan as `npm run i18n:check`.** The script used for this audit walks `src/`,
+- [x] **C-13** **Fixed.** `npm run i18n:check` runs `scripts/i18n-check.mjs`: it scans `t("…")` across `src/`, diffs against core+app locales in both languages using the same merge order as `i18n.ts`, flags missing *and* untranslated keys, lists keys with no static reference, and exits non-zero. Currently passes at 227/227. Original report: — Add the i18n scan as `npm run i18n:check`.** The script used for this audit walks `src/`,
       extracts `t("…")` literals, and diffs them against both locale files in both languages.
 
 - [x] **C-14** **Fixed.** `"typecheck": "tsc -b"`. The script pointed at the solution `tsconfig.json`
@@ -662,21 +662,21 @@ Measured, not estimated — `npx vite build` on the current tree.
       directions. The need is real — schema-supplied `className`/`groupClassName` are invisible to
       Tailwind's scanner — but the range should be narrowed to what schemas actually use, and the
       reason documented so nobody deletes it.
-- [ ] **P-06 — `ThunderSDK.getModule(name)` is called 8 times per `ListPage` render**, several of them
+- [x] **P-06** **Fixed.** One `module` memo replaces nine `ThunderSDK.getModule(name)` calls per render, several of which were inside JSX. Original report: — `ThunderSDK.getModule(name)` is called 8 times per `ListPage` render**, several of them
       inside JSX ([ListPage.tsx:397](../src/core/crud/ListPage.tsx#L397),
       [:473](../src/core/crud/ListPage.tsx#L473), [:593](../src/core/crud/ListPage.tsx#L593),
       [:613](../src/core/crud/ListPage.tsx#L613)). Hoist to one `useMemo`.
-- [ ] **P-07 — A new `Intl.DateTimeFormat` is constructed for every date cell on every render.**
+- [x] **P-07** **Fixed.** `Intl.DateTimeFormat` instances are cached per locale instead of constructed for every date cell on every render. Original report: — A new `Intl.DateTimeFormat` is constructed for every date cell on every render.**
       [ListPage.tsx:136](../src/core/crud/ListPage.tsx#L136). Formatter construction is the expensive
       part; hoist it per-locale.
-- [ ] **P-08 — `columnFromModuleMetadata` runs twice per list mount** (R-12), so the schema walk,
+- [x] **P-08** **Fixed** with R-12. Original report: — `columnFromModuleMetadata` runs twice per list mount** (R-12), so the schema walk,
       flatten and every `resolveRef` request happen twice.
-- [ ] **P-09 — 300 ms artificial delay on every navigation.**
+- [x] **P-09** **Fixed.** The 300ms delay now applies only on mobile, where it covers the nav sheet’s close animation. Every desktop navigation was paying it for a sheet that was never open. Original report: — 300 ms artificial delay on every navigation.**
       [navbar/index.tsx:180](../src/core/layouts/navbar/index.tsx#L180) wraps `navigate()` in a
       `setTimeout`. If it is waiting for the sidebar close animation, tie it to the animation instead.
 - [~] **P-10** *(half done, half by design: the unbounded ref dropdown is fixed by B-31/F-04; the unbounded table query is B-04, which the team keeps deliberately.)* — Unbounded fetches** — the full-collection list query (B-04) and the full-collection ref
       dropdown (B-31) are the two largest runtime costs and are tracked as bugs.
-- [ ] **P-11 — Unread-count polling is implemented twice**, once in
+- [x] **P-11** **Fixed.** `useUnreadCount(userId)` in `src/core/hooks/useUnreadCount.ts` replaces the two separate implementations in the mobile layout and the notification popover. It also aborts in-flight requests on unmount and before each poll, now that the endpoint accepts a signal (B-26). Original report: — Unread-count polling is implemented twice**, once in
       [mobile/index.tsx:60-83](../src/core/layouts/mobile/index.tsx#L60-L83) and once in
       [notification-popover.tsx:105-120](../src/core/pages/notifications/notification-popover.tsx#L105-L120),
       with separate state, separate intervals and separate error handling. Only one runs per layout

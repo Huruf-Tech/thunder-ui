@@ -68,6 +68,7 @@ import { getWallets } from "@/core/endpoints/wallet.ts"
 import { Skeleton } from "@/components/ui/skeleton"
 import { ActionSwapText } from "@/core/pages/wallet/action-swap"
 import { NotificationPopover } from "@/core/pages/notifications/notification-popover"
+import { defaultCurrency } from "@/core/lib/constants"
 import { HeaderActionsProvider } from "@/core/context/HeaderActions"
 
 function NavBalance({
@@ -84,7 +85,7 @@ function NavBalance({
     { balance: number; currency: string } | undefined
 
   const balance = wallet?.balance ?? 0
-  const currency = wallet?.currency?.toUpperCase() ?? "lyd"
+  const currency = wallet?.currency?.toUpperCase() ?? defaultCurrency
   const formatted = `${currency} ${balance.toLocaleString(undefined, {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
@@ -126,6 +127,9 @@ function NavBalance({
     </Button>
   )
 }
+
+/** Matches the sidebar sheet's close transition. */
+const SHEET_CLOSE_MS = 300
 
 function SidebarTrigger() {
   const { toggleSidebar } = useSidebar()
@@ -181,9 +185,22 @@ export function Layout({ children }: { children: React.ReactNode }) {
     setTheme(resolvedTheme === "dark" ? "light" : "dark")
   }
 
+  //! On mobile the nav item closes the sheet first, and navigating in the same
+  //! frame cuts that animation short. This delay used to run unconditionally, so
+  //! every desktop navigation paid 300ms for a sheet that was never open.
+  //! See P-09.
   const handleNavigate = React.useCallback(
     (path: string) => {
-      setTimeout(() => navigate(path, { viewTransition: true }), 300)
+      if (isMobile) {
+        setTimeout(
+          () => void navigate(path, { viewTransition: true }),
+          SHEET_CLOSE_MS
+        )
+
+        return
+      }
+
+      void navigate(path, { viewTransition: true })
     },
     [navigate, isMobile]
   )

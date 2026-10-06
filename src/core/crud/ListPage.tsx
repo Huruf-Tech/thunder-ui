@@ -83,6 +83,27 @@ export const columnFromModuleMetadata = async (
   return JSONSchemaToFields.flatten(fields, { excludeArray: true })
 }
 
+/**
+ * `Intl.DateTimeFormat` construction is the expensive part, and a new one was
+ * built for every date cell on every render. Cached per locale. See P-07.
+ */
+const dateFormatters = new Map<string, Intl.DateTimeFormat>()
+
+const dateFormatter = (locale: string) => {
+  let formatter = dateFormatters.get(locale)
+
+  if (!formatter) {
+    formatter = new Intl.DateTimeFormat(locale, {
+      dateStyle: "medium",
+      timeStyle: "short",
+    })
+
+    dateFormatters.set(locale, formatter)
+  }
+
+  return formatter
+}
+
 const prepareColumns = (
   fields: TField[],
   group?: string,
@@ -134,10 +155,7 @@ const prepareColumns = (
             const value = getValue()
 
             if (value) {
-              return new Intl.DateTimeFormat(i18next.language, {
-                dateStyle: "medium",
-                timeStyle: "short",
-              }).format(new Date(value))
+              return dateFormatter(i18next.language).format(new Date(value))
             }
           }
 
@@ -299,17 +317,19 @@ export function ListPage({ group, name }: IListPageProps) {
     }
   }, [fetchCount, query])
 
+  const metadata = React.useMemo(() => ThunderSDK.getMetadata(name), [name])
+
+  //! `ThunderSDK.getModule(name)` was called nine times per render, several of
+  //! them inside JSX. See P-06.
+  const module = React.useMemo(() => ThunderSDK.getModule(name), [name])
+
   //! This used to build a path and `matchPath` it against itself, which always
   //! succeeds — so the flag was permanently true and the literal "/tenant/"
   //! prefix never matched a real tenant anyway. The module's own metadata is the
   //! real answer: a form route exists only when create or update does. See B-10.
   const allowForm = React.useMemo(() => {
-    const module = ThunderSDK.getModule(name)
-
     return "create" in module || "update" in module
-  }, [name])
-
-  const metadata = React.useMemo(() => ThunderSDK.getMetadata(name), [name])
+  }, [module])
 
   const table = useReactTable(
     React.useMemo(
@@ -361,17 +381,37 @@ export function ListPage({ group, name }: IListPageProps) {
 
   const canShowActionBar = React.useMemo(
     () =>
-      [ThunderSDK.getModule(name).del, ThunderSDK.getModule(name).update].some(
+      [module.del, module.update].some(
         (fn) => ThunderSDK.isPermitted(fn)
       ),
-    [name]
+    [module]
   )
 
   React.useEffect(() => {
-    ;(async () => {
-      setFields(await columnFromModuleMetadata(metadata))
-      setFields(await columnFromModuleMetadata(metadata, true))
+    let cancelled = false
+
+    void (async () => {
+      //! Columns render from the unresolved pass immediately, then upgrade once
+      //! the `ref` option lists arrive. Both passes used to be awaited
+      //! unconditionally with no cancellation, so the schema walk and every
+      //! `resolveRef` request ran twice per mount and a fast module switch could
+      //! apply stale fields. See R-12 / P-08.
+      const base = await columnFromModuleMetadata(metadata)
+
+      if (cancelled) return
+
+      setFields(base)
+
+      const resolved = await columnFromModuleMetadata(metadata, true)
+
+      if (cancelled) return
+
+      setFields(resolved)
     })()
+
+    return () => {
+      cancelled = true
+    }
   }, [metadata])
 
   const totalPages = React.useMemo(
@@ -400,7 +440,7 @@ export function ListPage({ group, name }: IListPageProps) {
           )}
           <Container className="flex flex-wrap-reverse items-center justify-between gap-3 lg:flex-nowrap">
             {/* Render Card Select All Badge only when in Card View */}
-            {isCard && ThunderSDK.getModule(name).del && (
+            {isCard && module.del && (
               <CardSelectAll
                 checked={
                   table.getIsAllPageRowsSelected()
@@ -476,7 +516,7 @@ export function ListPage({ group, name }: IListPageProps) {
                   ) : null}
                   {allowForm &&
                     ThunderSDK.isPermitted(
-                      ThunderSDK.getModule(name).create
+                      module.create
                     ) && (
                       <Button onClick={() => navigate("form")}>
                         {t("Create")}
@@ -596,7 +636,7 @@ export function ListPage({ group, name }: IListPageProps) {
             <div className="flex items-center gap-2">
               {allowForm &&
                 selectedRows.length === 1 &&
-                ThunderSDK.isPermitted(ThunderSDK.getModule(name).update) && (
+                ThunderSDK.isPermitted(module.update) && (
                   <Button
                     size="icon-sm"
                     variant="outline"
@@ -616,7 +656,7 @@ export function ListPage({ group, name }: IListPageProps) {
                   </Button>
                 )}
 
-              {ThunderSDK.isPermitted(ThunderSDK.getModule(name).del) && (
+              {ThunderSDK.isPermitted(module.del) && (
                 <ConfirmationDialog
                   trigger={
                     <Button size="sm" variant="destructive">
@@ -631,7 +671,7 @@ export function ListPage({ group, name }: IListPageProps) {
                     //! list kept showing rows that were already gone. See B-11.
                     const results = await Promise.allSettled(
                       ids.map((id: string) =>
-                        ThunderSDK.getModule(name).del({ params: { id } })
+                        module.del({ params: { id } })
                       )
                     )
 
