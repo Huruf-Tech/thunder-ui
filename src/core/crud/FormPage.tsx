@@ -23,126 +23,18 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty"
 import { IconAlertTriangle } from "@tabler/icons-react"
-import { JSONSchemaToFields, type TField } from "../lib/jsonSchemaToFields"
+import type { TField } from "../lib/jsonSchemaToFields"
 import { forms } from "@/overrides/crud/forms"
 import { RenderFieldGroup } from "./form/RenderFieldGroup"
 import { Container } from "@/core/custom/Container"
 import { toast } from "sonner"
 import { isAxiosError } from "axios"
 
-export const fieldsFromModuleMetadata = async (
-  metadata: any,
-  opts: {
-    type: "insert" | "update" | "output"
-    resolveRef?: boolean
-  }
-) => {
-  if (!metadata) return []
+//! Re-exported for backwards compatibility: these moved to ./metadata so the
+//! `resolveRef` registration is no longer a side effect of loading this page.
+import { fieldsFromModuleMetadata } from "./metadata"
 
-  if (typeof metadata.crud !== "object" || metadata.crud === null) return []
-
-  const schema = (() => {
-    switch (opts.type) {
-      case "insert":
-        return metadata.crud.insertSchema ?? metadata.crud.schema
-
-      case "update":
-        return (
-          metadata.crud.updateSchema ??
-          metadata.crud.insertSchema ??
-          metadata.crud.schema
-        )
-
-      default:
-        return metadata.crud.schema
-    }
-  })()
-
-  //! A module can expose create/update without publishing a schema for them, and
-  //! `toFields` throws on anything that is not an object. Returning [] keeps this
-  //! function total so no caller has to handle a rejected promise. See B-02.
-  if (typeof schema !== "object" || schema === null) return []
-
-  // Convert json schema to fields data
-  const results = await JSONSchemaToFields.toFields(undefined, schema, {
-    resolveRef: opts.resolveRef,
-  })
-
-  return results
-}
-
-/** Upper bound on options materialised for the list filter dropdowns. */
-const REF_OPTIONS_LIMIT = 100
-
-JSONSchemaToFields.resolveRef = async (ref, field) => {
-  const createProjection = () => {
-    const fields =
-      field.refLabel instanceof Array
-        ? field.refLabel
-        : [field.refLabel, "label", "name", "title"].filter(Boolean)
-
-    return Object.fromEntries(fields.map((field) => [field, 1]))
-  }
-
-  try {
-    const { results } = await ThunderSDK.useCache(
-      async () =>
-        (await ThunderSDK.getModule(ref).get({
-          query: {
-            filters: field.refFilters,
-            project: createProjection(),
-            //! Still unbounded in spirit, but capped so a `ref` to a large module
-            //! cannot stall the page. The list filter UI is the only caller left;
-            //! form fields use `RefSelect`. See B-31.
-            limit: REF_OPTIONS_LIMIT,
-          },
-        })) as {
-          results: any[]
-        },
-      {
-        cacheKey: [ref, "get"],
-        cacheTTL: parseInt(import.meta.env.VITE_DEFAULT_CACHE_TTL ?? "1"),
-      }
-    )
-
-    const resolveLabel = (item: any) => {
-      if (field.refLabel instanceof Array) {
-        return field.refLabel
-          .map((prop) => item[prop])
-          .filter(Boolean)
-          .join(" ")
-      }
-
-      return (
-        (field.refLabel && item[field.refLabel]) ||
-        item.label ||
-        item.name ||
-        item.title
-      )
-    }
-
-    const resolveValue = (item: any) => {
-      if (field.refValue) {
-        return item[field.refValue]
-      }
-
-      return item._id
-    }
-
-    return results.map((item: any) => {
-      const value = resolveValue(item)
-
-      return {
-        label: resolveLabel(item) || value,
-        value,
-      }
-    })
-  } catch (error) {
-    console.error(error)
-
-    return []
-  }
-}
+export { fieldsFromModuleMetadata, REF_OPTIONS_LIMIT } from "./metadata"
 
 export interface IFormPageProps {
   group?: string

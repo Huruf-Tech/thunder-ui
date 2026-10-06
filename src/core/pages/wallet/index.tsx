@@ -88,11 +88,11 @@ export function Wallet() {
       : "text-foreground",
   );
 
+  React.useEffect(() => {
+    const timer = setTimeout(() => setIsMounting(false), 50);
 
-React.useEffect(() => {
-  const timer = setTimeout(() => setIsMounting(false), 50); 
-  return () => clearTimeout(timer);
-}, []);
+    return () => clearTimeout(timer);
+  }, []);
 
   function onReceive(): void {
     setReceiveOpen(true);

@@ -15,7 +15,7 @@ import { formatDateForInput } from "@/core/lib/utils";
 import { useTranslation } from "react-i18next";
 import { SkeletonRepeater } from "@/core/custom/SkeletonRepeater";
 import { Filters, type TFilterValue } from "@/core/crud/filters";
-import { fieldsFromModuleMetadata } from "@/core/crud/FormPage";
+import { fieldsFromModuleMetadata } from "@/core/crud/metadata";
 import { JSONSchemaToFields, type TField } from "@/core/lib/jsonSchemaToFields";
 import { CopyButton } from "@/components/ui/copy-button";
 import { filterToMongo } from "@/core/crud/filters/lib/filterToMongo";

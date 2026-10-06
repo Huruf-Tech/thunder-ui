@@ -5,6 +5,54 @@
     <link rel="icon" type="image/png" href="/logo.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Thunder UI</title>
+    <script>
+      /*
+       * Applies the stored theme and text direction before first paint.
+       *
+       * ThemeProvider adds the `light`/`dark` class in an effect, and the
+       * language effect sets `dir`/`lang` — both of which run after React
+       * mounts, so every load flashed light-mode and left-to-right first.
+       *
+       * Must stay in sync with:
+       *   - ThemeProvider `storageKey` ("theme")   src/components/theme-provider.tsx
+       *   - i18next `lookupLocalStorage`           src/i18n.ts
+       *   - detection order + fallbackLng          src/i18n.ts
+       *
+       * See C-10 in docs/AUDIT.md.
+       */
+      (function () {
+        var root = document.documentElement
+
+        try {
+          var theme = localStorage.getItem("theme") || "system"
+          var dark =
+            theme === "dark" ||
+            (theme === "system" &&
+              window.matchMedia("(prefers-color-scheme: dark)").matches)
+
+          root.classList.add(dark ? "dark" : "light")
+        } catch (e) {
+          root.classList.add("light")
+        }
+
+        try {
+          // Mirrors detection.order: ["localStorage", "navigator"] with
+          // supportedLngs ["en", "ar"] and fallbackLng "en".
+          var stored = localStorage.getItem("i18nextLng")
+          var detected =
+            stored ||
+            (navigator.languages && navigator.languages[0]) ||
+            navigator.language ||
+            "en"
+          var lang = String(detected).toLowerCase().indexOf("ar") === 0 ? "ar" : "en"
+
+          root.setAttribute("lang", lang)
+          root.setAttribute("dir", lang === "ar" ? "rtl" : "ltr")
+        } catch (e) {
+          root.setAttribute("dir", "ltr")
+        }
+      })()
+    </script>
   </head>
   <body>
     <div id="root"></div>

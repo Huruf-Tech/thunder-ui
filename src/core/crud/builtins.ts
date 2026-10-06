@@ -1,7 +1,7 @@
-import type { TCardsOverride } from "@/core/types"
-import { features } from "@/core/lib/features"
+import React from "react"
 
-import UserCardView from "@/core/pages/users/userCardView"
+import type { TCardProps, TCardsOverride } from "@/core/types"
+import { features } from "@/core/lib/features"
 
 /**
  * Card views that ship with the boilerplate, each behind its own feature flag.
@@ -11,7 +11,16 @@ import UserCardView from "@/core/pages/users/userCardView"
  * tell framework defaults from its own registrations. `ListPage` merges this map
  * under the overrides, so a developer registering the same key still wins.
  * See C-01 / F-13.
+ *
+ * Loaded lazily: the users card view pulls `zod` (275kB), and a static import
+ * shipped that to every app even with `VITE_ENABLE_USERS` off, because the flag
+ * only gates the registration — not the import. `ListPage` renders `<Cards>`
+ * inside a Suspense boundary. See P-01.
  */
+const UserCardView = React.lazy(
+  () => import("@/core/pages/users/userCardView")
+) as React.ComponentType<TCardProps>
+
 export const builtinCards: TCardsOverride = {
   ...(features.users ? { users: UserCardView } : {}),
 }

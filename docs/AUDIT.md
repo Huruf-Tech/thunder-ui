@@ -508,7 +508,13 @@ Backwards-compatible unless noted.
 - [x] **C-08** **Fixed.** The mobile logo's `aria-label`/`alt` now use `appName()`; the `"Doze"` key is deleted. — `"Doze"` is a leftover brand name** in the mobile layout's logo `aria-label` and `alt`
       ([mobile/index.tsx:109,112](../src/core/layouts/mobile/index.tsx#L109)). Should be `appName()`.
 - [ ] **C-09 — `README.md` is the stock Vite + shadcn template.** It says nothing about Thunder.
-- [ ] **C-10 — No theme/direction flash prevention.** `index.html` has no inline script, so the theme
+- [x] **C-10** **Fixed.** An inline script in `index.html` applies the stored theme class and
+      `dir`/`lang` **before first paint**; previously both were set in effects after React mounted,
+      so every load flashed light-mode and left-to-right. It mirrors `ThemeProvider`'s `storageKey`
+      and i18next's `lookupLocalStorage` / detection order / `fallbackLng`, with a comment naming the
+      files it must stay in sync with. Verified against the real script extracted from `index.html`
+      across 10 cases — stored theme, `system` + OS preference, stored vs. browser language,
+      unsupported language, and `localStorage` throwing in private mode. Original report: — No theme/direction flash prevention.** `index.html` has no inline script, so the theme
       class and `dir` attribute are only applied in an effect — light-mode and LTR flash on every load.
 - [x] **C-11** **Fixed.** `Screens` ships **empty**, with the type and a worked example in a doc comment, and `Onboarding` returns `null` (and skips the `Preferences` lookup) when there is nothing to show. The three placeholder “Thunder UI” slides no longer appear in every generated app, but the helper is intact — adding one screen turns the flow back on. Original report: — Onboarding placeholder content ships enabled.** `<Onboarding />` is mounted
       unconditionally in [App.tsx:91](../src/App.tsx#L91) and shows three auto-advancing
@@ -649,7 +655,7 @@ files that will be overwritten, and core depends on files developers are told to
       theme tokens) importing `src/core/styles/index.css` (core: mechanics only, zero tokens) is a clean
       split. Document it as the pattern the other boundaries should follow.
 
-- [ ] **S-09 — Core depends on 193 import sites it can never update.** Measured: `src/core/`
+- [~] **S-09** *(accepted — the team considers it a non-issue; documented as a frozen API for core in §5 of SYNC.md.)* — Core depends on 193 import sites it can never update.** Measured: `src/core/`
       imports **199 times** from outside itself, of which only **6** are the intended
       `src/overrides/` registries.
 
@@ -679,7 +685,35 @@ files that will be overwritten, and core depends on files developers are told to
 
 Measured, not estimated — `npx vite build` on the current tree.
 
-- [ ] **P-01 — One 8.0 MB JavaScript chunk, 1.66 MB gzipped, for 11,651 modules.** There is **zero code
+- [x] **P-12 — A module side effect blocked code splitting.** **Fixed** as a prerequisite for
+      P-01. `FormPage.tsx` assigned `JSONSchemaToFields.resolveRef` at **module scope**, and both
+      `ListPage` and the wallet transaction history imported `fieldsFromModuleMetadata` from it — so
+      they pulled the entire form page in just to make that assignment run. That made the form route
+      impossible to split and left a hidden import-order dependency: whichever module evaluated first
+      had to be the one that registered the resolver. Extracted to `src/core/crud/metadata.ts`, which
+      both import; `FormPage` re-exports both symbols for backwards compatibility (D6). Audited the
+      whole tree for similar hazards — the remaining module-scope statements are all safe
+      (`coreRoutes.unshift`, Handlebars helper registration, two `displayName` assignments).
+
+- [x] **P-01** **Largely fixed — initial JS 4,068 kB → 1,933 kB (553 kB gzip).** Measured, not
+      estimated: a temporary per-package `manualChunks` build was used to find what was actually
+      large, which pointed at four leaf dependencies rather than the routes:
+
+      | Split out | kB (gzip) | Loads only when |
+      | --- | --- | --- |
+      | `MarkdownEditor` (+ codemirror, lexical, lezer) | 1,293 (428) + 52 CSS | a field has `fieldHint: "markdown"` |
+      | `phone-input` (country-flag-icons, libphonenumber-js) | 435 (101) | a field has `type: "phone"` |
+      | `userCardView` (pulls `zod`) | 285 (67) | the users card view is enabled **and** shown |
+      | `handlebars` + template | 107 (33) | someone exports a wallet PDF |
+
+      `zod` was the sharpest find: it shipped to **every** app even with `VITE_ENABLE_USERS` off,
+      because the flag gated the registration but not the import.
+
+      **Route-level `lazy()` was deliberately not done.** These four are leaf components behind a
+      condition, each with a local Suspense boundary at its use site, so nothing else can be affected
+      while a chunk is in flight. Splitting routes would additionally touch `getNavRoutes`, the
+      `display()` permission callbacks and the router's eager `coreRoutes` construction — more risk
+      for less gain. It remains available if the entry chunk needs to shrink further. Original report: — One 8.0 MB JavaScript chunk, 1.66 MB gzipped, for 11,651 modules.** There is **zero code
       splitting**: no `React.lazy`, no dynamic `import()` anywhere in `src/`. Every module page, all three
       layouts, the markdown editor, the Handlebars compiler and the whole wallet print pipeline are parsed
       before first paint. For a Capacitor app on a mid-range phone this is the dominant startup cost.
@@ -688,17 +722,36 @@ Measured, not estimated — `npx vite build` on the current tree.
       [vite.config.ts:9](../vite.config.ts#L9). Measured: **8.0 MB → 3.98 MB raw, 1.66 MB → 1.17 MB
       gzip** from that one line. Confirm it was deliberate; if it was for debugging, `sourcemap: true`
       is the right tool.
-- [ ] **P-03 — `@mdxeditor/editor` and `handlebars` are eagerly bundled.** The editor is only reachable
+- [x] **P-03** **Fixed with P-01.** Both are now dynamic. `handlebars` additionally had a module-scope
+      `Handlebars.compile(...)`, so merely importing the print module pulled the compiler in; the
+      template is compiled on first use and cached. Original report: — `@mdxeditor/editor` and `handlebars` are eagerly bundled.** The editor is only reachable
       via `fieldHint: "markdown"` ([RenderInput.tsx:160](../src/core/crud/form/RenderInput.tsx#L160)) and
       Handlebars only via wallet PDF export, yet both load for every user on every page. Both are large
       and both are textbook `lazy()` candidates.
-- [ ] **P-04 — Two Latin fonts are bundled, and neither supports Arabic.**
+- [x] **P-04** **Fixed, and the original claim was partly wrong.** Each `@font-face` carries a
+      `unicode-range`, so browsers only ever **download** the subsets a page needs — the extra
+      cyrillic/greek/vietnamese subsets were never a load cost. They were, however, emitted into the
+      committed `www/`: **13 woff2 files, ~295kB, of which 8 (~116kB) nobody could ever download.**
+      `src/core/styles/fonts.css` now declares only the ranges this app serves, so the build emits
+      **5 files**. The real user-facing gap — no Arabic face at all, so Arabic fell back to whatever
+      the device provided — is fixed by bundling **Cairo (31kB, Arabic range)**, the same family the
+      print templates already fetch. Because selection is per character, Latin still renders in
+      Inter/Geist and only Arabic resolves to Cairo, and it works offline in the Capacitor build.
+      Note: Geist is **not** removable — it backs `--font-heading`, used by six UI components. Original report: — Two Latin fonts are bundled, and neither supports Arabic.**
       [index.css:6-7](../src/index.css#L6-L7) imports **all** subsets of Inter *and* Geist Variable —
       13 woff2 files, ~295 KB — while the app defaults to Arabic (`fallbackLng: "ar"`). Arabic text
       falls back to a system font. Meanwhile `loadFontsCSS()`
       ([utils.ts:261](../src/core/lib/utils.ts#L261)) fetches **Cairo** from Google Fonts at runtime,
       but only for print templates. Pick one Latin family, subset it, and bundle an Arabic face.
-- [ ] **P-05 — 343 KB of CSS (46 KB gzip), inflated by a force-generated utility matrix.**
+- [x] **P-05** **Measured; closing as not an issue — the original claim was wrong.** The
+      `@source inline(...)` matrix costs **1.7kB raw / 0.28kB gzip**, not the inflation the audit
+      implied, so it stays as-is (and it is genuinely needed: schema-supplied `className` values are
+      invisible to Tailwind's scanner). Measured breakdown of the 227.9kB / 33.7kB gzip stylesheet:
+      the `@tailwindcss/typography` plugin is 15kB raw / 2.2kB gzip and **is** used (the markdown
+      preview's `prose` classes), leaving ~211kB / 31.5kB gzip for Tailwind base + the shadcn theme +
+      Base UI + tw-animate + the app's own utilities. **33.7kB gzip for a complete design system is
+      not worth optimising**, and splitting the typography rules out to follow the now-lazy markdown
+      editor is not something Tailwind v4 supports per-chunk. Original report: — 343 KB of CSS (46 KB gzip), inflated by a force-generated utility matrix.**
       [index.css:10-12](../src/index.css#L10-L12) `@source inline(...)` materialises
       `grid-cols-{1..12}`, `grid-rows-{1..12}`, `gap-{1..10}`, `col-span-{1..12}` and both grid-flow
       directions. The need is real — schema-supplied `className`/`groupClassName` are invisible to

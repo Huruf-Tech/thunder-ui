@@ -1,10 +1,26 @@
 import i18n from "i18next";
 
-import WalletTemplateSource from "./template/wallet-template.hbs?raw";
-import Handlebars from "@/core/lib/handlebars";
 import { loadFontsCSS, loadTailwindCSS } from "@/core/lib/utils";
 
-const WalletTemplate = Handlebars.compile(WalletTemplateSource);
+/**
+ * Handlebars (79kB) and the template source are only needed when someone
+ * exports a PDF. Compiling at module scope pulled the whole compiler into the
+ * initial bundle for every user. Imported on first use and cached. See P-03.
+ */
+let compiled: HandlebarsTemplateDelegate | undefined;
+
+const getTemplate = async () => {
+  if (!compiled) {
+    const [{ default: Handlebars }, { default: source }] = await Promise.all([
+      import("@/core/lib/handlebars"),
+      import("./template/wallet-template.hbs?raw"),
+    ]);
+
+    compiled = Handlebars.compile(source);
+  }
+
+  return compiled;
+};
 
 export const buildWalletHTML = async (data: {
   title: string;
@@ -19,7 +35,9 @@ export const buildWalletHTML = async (data: {
 
   const lang = i18n.language || "ar";
 
-  return WalletTemplate({
+  const template = await getTemplate();
+
+  return template({
     lang,
     dir: lang === "en" ? "ltr" : "rtl",
     ...data,

@@ -22,11 +22,37 @@ import { Switch } from "@/components/ui/switch"
 import { Input } from "@/components/ui/input"
 import { Input as NumberInput } from "@/components/ui/number-input"
 import { Textarea } from "@/components/ui/textarea"
-import { PhoneInput } from "@/components/reui/phone-input"
+
+import { Skeleton } from "@/components/ui/skeleton"
 
 import type { TField } from "@/core/lib/jsonSchemaToFields"
+
+/**
+ * Both of these are leaf controls behind a condition, and both drag in very
+ * large dependency trees that most forms never touch:
+ *
+ * - the markdown editor pulls @mdxeditor + codemirror + lexical + lezer (~600kB)
+ * - the phone input pulls country-flag-icons + libphonenumber-js (~387kB)
+ *
+ * They are loaded on demand, each with its own local Suspense boundary at the
+ * use site so nothing else in the form is affected while a chunk is in flight.
+ * See P-01 / P-03.
+ */
+const MarkdownEditorField = React.lazy(() =>
+  import("@/core/custom/MarkdownEditor").then((m) => ({
+    default: m.MarkdownEditorField,
+  }))
+)
+
+const PhoneInput = React.lazy(() =>
+  import("@/components/reui/phone-input").then((m) => ({
+    default: m.PhoneInput,
+  }))
+)
+
+/** Placeholder shown while a lazily loaded control's chunk arrives. */
+const ControlFallback = () => <Skeleton className="h-9 w-full rounded-3xl" />
 import { findFieldError } from "./errors"
-import { MarkdownEditorField } from "@/core/custom/MarkdownEditor"
 import { Autocomplete } from "@/core/custom/Autocomplete"
 
 import { Dropdown } from "../../custom/Dropdown"
@@ -322,10 +348,12 @@ export const RenderField = ({
         rules={rules}
         defaultValue={defaultValue}
         render={(def) => (
-          <MarkdownEditorField
-            value={def.field.value}
-            onChange={def.field.onChange}
-          />
+          <React.Suspense fallback={<ControlFallback />}>
+            <MarkdownEditorField
+              value={def.field.value}
+              onChange={def.field.onChange}
+            />
+          </React.Suspense>
         )}
       />
     )
@@ -519,11 +547,13 @@ export const RenderField = ({
         rules={rules}
         defaultValue={defaultValue}
         render={(def) => (
-          <PhoneInput
-            id={id}
-            value={def.field.value}
-            onChange={def.field.onChange}
-          />
+          <React.Suspense fallback={<ControlFallback />}>
+            <PhoneInput
+              id={id}
+              value={def.field.value}
+              onChange={def.field.onChange}
+            />
+          </React.Suspense>
         )}
       />
     )

@@ -42,7 +42,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty"
-import { fieldsFromModuleMetadata } from "./FormPage"
+import { fieldsFromModuleMetadata } from "./metadata"
 import { JSONSchemaToFields, type TField } from "../lib/jsonSchemaToFields"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
@@ -553,26 +553,29 @@ export function ListPage({ group, name }: IListPageProps) {
 
           {isCard ? (
             <>
-              <Cards
-                name={name}
-                isLoading={isLoading}
-                isRefetching={isRefetching}
-                data={getData?.results ?? []}
-                setFilters={setFilters}
-                setProject={setProject}
-                setSort={setSort}
-                setPage={setPage}
-                fetcher={fetcher}
-                selectedIds={selectedRows.map((v) => (v.original as any)._id)}
-                toggleSelect={(id) => {
-                  const row = table
-                    .getRowModel()
-                    .rows.find((v) => (v.original as any)._id === id)
+              {/* A card override can be a lazily loaded component. */}
+              <React.Suspense fallback={<TableSkeleton />}>
+                <Cards
+                  name={name}
+                  isLoading={isLoading}
+                  isRefetching={isRefetching}
+                  data={getData?.results ?? []}
+                  setFilters={setFilters}
+                  setProject={setProject}
+                  setSort={setSort}
+                  setPage={setPage}
+                  fetcher={fetcher}
+                  selectedIds={selectedRows.map((v) => (v.original as any)._id)}
+                  toggleSelect={(id) => {
+                    const row = table
+                      .getRowModel()
+                      .rows.find((v) => (v.original as any)._id === id)
 
-                  if (row) row.toggleSelected()
-                  else table.toggleAllPageRowsSelected()
-                }}
-              />
+                    if (row) row.toggleSelected()
+                    else table.toggleAllPageRowsSelected()
+                  }}
+                />
+              </React.Suspense>
 
               {countLoading && !countData ? (
                 <div className="flex items-center justify-center">

@@ -3,8 +3,21 @@
 
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-@import "@fontsource-variable/inter";
-@import "@fontsource-variable/geist";
+/*
+ * Fonts.
+ *
+ * The blanket `@fontsource-variable/*` imports pulled every subset (cyrillic,
+ * greek, vietnamese, latin-ext). Browsers only *download* the subsets whose
+ * `unicode-range` the page actually needs, so that was never a load cost -- but
+ * it did emit ~180kB of unused woff2 into `www/`, which is committed. Only the
+ * latin ranges are imported now.
+ *
+ * Neither Inter nor Geist covers Arabic, so Arabic text fell back to whatever
+ * the device happened to have. Cairo is bundled for it -- the same family the
+ * print templates already fetch -- so Arabic renders consistently, and offline
+ * in the Capacitor build. See P-04.
+ */
+@import "./core/styles/fonts.css";
 @import "./core/styles/index.css";
 
 @source inline(
@@ -87,8 +100,8 @@
 }
 
 @theme inline {
-  --font-sans: "Inter Variable", sans-serif;
-  --font-heading: "Geist Variable", sans-serif;
+  --font-sans: "Inter Variable", "Cairo Variable", sans-serif;
+  --font-heading: "Geist Variable", "Cairo Variable", sans-serif;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
