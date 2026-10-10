@@ -44,12 +44,16 @@ export default defineConfig([
       "@typescript-eslint/no-explicit-any": "warn",
       "react-refresh/only-export-components": "warn",
       "react-hooks/set-state-in-effect": "warn",
+
+      // A variable declared up front, captured by a closure, then assigned
+      // later cannot be `const` — see the timer handle in custom/UndoToast.tsx.
+      "prefer-const": ["error", { ignoreReadBeforeAssign: true }],
     },
   },
   {
-    // `ThunderSDK.useCaching` is an SDK method, not a React hook; the rule only
-    // matches it because of the `use` prefix.
-    files: ["src/core/endpoints/**/*.ts"],
+    // `ThunderSDK.useCache` / `useCaching` are SDK methods, not React hooks; the
+    // rule only matches them because of the `use` prefix.
+    files: ["src/core/endpoints/**/*.ts", "src/core/crud/metadata.ts"],
     rules: { "react-hooks/rules-of-hooks": "off" },
   },
 ])

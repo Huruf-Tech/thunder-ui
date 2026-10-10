@@ -364,10 +364,16 @@ fully custom shell.
 
 ## 3. Suggested missing features
 
-- [ ] **F-01 — A real detail/view page.** `ViewPage` currently redirects to the *edit form* when no
+- [x] **F-01** **Closed as by design.** A detail route with no registered view goes to that module's
+      edit form; there is no generic read-only detail page, and the team keeps it that way. Original report: — A real detail/view page.** `ViewPage` currently redirects to the *edit form* when no
       override exists ([ViewPage.tsx:17-27](../src/core/crud/ViewPage.tsx#L17-L27)). There is no
       read-only record view, which also means read-only users have nowhere to land.
-- [ ] **F-02 — `ViewPage` never fetches the record.** It renders `<View data={{}} />`
+- [x] **F-02** **Resolved by removing the prop.** `TViewProps.data` was always `{}`, which read as
+      though the record had been fetched for you. Views now take **no props**, mirroring
+      `TFormsOverride`: `TViewsOverride = Record<string, React.ComponentType>`. `TViewProps` is
+      kept as a deprecated empty type so an existing import still resolves, and `ViewPage` renders
+      `<View />`. Fetching the record is the detail component's job, by design — confirmed with the
+      team. Original report: — `ViewPage` never fetches the record.** It renders `<View data={{}} />`
       ([ViewPage.tsx:15](../src/core/crud/ViewPage.tsx#L15)) — every custom detail view has to refetch
       by id itself. The `TViewProps.data` contract is a lie.
 - [~] **F-03** *(deferred with B-04)* — Table pagination + page-size control** (pairs with B-04). `usePagination` already
@@ -524,7 +530,40 @@ Backwards-compatible unless noted.
       be documented).
 - [x] **C-08** **Fixed.** The mobile logo's `aria-label`/`alt` now use `appName()`; the `"Doze"` key is deleted. — `"Doze"` is a leftover brand name** in the mobile layout's logo `aria-label` and `alt`
       ([mobile/index.tsx:109,112](../src/core/layouts/mobile/index.tsx#L109)). Should be `appName()`.
-- [ ] **C-09 — `README.md` is the stock Vite + shadcn template.** It says nothing about Thunder.
+- [x] **C-09** **Done differently than logged, per the maintainers.** The README is not the
+      deliverable: the docs live in the Thunder Framework's Fumadocs site. `llms.txt` at the repo root (the llmstxt.org convention)
+      is the source-of-truth brief an LLM consumes to author that section — 20 sections in Markdown,
+      covering install, the sync boundary, route generation, the full JSON Schema support matrix,
+      every override registry with its exact prop types, layouts, i18n, theming, the mobile build,
+      auth, and a §18 list of real limitations. Every factual claim was re-verified against the code
+      (key counts, `appId`, storage keys, auth endpoints, flag names, `data={{}}`, empty `Screens`,
+      `HAS_SETTINGS_ROUTE`), and every `src/`, `docs/` and `scripts/` path in it was checked to
+      resolve. §19 lists the framework-side facts that could not be verified here, so the authoring
+      model asks instead of inventing. The README itself is still the stock template — see C-17. Original report: — `README.md` is the stock Vite + shadcn template.** It says nothing about Thunder.
+- [x] **C-18 — `zod` was an undeclared runtime dependency.** **Fixed:** declared as
+      `zod@^4.6.5`. Worse than previously logged — it did **not** resolve through `thunder-sdk`
+      (which declares only `axios` and `path-to-regexp`), but through the **devDependencies**
+      `eslint-plugin-react-hooks` and `shadcn`. Two runtime files import it
+      (`src/core/lib/zodToMongoProjection.ts`, `src/core/pages/users/userCardView.tsx`), so a
+      production install (`npm ci --omit=dev`) would have had no `zod` at all and the build would
+      have failed.
+- [x] **C-19 — Lint error count was being misread.** `npx eslint .` prints a "potentially
+      fixable" line after the `✘ N problems (X errors, Y warnings)` totals line; earlier reports
+      in this log read the former. The true count was **2 errors**, both pre-existing on the
+      committed baseline: `react-hooks/rules-of-hooks` on `ThunderSDK.useCache` in
+      `src/core/crud/metadata.ts` (introduced by the P-12 extraction, which moved the call outside
+      the `src/core/endpoints/**` exemption) and `prefer-const` on the timer handle in
+      `src/core/custom/UndoToast.tsx`. Both fixed in `eslint.config.js`: the exemption now covers
+      `metadata.ts`, and `prefer-const` runs with `ignoreReadBeforeAssign: true`, which is the
+      correct option for a variable captured by a closure before it is assigned. **Now genuinely
+      0 errors, 68 warnings.**
+
+- [ ] **C-17 — `README.md` is still the stock Vite + shadcn template.** With the real
+      documentation now sourced from `llm.txt` into the framework's Fumadocs site, the README only
+      needs to be a short orientation for someone opening this repository: what Thunder UI is, the
+      `src/core/` read-only rule, the commands, and links to `llms.txt`, `docs/SYNC.md` and the
+      published docs.
+
 - [x] **C-10** **Fixed.** An inline script in `index.html` applies the stored theme class and
       `dir`/`lang` **before first paint**; previously both were set in effects after React mounted,
       so every load flashed light-mode and left-to-right. It mirrors `ThemeProvider`'s `storageKey`

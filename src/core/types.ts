@@ -28,9 +28,15 @@ export type TListPagesOverride = Record<
   React.ComponentType<TListPageProps>
 >;
 
-export type TViewProps = { data: unknown };
+/**
+ * @deprecated Views receive no props. `data` was always an empty object, which
+ * read as though the record had been fetched for you. Read the id from the
+ * route with `useParams` and fetch it however you like.
+ */
+export type TViewProps = Record<string, never>;
 
-export type TViewsOverride = Record<string, React.ComponentType<TViewProps>>;
+/** Detail pages, keyed by module name. Mirrors `TFormsOverride`: no props. */
+export type TViewsOverride = Record<string, React.ComponentType>;
 
 export type TFormsOverride = Record<string, React.ComponentType>;
 

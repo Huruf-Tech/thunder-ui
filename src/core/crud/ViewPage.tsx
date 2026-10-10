@@ -12,7 +12,7 @@ export function ViewPage({ group, name }: IViewPageProps) {
 
   const View = views[name as keyof typeof views]
 
-  if (View) return <View data={{}} />
+  if (View) return <View />
 
   return (
     <Navigate
