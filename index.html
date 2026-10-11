@@ -3,7 +3,32 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="/logo.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!--
+      `viewport-fit=cover` lets the page paint under the notch and the home
+      indicator, and is what makes `env(safe-area-inset-*)` report anything other
+      than 0px. `interactive-widget=resizes-content` makes the Android keyboard
+      shrink the layout viewport, so `dvh` and bottom-pinned UI react to it the
+      way they already do on iOS.
+    -->
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content"
+    />
+    <!--
+      Browser chrome and status bar colour. These follow the OS setting, which is
+      the default theme; an explicit light/dark override in-app does not move them.
+    -->
+    <meta name="color-scheme" content="light dark" />
+    <meta
+      name="theme-color"
+      media="(prefers-color-scheme: light)"
+      content="#ffffff"
+    />
+    <meta
+      name="theme-color"
+      media="(prefers-color-scheme: dark)"
+      content="#000000"
+    />
     <title>Thunder UI</title>
     <script>
       /*

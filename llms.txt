@@ -48,7 +48,7 @@ public/app/                # ← the generated Thunder UI app
 │   │   ├── protected.tsx  # auth gate (OIDC or cookie session)
 │   │   ├── types.ts       # the override contracts
 │   │   ├── crud/          # ListPage, FormPage, ViewPage, filters, field renderers
-│   │   ├── layouts/       # navbar | sidebar | mobile
+│   │   ├── layouts/       # navbar | sidebar | mobile | native + registry.ts
 │   │   ├── custom/        # composite components (RefSelect, Datatable, …)
 │   │   ├── lib/           # jsonSchemaToFields, utils, features, constants
 │   │   ├── locals/        # Thunder UI's own translations
@@ -58,6 +58,7 @@ public/app/                # ← the generated Thunder UI app
 │   ├── overrides/         # Extension points — replace generated screens
 │   │   ├── crud/{lists,cards,forms,views}.tsx
 │   │   ├── icons.tsx
+│   │   ├── layouts.ts
 │   │   └── routes.tsx
 │   │
 │   ├── pages/             # YOUR pages
@@ -755,6 +756,9 @@ export const views: TViewsOverride = { posts: PostDetail }
 
 // src/overrides/icons.tsx — nav icon per module or group
 export const icons: TIconsOverride = { posts: IconNotebook }
+
+// src/overrides/layouts.ts — your own layouts, loaded on demand
+export const layouts: TLayoutsOverride = { compact: () => import("@/layouts/compact") }
 ```
 
 `src/overrides/crud/cards.tsx` and `src/overrides/routes.tsx` do the most work and are covered
@@ -1207,27 +1211,76 @@ useBreadcrumbTitle(post?.title) // sets the trailing crumb
 
 ## Layouts and Theming
 
-Three layouts ship, selected by `VITE_APP_LAYOUT`:
+Four layouts ship, selected by `VITE_APP_LAYOUT`:
 
 | Value | Shell |
 | --- | --- |
 | `navbar` (default) | collapsible icon sidebar + top header with breadcrumb and actions |
 | `sidebar` | classic full sidebar grouped by route group |
 | `mobile` | sticky header with back/logo/actions and floating bottom tabs |
+| `native` | one adaptive shell: native app on a phone, sidebar on a desktop |
 
-All three read the same route tree, so navigation stays consistent.
+All four read the same route tree, so navigation stays consistent.
 
-### Adding your own layouts
+#### `native`
 
-A layout is just a component that receives `children`. `LayoutProvider` takes a `layout` prop
-that overrides the built-in selection, and `src/App.tsx` is yours — so ship as many
-layouts/themes as you want and pick between them however you like.
+The one to reach for when the app is going to be installed. It is a single shell that changes
+shape at the `md` breakpoint rather than two layouts behind a branch:
+
+- **Phone** — a floating translucent tab bar (first four routes plus a `More` sheet), a large
+  title on each tab's own screen that becomes a compact centred title with a back button once you
+  drill in, and an edge swipe that goes back with 1:1 tracking and momentum projection.
+- **Desktop** — the same destinations as a persistent sidebar, a navigable breadcrumb in the
+  toolbar, and the account actions in a side sheet.
+
+Which half renders is decided by `md:` variants, not by a measured window width, so the first
+painted frame is already the right size class. Safe-area insets, RTL, dark mode and
+`prefers-reduced-motion` are all handled.
+
+The platform baseline it relies on lives in `src/core/styles/index.css` and `index.html` and
+applies to every layout: `env(safe-area-inset-*)` exposed as the `safe-t`/`safe-b`/`safe-l`/
+`safe-r` spacing tokens (`pt-safe-t`, `pb-safe-b`, `mb-safe-b`, and so on), a `glass` utility for
+translucent chrome that falls back to opaque without `backdrop-filter` or under
+`prefers-reduced-transparency`, no tap highlight, no pull-to-refresh, no input-focus zoom, and
+`viewport-fit=cover` so the insets report anything at all.
+
+### How a layout is selected
+
+There are two registries. `src/core/layouts/registry.ts` holds the built-ins and is replaced on
+every sync; `src/overrides/layouts.ts` is yours and is not. `VITE_APP_LAYOUT` is looked up in
+yours first, then in the built-ins, so a layout of yours named `navbar` takes over the built-in
+one without you renaming it across your env files.
+
+Both registries map a name onto a function that **loads** a layout rather than onto the layout
+itself:
+
+```ts
+// src/core/layouts/registry.ts — core-owned
+export const coreLayouts = {
+  navbar: () => import("./navbar"),
+  sidebar: () => import("./sidebar"),
+  mobile: () => import("./mobile"),
+  native: () => import("./native"),
+}
+```
+
+Only the selected layout is ever requested, so every layout after the first costs nothing in the
+initial bundle. The loader body has to be a literal `import("...")` with a static path — a
+bundler cannot split a path it has to compute at runtime.
+
+An unknown `VITE_APP_LAYOUT` is not a white screen: the app comes up on `navbar` and logs which
+names are registered.
+
+### Adding your own layout
+
+A layout is a component that renders `children`. Put the file anywhere outside `src/core/` and
+export it as `default` or as a named `Layout` — either is picked up.
 
 ```tsx
-// src/layouts/compact.tsx — your own shell
-export function CompactLayout({ children }: { children: React.ReactNode }) {
+// src/layouts/compact.tsx
+export default function CompactLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex h-svh">
+    <div className="flex h-dvh">
       <aside className="w-56 border-e">{/* your nav */}</aside>
       <main className="flex-1 overflow-auto p-4">{children}</main>
     </div>
@@ -1235,29 +1288,46 @@ export function CompactLayout({ children }: { children: React.ReactNode }) {
 }
 ```
 
+```ts
+// src/overrides/layouts.ts
+import type { TLayoutsOverride } from "@/core/types"
+
+export const layouts: TLayoutsOverride = {
+  compact: () => import("@/layouts/compact"),
+  brand: () => import("@/layouts/brand"),
+}
+```
+
+```bash
+VITE_APP_LAYOUT=compact
+```
+
+That is the whole registration. Inside the layout, read the route tree with
+`getNavRoutes(useLayout().router.routes)`.
+
+Copy `src/core/layouts/{navbar,sidebar,mobile,native}/index.tsx` as starting points. `native/` is
+the one to copy for a hybrid build; it already has the gesture, safe-area and size-class handling
+worked out.
+
+#### Choosing in code instead
+
+`LayoutProvider` still takes a `layout` prop, and `src/App.tsx` is yours. Passing it skips the
+registry and the lazy load entirely, which is what you want when the decision is made in code
+rather than in an env file:
+
 ```tsx
-// src/App.tsx — choose it, however you want to decide
-import { CompactLayout } from "@/layouts/compact"
-import { BrandLayout } from "@/layouts/brand"
-
-const THEMES = { compact: CompactLayout, brand: BrandLayout }
-const Layout = THEMES[import.meta.env.VITE_APP_THEME as keyof typeof THEMES]
-
-<LayoutProvider router={router} layout={Layout}>
+<LayoutProvider router={router} layout={CompactLayout}>
   <Outlet />
 </LayoutProvider>
 ```
-
-Omit the prop to keep the built-in `VITE_APP_LAYOUT` behaviour. Copy
-`src/core/layouts/{navbar,sidebar,mobile}/index.tsx` as starting points — they show how to read
-the route tree with `getNavRoutes()`.
 
 ### Theme tokens
 
 - `src/index.css` is **yours**: OKLCH colour variables under `:root` and `.dark`, radii, and the
   font stacks (`--font-sans`, `--font-heading`). Restyling means editing tokens here.
 - `src/core/styles/index.css` is **core's**: mechanics only — `@property` declarations,
-  keyframes, scroll-mask utilities. No tokens.
+  keyframes, scroll-mask utilities, safe-area spacing tokens, the `glass` material and the
+  hybrid platform baseline. No colour tokens.
 
 That split is the model for the whole ownership boundary: restyle freely, core still ships new
 utilities, neither side loses work on sync.
@@ -1399,7 +1469,7 @@ string; boolean flags go through `envFlag()` in `src/core/lib/utils.ts`, which t
 | `VITE_OAUTH_SERVER_URL` | OIDC issuer |
 | `VITE_OAUTH_CLIENT_ID` | Set → OIDC. Empty → cookie session. **Chooses the auth strategy.** |
 | `VITE_OAUTH_SCOPE` | e.g. `full_access offline_access` |
-| `VITE_APP_LAYOUT` | `navbar` (default) \| `sidebar` \| `mobile` |
+| `VITE_APP_LAYOUT` | `navbar` (default) \| `sidebar` \| `mobile` \| `native`, or any name in `src/overrides/layouts.ts` |
 | `VITE_DEFAULT_PAGINATION_LIMIT` | Page size for the card list view |
 | `VITE_DEFAULT_CACHE_TTL` | SDK cache stale time, in **seconds**. Falls back to `1`. |
 | `VITE_ENABLE_WALLET` | Wallet route + navbar balance widget |

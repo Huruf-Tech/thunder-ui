@@ -4,9 +4,13 @@ import { createBrowserRouter } from "react-router";
 import { Toaster } from "sonner";
 import { useTheme } from "@/components/theme-provider";
 
-import { Layout as NavbarLayout } from "@/core/layouts/navbar";
-import { Layout as MobileLayout } from "@/core/layouts/mobile";
-import { Layout as SidebarLayout } from "@/core/layouts/sidebar";
+import {
+  coreLayouts,
+  type TCoreLayoutName,
+  type TLayoutComponent,
+  type TLayoutLoader,
+} from "@/core/layouts/registry";
+import { layouts as customLayouts } from "@/overrides/layouts";
 
 export interface ILayoutContext {
   router: ReturnType<typeof createBrowserRouter>;
@@ -15,30 +19,61 @@ export interface ILayoutContext {
 const LayoutContext = React.createContext<ILayoutContext | null>(null);
 
 export interface ILayoutProps {
-  layout?: React.ComponentType<{
-    children: React.ReactNode;
-  }>;
+  /**
+   * Renders this layout instead of the one `VITE_APP_LAYOUT` selects, and skips
+   * the lazy load entirely. Use it when the choice is made in code; register in
+   * `src/overrides/layouts.ts` instead when it should follow the env var.
+   */
+  layout?: TLayoutComponent;
   router: ReturnType<typeof createBrowserRouter>;
   children: React.ReactNode;
 }
 
-//! Resolved at module scope: an inline factory call in the render body reads to
-//! React (and to eslint) as a component created during render, which would reset
-//! the subtree's state on every render.
-function resolveLayout() {
-  switch (import.meta.env.VITE_APP_LAYOUT) {
-    case "mobile":
-      return MobileLayout;
+/** Used when `VITE_APP_LAYOUT` is unset, or names a layout nobody registered. */
+const DEFAULT_LAYOUT: TCoreLayoutName = "navbar";
 
-    case "sidebar":
-      return SidebarLayout;
+function resolveLayout(): TLayoutLoader {
+  const name = import.meta.env.VITE_APP_LAYOUT || DEFAULT_LAYOUT;
 
-    default:
-      return NavbarLayout;
-  }
+  //! The project's registry is consulted first, so a layout can take over a
+  //! built-in name rather than having to be called something else everywhere.
+  const loader = customLayouts[name] ?? coreLayouts[name as TCoreLayoutName];
+
+  if (loader) return loader;
+
+  //! A typo in an env var should not be a white screen, and it should not be
+  //! silence either -- the app comes up on the default layout and says why.
+  console.error(
+    [
+      `[thunder-ui] VITE_APP_LAYOUT="${name}" is not a registered layout.`,
+      `Built in: ${Object.keys(coreLayouts).join(", ")}.`,
+      `Registered in src/overrides/layouts.ts: ${
+        Object.keys(customLayouts).join(", ") || "none"
+      }.`,
+      `Falling back to "${DEFAULT_LAYOUT}".`,
+    ].join(" "),
+  );
+
+  return coreLayouts[DEFAULT_LAYOUT];
 }
 
-const ConfiguredLayout = resolveLayout();
+//! `React.lazy` holds the factory until the component first renders, so passing
+//! a `layout` prop never requests a chunk that will not be used. It is built at
+//! module scope because a lazy component created during render is a new
+//! component type on every render, which would remount the entire app.
+const ConfiguredLayout = React.lazy(async () => {
+  const loaded = await resolveLayout()();
+  const Layout = loaded.Layout ?? loaded.default;
+
+  if (!Layout) {
+    throw new Error(
+      "[thunder-ui] A registered layout module exported neither `Layout` nor a " +
+        "default export. See src/overrides/layouts.ts.",
+    );
+  }
+
+  return { default: Layout };
+});
 
 export function LayoutProvider({ children, layout, router }: ILayoutProps) {
   const { resolvedTheme } = useTheme();
@@ -47,7 +82,15 @@ export function LayoutProvider({ children, layout, router }: ILayoutProps) {
 
   return (
     <LayoutContext.Provider value={{ router }}>
-      <Layout>{children}</Layout>
+      {/*
+        The fallback is a bare surface in the theme's background colour, not a
+        spinner: the layout chunk is fetched on the same connection that just
+        delivered the app, and a spinner that appears for one frame reads worse
+        than a moment of empty shell.
+      */}
+      <React.Suspense fallback={<div className="h-dvh w-full bg-background" />}>
+        <Layout>{children}</Layout>
+      </React.Suspense>
 
       <Toaster
         theme={resolvedTheme}

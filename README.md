@@ -51,8 +51,10 @@ been regenerated.
 
 - **Generated CRUD** — a list page, create/update forms and a detail route per backend module,
   derived from its JSON Schema. Table columns, filters and form controls all follow the schema.
-- **Three layouts** — `navbar`, `sidebar`, `mobile`, selected with `VITE_APP_LAYOUT`. Add your
-  own by passing a `layout` to `LayoutProvider`.
+- **Four layouts** — `navbar`, `sidebar`, `mobile`, `native`, selected with `VITE_APP_LAYOUT`.
+  `native` is one adaptive shell: a tab bar, large titles and an edge-swipe back on a phone, a
+  persistent sidebar on a desktop. Register your own in `src/overrides/layouts.ts` and name it in
+  the same env var. Only the selected layout is bundled.
 - **Theming** — Tailwind v4 tokens in `src/index.css`, light/dark/system, full RTL.
 - **i18n** — English and Arabic, with your translations merged over the framework's.
 - **Hybrid** — Capacitor is pre-configured; the same codebase builds for Android and iOS.
@@ -90,6 +92,7 @@ Everything in `src/overrides/` is a registry that core reads at startup:
 | `crud/forms.tsx` | a whole form |
 | `crud/views.tsx` | a detail page |
 | `icons.tsx` | the nav icon, per module or group |
+| `layouts.ts` | registers your own layouts, loaded on demand |
 | `routes.tsx` | add routes, or hide/reorder/replace generated and built-in ones |
 
 ## Scripts

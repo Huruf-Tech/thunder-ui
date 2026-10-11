@@ -1,6 +1,7 @@
 import type { TablerIcon } from "@tabler/icons-react";
 import type { TRouteObject } from "./router";
 import type { TFilters } from "thunder-sdk/types";
+import type { TLayoutRegistry } from "./layouts/registry";
 
 export type TCardProps = {
   name: string;
@@ -41,6 +42,13 @@ export type TViewsOverride = Record<string, React.ComponentType>;
 export type TFormsOverride = Record<string, React.ComponentType>;
 
 export type TIconsOverride = Record<string, TablerIcon>;
+
+/**
+ * Your own layouts, keyed by the name `VITE_APP_LAYOUT` selects. Each value
+ * loads a layout rather than being one, so only the selected layout is
+ * bundled. See `src/overrides/layouts.ts`.
+ */
+export type TLayoutsOverride = TLayoutRegistry;
 
 export type TRoutesOverride = Record<
   string,

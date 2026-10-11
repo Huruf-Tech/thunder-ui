@@ -37,12 +37,21 @@ type MoreSheetProps = {
   overflowItems: TNav[]
   activeParent?: string
   unreadCount?: number
+  /**
+   * Replaces the default tab-strip trigger, for layouts whose nav bar is shaped
+   * differently. The sheet's contents are unaffected.
+   */
+  trigger?: React.ReactElement
+  /** Edge the sheet enters from. Bottom on a phone; a side reads better beside a rail. */
+  side?: "top" | "bottom" | "left" | "right"
 }
 
 export function MoreSheet({
   overflowItems,
   activeParent,
   unreadCount = 0,
+  trigger,
+  side = "bottom",
 }: MoreSheetProps) {
   const navigate = useNavigate()
   const [open, setOpen] = React.useState(false)
@@ -75,28 +84,36 @@ export function MoreSheet({
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger
-        render={
-          <button
-            type="button"
-            className={cn(
-              "flex h-full min-w-0 flex-1 flex-col items-center justify-center gap-1 px-1 transition-colors",
-              isMoreActive
-                ? "text-primary"
-                : "text-muted-foreground hover:text-foreground"
-            )}
-          />
-        }
-      >
-        <IconDotsCircleHorizontal className="size-5 shrink-0" />
-        <span className="text-[11px] leading-none font-medium">
-          {t("More")}
-        </span>
-      </SheetTrigger>
+      {trigger ? (
+        <SheetTrigger render={trigger} />
+      ) : (
+        <SheetTrigger
+          render={
+            <button
+              type="button"
+              className={cn(
+                "flex h-full min-w-0 flex-1 flex-col items-center justify-center gap-1 px-1 transition-colors",
+                isMoreActive
+                  ? "text-primary"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
+            />
+          }
+        >
+          <IconDotsCircleHorizontal className="size-5 shrink-0" />
+          <span className="text-[11px] leading-none font-medium">
+            {t("More")}
+          </span>
+        </SheetTrigger>
+      )}
 
       <SheetContent
-        side="bottom"
-        className="max-h-[85svh] gap-0 rounded-t-2xl pb-[env(safe-area-inset-bottom)]"
+        side={side}
+        className={cn(
+          "gap-0",
+          side === "bottom" && "max-h-[85svh] rounded-t-2xl pb-safe-b",
+          (side === "left" || side === "right") && "w-80 max-w-[85vw] pb-safe-b"
+        )}
       >
         <SheetHeader className="gap-3 p-4">
           <SheetTitle className="sr-only">{t("Menu")}</SheetTitle>
