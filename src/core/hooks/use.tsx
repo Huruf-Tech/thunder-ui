@@ -26,10 +26,14 @@ type RefetchFn = (opts?: {
 }) => Promise<RefetchResult>
 
 export function use<T>(
-  request?: TRequestCallback<T> | TRequester<T>,
+  req?: TRequestCallback<T> | TRequester<T>,
   options?: TUseOpts
 ) {
-  if (!request) request = () => Promise.resolve(null as T)
+  const request = React.useMemo(() => {
+    if (!req) return () => Promise.resolve(null as T)
+
+    return req
+  }, [req])
 
   const _request = typeof request === "function" ? request : request.get
   const _onInvalidate =
