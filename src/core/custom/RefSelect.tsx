@@ -66,7 +66,7 @@ function buildProjection(field: TField) {
  * The previous implementation (`JSONSchemaToFields.resolveRef`) fetched the
  * *entire* referenced collection up-front and stuffed it into `field.enum`, so a
  * `ref` to a large module downloaded every record before the form could render.
- * See B-31 / F-04.
+ *
  */
 async function queryRef(
   field: TField,

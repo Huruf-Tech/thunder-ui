@@ -174,7 +174,7 @@ coreRoutes.unshift(
     //! Core used to import this from `@/pages/overview`, a file the developer
     //! owns and is told to customise — deleting or renaming it broke the core
     //! router. The default now lives in core, and the developer replaces it by
-    //! registering an `overview` entry in `src/overrides/routes.tsx`. See S-04.
+    //! registering an `overview` entry in `src/overrides/routes.tsx`.
     name: "Overview",
     path: "overview",
     icon: IconLayoutGrid,
@@ -199,7 +199,7 @@ coreRoutes.unshift(
     path: "notifications",
     icon: IconNotification,
     //! Hidden from navigation by design (reached from the bell), but the route
-    //! must also stop resolving when the feature is off. See F-13.
+    //! must also stop resolving when the feature is off.
     display: false,
     priority: 7,
     Component: () =>

@@ -15,7 +15,7 @@ export type TRequestOptions = {
  * instance (that one is pinned to `VITE_API_BASE_URL`). One configured client per
  * base URL replaces the bare `axios` calls, which built URLs by string
  * concatenation — a `VITE_TRIGGERS_BASE_URL` with a trailing slash produced a
- * double slash — and could not be cancelled or time out. See B-26.
+ * double slash — and could not be cancelled or time out.
  *
  * Note: these requests carry no credentials, matching the previous behaviour.
  * Turning that on requires the triggers service to allow it (CORS

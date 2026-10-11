@@ -13,7 +13,7 @@ let ejectErrorInterceptor: (() => void) | undefined;
  * This has to run for every SDK instance, including the first one created at
  * boot. It previously ran only inside `refreshThunder()`, whose sole caller is
  * `useLogout()` — which then sets `window.location.href`, so the interceptor was
- * torn down by the page reload a moment later and never actually fired. See B-03.
+ * torn down by the page reload a moment later and never actually fired.
  */
 const registerErrorInterceptor = () => {
     ejectErrorInterceptor?.();

@@ -69,9 +69,8 @@ public/app/                # ← the generated Thunder UI app
 │   ├── main.tsx           # app entry
 │   └── i18n.ts            # i18next setup
 │
-├── docs/                  # SYNC.md, example-schema.md, AUDIT.md
 ├── android/, ios/         # Capacitor native projects
-├── www/                   # build output (committed)
+├── www/                   # build output (gitignored; produced by the build)
 ├── .env, .env.example     # environment
 └── capacitor.config.ts
 ```
@@ -188,7 +187,8 @@ package downloaded from a registry.
 
 The web build outputs to `www/` inside the app directory and is served under the base path
 `/app` (`vite.config.ts` sets `build.outDir: "./www"`; the build passes `--base=/app`). `www/`
-and the `.env` files are committed deliberately.
+is **gitignored** — it is a build artifact, produced by `generate:app` on install and by
+`npm run build` afterwards. The `.env` files, by contrast, are committed deliberately.
 
 ### Two Kinds of Update
 
@@ -624,7 +624,7 @@ schema by intent and converts it with `JSONSchemaToFields.toFields`:
 The function is **total** — it always returns `TField[]` and never rejects. A module that exposes
 `create`/`update` without a schema yields an empty array and the form shows an empty state.
 
-`docs/example-schema.md` is a worked example schema exercising every supported feature.
+The [worked schema](#field-level-a-worked-schema) above exercises most of this.
 
 ### JSON Schema support matrix
 
@@ -1463,7 +1463,7 @@ If asked to write documentation for Thunder UI, these pages cover it:
 | Building your own features | [It Is Still a Normal React App](#it-is-still-a-normal-react-app) |
 | How CRUD screens are generated | [How CRUD Screens Are Generated](#how-crud-screens-are-generated) |
 | Shaping the UI from the backend | [Controlling the UI From the Backend Schema](#controlling-the-ui-from-the-backend-schema) — the `.meta()` reference. Arguably the most important page. |
-| Schema reference | [Schema to Form Fields](#schema-to-form-fields); `docs/example-schema.md` is the worked example |
+| Schema reference | [Schema to Form Fields](#schema-to-form-fields) |
 | Customization | [Customization](#customization) — one page per registry |
 | Layouts and theming | [Layouts and Theming](#layouts-and-theming) |
 | Internationalisation | [Internationalisation](#internationalisation) |

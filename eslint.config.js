@@ -40,7 +40,6 @@ export default defineConfig([
       // Demoted to warnings rather than silenced: each is a real signal, but the
       // existing code leans on all three, so leaving them as errors would mean a
       // permanently red lint that nobody runs. They stay visible as a backlog.
-      // See docs/AUDIT.md B-01.
       "@typescript-eslint/no-explicit-any": "warn",
       "react-refresh/only-export-components": "warn",
       "react-hooks/set-state-in-effect": "warn",

@@ -59,7 +59,6 @@ export function ImageUpload({
     accept: "image/*,application/pdf",
     onFilesAdded: (addedFiles) => {
       for (const f of addedFiles) {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
         setBusy(true)
         signalRef.current = new AbortController()
         onUpload(f, signalRef.current.signal).finally(() => setBusy(false))

@@ -9,7 +9,7 @@ import { useCssVar } from "@/core/lib/cssVars";
 import { useTheme } from "@/components/theme-provider";
 
 //! These take an already-converted hex value. They used to call `rgbToHex` a
-//! second time on the output of the caller's conversion. See B-20.
+//! second time on the output of the caller's conversion.
 const setSystemBars = async (
   hexColor: string,
   style: SystemBarsStyle,

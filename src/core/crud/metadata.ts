@@ -13,7 +13,7 @@ import { JSONSchemaToFields } from "../lib/jsonSchemaToFields"
  * that assignment to run — which made the form route impossible to code-split
  * and left a hidden import-order dependency: whoever evaluated first had to be
  * the one that registered the resolver. Keeping it in a small shared module
- * removes both problems. See P-01 / P-03.
+ * removes both problems.
  */
 
 export const fieldsFromModuleMetadata = async (
@@ -46,7 +46,7 @@ export const fieldsFromModuleMetadata = async (
 
   //! A module can expose create/update without publishing a schema for them, and
   //! `toFields` throws on anything that is not an object. Returning [] keeps this
-  //! function total so no caller has to handle a rejected promise. See B-02.
+  //! function total so no caller has to handle a rejected promise.
   if (typeof schema !== "object" || schema === null) return []
 
   // Convert json schema to fields data
@@ -79,7 +79,7 @@ JSONSchemaToFields.resolveRef = async (ref, field) => {
             project: createProjection(),
             //! Still unbounded in spirit, but capped so a `ref` to a large module
             //! cannot stall the page. The list filter UI is the only caller left;
-            //! form fields use `RefSelect`. See B-31.
+            //! form fields use `RefSelect`.
             limit: REF_OPTIONS_LIMIT,
           },
         })) as {

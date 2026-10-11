@@ -24,7 +24,7 @@ export interface ILayoutProps {
 
 //! Resolved at module scope: an inline factory call in the render body reads to
 //! React (and to eslint) as a component created during render, which would reset
-//! the subtree's state on every render. See B-01.
+//! the subtree's state on every render.
 function resolveLayout() {
   switch (import.meta.env.VITE_APP_LAYOUT) {
     case "mobile":

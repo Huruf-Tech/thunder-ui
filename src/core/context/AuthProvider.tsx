@@ -117,7 +117,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
     //! `App.addListener` returns a handle that was never kept, so every remount
     //! added another `appUrlOpen` listener and the old ones stayed alive for the
-    //! life of the app — each one re-running the login callback. See B-25.
+    //! life of the app — each one re-running the login callback.
     let listener: { remove: () => Promise<void> } | undefined
 
     setLoading(true)

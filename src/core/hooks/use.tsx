@@ -57,7 +57,7 @@ export function use<T>(
 
           setData(Response)
           //! Without this the error state survived a successful refetch, so the
-          //! error UI stayed on screen forever. See B-12.
+          //! error UI stayed on screen forever.
           setError(null)
           setLoading(false)
 
@@ -164,6 +164,23 @@ export function use<T>(
     [SendRequest]
   )
 
+  /**
+   * Deliberately memoised with empty deps and then mutated in place.
+   *
+   * Consumers get **one stable object reference** for the lifetime of the hook,
+   * while its properties always hold the latest values. That keeps the returned
+   * value out of dependency arrays and prop comparisons, so a consumer does not
+   * re-render just because the result object was recreated.
+   *
+   * Do not "fix" this into a normal memo with real dependencies — that would
+   * reintroduce the churn it exists to avoid.
+   *
+   * Consequence to be aware of: because the object is mutated rather than
+   * replaced, anything relying on referential change will not see updates — a
+   * `React.memo` child receiving it as a prop, or a `useEffect` with it in the
+   * dependency array. Depend on the individual fields instead
+   * (`[data]`, `[isLoading]`), not on the object.
+   */
   const results = React.useMemo(
     () =>
       ({
@@ -190,9 +207,12 @@ export function use<T>(
             error: Error
             refetch: RefetchFn
           },
+    // Empty on purpose — see the note above.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   )
 
+  // Latest values onto the stable reference — see the note above.
   results.isLoading = isLoading
   results.data = data
   results.error = error

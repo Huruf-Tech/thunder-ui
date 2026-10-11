@@ -8,7 +8,7 @@ import { envFlag } from "./utils"
  * in the project's env file to turn one on.
  *
  * Replaces `VITE_DISABLE_WALLET`, which was the only flag and ran the opposite
- * way. See F-13.
+ * way.
  */
 export const features = {
   wallet: envFlag(import.meta.env.VITE_ENABLE_WALLET),

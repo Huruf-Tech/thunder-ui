@@ -17,7 +17,7 @@ import { useUnreadCount } from "@/core/hooks/useUnreadCount";
 import { features } from "@/core/lib/features";
 import { NotificationSidebar } from "@/core/pages/notifications/notification-sidebar";
 
-/** Flip to true once a `settings` route exists. See F-08. */
+/** Flip to true once a `settings` route exists. */
 const HAS_SETTINGS_ROUTE = false
 
 export function Layout({ children }: { children: React.ReactNode }) {
@@ -103,8 +103,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
             ) : <span className="size-9" />}
             {/*
               There is no `settings` route in coreRoutes, so this button used to
-              navigate straight to a 404. It stays hidden until the page exists;
-              see B-13 / F-08 in docs/AUDIT.md.
+              navigate straight to a 404. It stays hidden until that page exists.
             */}
             {HAS_SETTINGS_ROUTE && activeParent !== "settings" ? (
               <Button

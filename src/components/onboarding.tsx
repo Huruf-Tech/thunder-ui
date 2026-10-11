@@ -21,7 +21,7 @@ type Screen = {
  *
  * Empty by default: the boilerplate used to ship three placeholder "Thunder UI"
  * slides that every generated app showed to every first-time user. Add your own
- * screens here to switch the flow on. See C-11.
+ * screens here to switch the flow on.
  *
  * @example
  * const Screens: Screen[] = [
@@ -42,7 +42,7 @@ export function Onboarding() {
   const isLastScreen = current === Screens.length - 1
 
   //! Skip used to only close the dialog, so onboarding reappeared on the next
-  //! launch. Both exits must record that it was seen. See B-15.
+  //! launch. Both exits must record that it was seen.
   const dismiss = React.useCallback(async () => {
     setOpen(false)
 

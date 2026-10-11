@@ -86,7 +86,7 @@ export const columnFromModuleMetadata = async (
 
 /**
  * `Intl.DateTimeFormat` construction is the expensive part, and a new one was
- * built for every date cell on every render. Cached per locale. See P-07.
+ * built for every date cell on every render. Cached per locale.
  */
 const dateFormatters = new Map<string, Intl.DateTimeFormat>()
 
@@ -216,7 +216,7 @@ export function ListPage({ group, name }: IListPageProps) {
 
   const [fields, setFields] = React.useState<TField[]>([])
 
-  //! A developer's registration wins over the built-in one. See C-01.
+  //! A developer's registration wins over the built-in one.
   const Cards = cards[name as keyof typeof cards] ?? builtinCards[name]
   const [view, setView] = React.useState(Cards ? "cards" : "table")
 
@@ -322,13 +322,13 @@ export function ListPage({ group, name }: IListPageProps) {
   const metadata = React.useMemo(() => ThunderSDK.getMetadata(name), [name])
 
   //! `ThunderSDK.getModule(name)` was called nine times per render, several of
-  //! them inside JSX. See P-06.
+  //! them inside JSX.
   const module = React.useMemo(() => ThunderSDK.getModule(name), [name])
 
   //! This used to build a path and `matchPath` it against itself, which always
   //! succeeds — so the flag was permanently true and the literal "/tenant/"
   //! prefix never matched a real tenant anyway. The module's own metadata is the
-  //! real answer: a form route exists only when create or update does. See B-10.
+  //! real answer: a form route exists only when create or update does.
   const allowForm = React.useMemo(() => {
     return "create" in module || "update" in module
   }, [module])
@@ -397,7 +397,7 @@ export function ListPage({ group, name }: IListPageProps) {
       //! the `ref` option lists arrive. Both passes used to be awaited
       //! unconditionally with no cancellation, so the schema walk and every
       //! `resolveRef` request ran twice per mount and a fast module switch could
-      //! apply stale fields. See R-12 / P-08.
+      //! apply stale fields.
       const base = await columnFromModuleMetadata(metadata)
 
       if (cancelled) return
@@ -673,7 +673,7 @@ export function ListPage({ group, name }: IListPageProps) {
 
                     //! Deletes used to run in a bare loop: the first rejection
                     //! threw past the success toast and the cache refresh, so the
-                    //! list kept showing rows that were already gone. See B-11.
+                    //! list kept showing rows that were already gone.
                     const results = await Promise.allSettled(
                       ids.map((id: string) =>
                         module.del({ params: { id } })
@@ -700,7 +700,7 @@ export function ListPage({ group, name }: IListPageProps) {
                     table.resetRowSelection()
 
                     //! The total is a separate cache entry; refreshing only the
-                    //! rows left the count stale. See B-11.
+                    //! rows left the count stale.
                     await Promise.allSettled([
                       get.invalidate(),
                       count.invalidate(),

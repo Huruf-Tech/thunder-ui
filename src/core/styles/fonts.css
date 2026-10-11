@@ -5,8 +5,8 @@
  * (cyrillic, greek, vietnamese, latin-ext, latin). Each face carries a
  * `unicode-range`, so a browser only ever downloads the subsets the page
  * actually needs — the extra subsets were never a load cost. They were, however,
- * emitted into `www/`, which is committed, so ~180kB of woff2 nobody downloads
- * was being tracked in git. Only the ranges this app serves are declared here.
+ * emitted into every build, so ~180kB of woff2 nobody downloads was being
+ * shipped. Only the ranges this app serves are declared here.
  *
  * Neither Inter nor Geist covers Arabic, so Arabic text fell back to whatever
  * face the device happened to provide. Cairo — the family the print templates
@@ -16,8 +16,8 @@
  * Because selection is per character via `unicode-range`, Latin text still
  * renders in Inter/Geist and only Arabic resolves to Cairo.
  *
- * See P-04 in docs/AUDIT.md. To add a subset (e.g. cyrillic), copy its
- * `@font-face` from node_modules/@fontsource-variable/<pkg>/wght.css.
+ * To add a subset (e.g. cyrillic), copy its `@font-face` from
+ * node_modules/@fontsource-variable/<pkg>/wght.css.
  */
 
 /* --- Inter Variable: body text (--font-sans) --- */

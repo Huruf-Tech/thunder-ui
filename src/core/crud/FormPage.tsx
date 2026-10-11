@@ -85,7 +85,7 @@ export function FormPage({ name }: IFormPageProps) {
       } finally {
         //! This used to run in `.finally()` on the fetch itself, i.e. *before*
         //! `reset()`. The form rendered once with empty values, and any
-        //! uncontrolled input latched that blank. See B-07.
+        //! uncontrolled input latched that blank.
         if (!cancelled) setIsRecordLoading(false)
       }
     })()
@@ -111,7 +111,7 @@ export function FormPage({ name }: IFormPageProps) {
           type: isEditMode ? "update" : "insert",
           //! `ref` fields are rendered by `RefSelect`, which queries on demand.
           //! Resolving here would download every referenced collection before the
-          //! form could paint. See B-31.
+          //! form could paint.
           resolveRef: false,
         })
 
@@ -166,7 +166,7 @@ export function FormPage({ name }: IFormPageProps) {
       navigate(-1)
     } catch (error) {
       //! The axios interceptor already toasts whatever the server sent, so the
-      //! generic message is only useful when the response carried none. See B-39.
+      //! generic message is only useful when the response carried none.
       const reported = isAxiosError<{ messages?: unknown[] }>(error)
         ? !!error.response?.data?.messages?.length
         : false

@@ -37,7 +37,7 @@ import type { TField } from "@/core/lib/jsonSchemaToFields"
  *
  * They are loaded on demand, each with its own local Suspense boundary at the
  * use site so nothing else in the form is affected while a chunk is in flight.
- * See P-01 / P-03.
+ *
  */
 const MarkdownEditorField = React.lazy(() =>
   import("@/core/custom/MarkdownEditor").then((m) => ({
@@ -108,7 +108,7 @@ export default function RenderInput({ name, field }: TRenderInputProps) {
 
   //! A `const` property has exactly one legal value. It used to render as an
   //! editable, empty text box whose value was never submitted. Register it so it
-  //! is sent, and show nothing. See G-05.
+  //! is sent, and show nothing.
   if (field.const !== undefined) {
     return (
       <Controller
@@ -127,7 +127,7 @@ export default function RenderInput({ name, field }: TRenderInputProps) {
       {field.type === "hidden" ? null : (
         <FieldLabel htmlFor={id}>
           {/* `field.label ?? t(name)` translated the raw field name but left a
-              schema-supplied label untranslated. See B-37. */}
+              schema-supplied label untranslated. */}
           {t(field.label ?? name)}
           {field.optional ? ` (${t("optional")})` : ""}
         </FieldLabel>
@@ -161,7 +161,7 @@ function resolveValueType(field: TField, value: any) {
  * Previously only `required` and `pattern` were applied, and they were spelled
  * out at all fifteen Controller call sites. The length/range limits reached the
  * DOM as attributes but were never validated, so they did nothing for any
- * non-native control (dropdown, tag input, upload). See F-07.
+ * non-native control (dropdown, tag input, upload).
  */
 export function buildRules(field: TField, t: TFunction) {
   const rules: RegisterOptions = {
@@ -257,7 +257,7 @@ export const RenderField = ({
     : null
 
   //! A query parameter wins so a link can prefill the form; otherwise fall back
-  //! to the schema's own `default`, which used to be dropped entirely. See G-04.
+  //! to the schema's own `default`, which used to be dropped entirely.
   const defaultValue =
     queryValue !== null
       ? resolveValueType(field, queryValue)
@@ -269,7 +269,7 @@ export const RenderField = ({
    * Binds the four props every control needs, so each branch below is just its
    * control. These were spelled out at all fifteen call sites, which made the
    * file read as boilerplate and buried the one branch that needs different
-   * rules. See R-01.
+   * rules.
    *
    * Deliberately a plain function rather than a component: a component declared
    * here would get a new identity on every render and remount its subtree.
@@ -307,7 +307,7 @@ export const RenderField = ({
 
   //! A record/dictionary (`additionalProperties`, i.e. zod's `z.record()`) has no
   //! fixed keys, so there is no field list to render. Edit it as JSON rather than
-  //! silently degrading to a one-line text box. See G-07.
+  //! silently degrading to a one-line text box.
   if (field.type === "text" && field.fieldHint === "json") {
     return controlled(
       (def) => (
@@ -437,7 +437,7 @@ export const RenderField = ({
 
   //! A `ref` field is backed by another module, which may hold more records than
   //! can sensibly be downloaded. It gets a searchable, server-paginated picker
-  //! rather than an enum materialised up-front. See B-31 / F-04.
+  //! rather than an enum materialised up-front.
   if (field.ref) {
     return controlled((def) => (
       <RefSelect
@@ -549,7 +549,7 @@ export const RenderField = ({
         type={withTime ? "datetime-local" : "date"}
         placeholder={field.example ?? field.name}
         //! `defaultValue` made this uncontrolled, so a value arriving from
-        //! `methods.reset()` after first paint never appeared. See B-07.
+        //! `methods.reset()` after first paint never appeared.
         value={formatDateForInput(def.field.value, withTime)}
         onChange={(e) => def.field.onChange(parseDateInput(e.target.value))}
       />

@@ -12,7 +12,7 @@ import {
  *
  * This logic existed twice — once in the mobile layout and once in the
  * notification popover — with separate state, separate intervals and separate
- * error handling, so B-14 had to be fixed in two places. See P-11.
+ * error handling, so B-14 had to be fixed in two places.
  *
  * Requests are aborted on unmount and before each new poll, so a slow response
  * cannot land after the component is gone or overwrite a newer one.

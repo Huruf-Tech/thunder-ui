@@ -15,7 +15,7 @@ export const StringOperator = {
 
 //! The operators are inclusive, so the labels say so. Renaming the labels keeps
 //! every stored filter working; swapping the operators to $gt/$lt would silently
-//! change the meaning of filters already saved in URLs. See B-18.
+//! change the meaning of filters already saved in URLs.
 export const NumberOperator = {
   is: "$eq",
   "is not": "$ne",

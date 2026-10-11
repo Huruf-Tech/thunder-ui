@@ -34,7 +34,7 @@ export const triggersBaseUrl = import.meta.env.VITE_TRIGGERS_BASE_URL;
  * Currency code used when a wallet does not report one.
  *
  * Was hardcoded as a literal at four sites, one of them lowercase `"lyd"` right
- * after an `.toUpperCase()` branch. See C-12.
+ * after an `.toUpperCase()` branch.
  */
 export const defaultCurrency = (
   import.meta.env.VITE_DEFAULT_CURRENCY || "LYD"

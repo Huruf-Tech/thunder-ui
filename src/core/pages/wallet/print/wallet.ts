@@ -5,7 +5,7 @@ import { loadFontsCSS, loadTailwindCSS } from "@/core/lib/utils";
 /**
  * Handlebars (79kB) and the template source are only needed when someone
  * exports a PDF. Compiling at module scope pulled the whole compiler into the
- * initial bundle for every user. Imported on first use and cached. See P-03.
+ * initial bundle for every user. Imported on first use and cached.
  */
 let compiled: HandlebarsTemplateDelegate | undefined;
 

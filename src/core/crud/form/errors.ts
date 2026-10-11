@@ -11,7 +11,7 @@ import type { FieldErrors } from "react-hook-form"
  * The descent starts at the root and then follows the path strictly. The old
  * `error?.[part] ?? errors[part]` re-applied the root lookup on every segment,
  * so a miss part-way down resolved to an unrelated top-level key of the same
- * name — `wage.amount` could surface the error belonging to `amount`. See B-08.
+ * name — `wage.amount` could surface the error belonging to `amount`.
  */
 export function findFieldError(
   errors: FieldErrors,

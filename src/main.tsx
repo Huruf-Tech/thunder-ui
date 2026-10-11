@@ -14,7 +14,7 @@ import "./i18n.ts"
 /**
  * `DirectionProvider` used to read `i18next.language` once, at mount, so
  * switching language updated the `dir` attribute but left every Base UI
- * component still laid out left-to-right until a reload. See B-22.
+ * component still laid out left-to-right until a reload.
  */
 function Root() {
   const { i18n } = useTranslation()

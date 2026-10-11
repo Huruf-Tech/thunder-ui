@@ -188,7 +188,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
   //! On mobile the nav item closes the sheet first, and navigating in the same
   //! frame cuts that animation short. This delay used to run unconditionally, so
   //! every desktop navigation paid 300ms for a sheet that was never open.
-  //! See P-09.
   const handleNavigate = React.useCallback(
     (path: string) => {
       if (isMobile) {

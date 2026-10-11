@@ -201,7 +201,7 @@ export class JSONSchemaToFields {
    * - Several object branches are merged into one object; a property keeps
    *   `required` only if every branch requires it. This is a superset form:
    *   submittable, but it cannot express "these fields XOR those fields".
-   *   A true variant picker is tracked as G-01b.
+   *   Rendering only the selected variant is not implemented.
    * - Several scalar branches fall back to the first one's type.
    */
   protected static collapseUnion(
@@ -237,7 +237,7 @@ export class JSONSchemaToFields {
       //! The discriminator of a tagged union appears in every branch with a
       //! different `const`. Merging would keep only the last one, leaving the
       //! user no way to pick a variant, so collect the constants into an enum
-      //! instead. See G-01.
+      //! instead.
       for (const key of Object.keys(properties)) {
         const constants = objects
           .map((branch) => branch.properties?.[key])
@@ -351,7 +351,7 @@ export class JSONSchemaToFields {
 
     //! A `$ref` that reappears beneath itself (a tree/linked-list shape) would
     //! recurse forever, because resolving it yields the same node again. Keep it
-    //! on a stack for the whole subtree so the nested occurrence stops. See G-01.
+    //! on a stack for the whole subtree so the nested occurrence stops.
     const followed =
       typeof (schema as TSchema).$ref === "string"
         ? ((schema as TSchema).$ref as string)
@@ -390,7 +390,7 @@ export class JSONSchemaToFields {
 
     //! JSON Schema default: a property is OPTIONAL unless its parent lists it in
     //! `required`. Callers pass `optional` down through hints; anything that
-    //! arrives without it is optional, never mandatory. See G-02.
+    //! arrives without it is optional, never mandatory.
     const base: Partial<TField> = {
       optional: true,
       ...hints,
@@ -427,7 +427,7 @@ export class JSONSchemaToFields {
 
     //! An object with no `properties` but an `additionalProperties` schema is a
     //! dictionary/record. There is no per-key UI for that, so it is edited as
-    //! JSON rather than silently rendered as a one-line text box. See G-07.
+    //! JSON rather than silently rendered as a one-line text box.
     if (
       type === "object" &&
       node.additionalProperties !== undefined &&

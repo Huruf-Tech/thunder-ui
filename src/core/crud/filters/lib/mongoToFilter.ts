@@ -107,7 +107,7 @@ export const _mongoToFilter = (
     /**
      * `filterToMongo` nests each "not between" under `$and` so two of them stay
      * independent (see B-17). Older links still carry a single flat `$or`, so
-     * both shapes are read here. See B-17.
+     * both shapes are read here.
      */
     const orGroups: unknown[][] = [];
 

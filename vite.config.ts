@@ -7,9 +7,8 @@ import { defineConfig } from "vite"
 export default defineConfig({
   build: {
     outDir: "./www",
-    // `minify: false` cost ~4MB raw / ~0.5MB gzip on every build, and `www` is
-    // committed. Flip `sourcemap` on temporarily if you need to debug a built
-    // bundle — it is off here to keep the committed output small.
+    // `minify: false` cost ~4MB raw / ~0.5MB gzip on every build. Flip
+    // `sourcemap` on temporarily if you need to debug a built bundle.
     emptyOutDir: true,
   },
   plugins: [react(), tailwindcss()],

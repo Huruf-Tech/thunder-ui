@@ -89,7 +89,7 @@ export function transformImage(
 
 export function getInitials(name?: string) {
   //! This used to destructure the *string*, so `last` was an array of characters
-  //! and never empty: "John Doe" returned "JO" instead of "JD". See B-05.
+  //! and never empty: "John Doe" returned "JO" instead of "JD".
   const [first, ...rest] = (name || "Unnamed").trim().split(/\s+/)
 
   if (!first) return "?"
@@ -168,7 +168,7 @@ export function formatDateForInput(
  *
  * Replaces every run of whitespace: `replace(" ", "-")` substituted only the
  * first one, so "Human Resources Admin" produced "human-resources admin", which
- * matched no route. See B-09.
+ * matched no route.
  */
 export function groupPath(group?: string) {
   return group?.trim().toLowerCase().replace(/\s+/g, "-")
@@ -179,7 +179,7 @@ export function groupPath(group?: string) {
  *
  * Every value in `import.meta.env` is a string, so `!import.meta.env.FLAG` was
  * true only when the variable was absent entirely — `FLAG=0` and `FLAG=false`
- * both read as enabled. See B-24.
+ * both read as enabled.
  */
 export function envFlag(value: unknown, fallback = false) {
   if (value === undefined || value === "") return fallback
@@ -195,7 +195,7 @@ export function envFlag(value: unknown, fallback = false) {
  * UTC offset that round-trips to the previous day, so a record edited in the
  * Americas would shift every date back by one on each save. Building the Date
  * from local parts makes the round-trip offset-independent. Empty input yields
- * `null` rather than `Invalid Date`. See B-07.
+ * `null` rather than `Invalid Date`.
  */
 export function parseDateInput(value: string): Date | null {
   if (!value) return null
@@ -399,7 +399,7 @@ export const printDocument = async <T>(
 
 /**
  * date-fns needs the locale passed explicitly; without it every relative time
- * and month name rendered in English even in the Arabic UI. See B-36.
+ * and month name rendered in English even in the Arabic UI.
  */
 const dateLocale = () => (i18next.language?.startsWith("ar") ? ar : enUS)
 

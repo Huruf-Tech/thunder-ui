@@ -174,7 +174,7 @@ export function FilterValueDateDisplay({ filter }: { filter?: TValue }) {
    * `nldate:tomorrow` reaches here before it is resolved), so only the
    * formatting is guarded. The JSX used to be built *inside* the try block,
    * which does not actually protect rendering — React renders children later,
-   * outside the catch. See B-01.
+   * outside the catch.
    */
   const formatted = (() => {
     try {

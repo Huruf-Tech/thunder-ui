@@ -9,7 +9,7 @@ export const getWallets = (query: Record<string, unknown> = {}) => {
         ["wallets.get", hash(query)],
         //! `query` used to be hashed into the cache key and then dropped from the
         //! request, so a filtered read returned unfiltered data under its own
-        //! key. See B-06.
+        //! key.
         async ({ signal }) =>
             await ThunderSDK.wallets.get({ signal, params: {}, query }),
         { cacheTTL },
@@ -34,7 +34,7 @@ const WALLET_CACHE = /(^|:)(wallets|walletLedgers)\.get(:|$)/;
  * This used to call `getWallets()` / `getWalletLedgers()` with no arguments,
  * which invalidates only the entry keyed by `hash({})`. Any screen reading with
  * a real query — the transaction history, which filters and paginates — kept its
- * stale data after a transfer. Matching on the key covers every variant. See B-06.
+ * stale data after a transfer. Matching on the key covers every variant.
  */
 export const invalidateWallets = async () => {
     await ThunderSDK.withCaching(

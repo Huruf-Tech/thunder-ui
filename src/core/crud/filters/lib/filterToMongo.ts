@@ -144,7 +144,7 @@ export const filterToMongo = (
          * `mongoFilter.$or` turned an AND of two exclusions into a single OR, so
          * adding a second "is not between" filter *widened* the result set
          * instead of narrowing it. Nesting each one under `$and` keeps the
-         * fields independent. See B-17.
+         * fields independent.
          */
         mongoFilter.$and ??= [];
 
