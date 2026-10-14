@@ -186,7 +186,7 @@ export function FormPage({ name }: IFormPageProps) {
       <Container>
         <FormProvider {...methods}>
           <form
-            className="mx-auto w-full max-w-md pb-24"
+            className="mx-auto w-full max-w-lg pb-24"
             onSubmit={methods.handleSubmit(onSubmit)}
           >
             <FieldGroup>
