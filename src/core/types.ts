@@ -41,6 +41,20 @@ export type TViewsOverride = Record<string, React.ComponentType>;
 
 export type TFormsOverride = Record<string, React.ComponentType>;
 
+export type TListActionsOverride = Record<string, React.ComponentType>;
+
+export type TListToolbarProps = {
+  /** The module name (e.g. "orders"). */
+  name: string;
+  /** Whether the list data is still loading. */
+  isLoading: boolean;
+};
+
+export type TListToolbarOverride = Record<
+  string,
+  React.ComponentType<TListToolbarProps>
+>;
+
 export type TIconsOverride = Record<string, TablerIcon>;
 
 /**

@@ -5,6 +5,8 @@ import { ThunderSDK } from "thunder-sdk"
 import type { TFilters } from "thunder-sdk/types"
 import { DataTable } from "../custom/Datatable"
 import { cards } from "@/overrides/crud/cards"
+import { listActions } from "@/overrides/crud/list-actions"
+import { listToolbar } from "@/overrides/crud/list-toolbar"
 import { builtinCards } from "./builtins"
 import {
   type ColumnDef,
@@ -218,6 +220,8 @@ export function ListPage({ group, name }: IListPageProps) {
 
   //! A developer's registration wins over the built-in one.
   const Cards = cards[name as keyof typeof cards] ?? builtinCards[name]
+  const ListAction = listActions[name as keyof typeof listActions]
+  const ListToolbar = listToolbar[name as keyof typeof listToolbar]
   const [view, setView] = React.useState(Cards ? "cards" : "table")
 
   const isCard = view === "cards" && !!Cards
@@ -441,114 +445,121 @@ export function ListPage({ group, name }: IListPageProps) {
             </Container>
           )}
           <Container className="flex flex-wrap-reverse items-center justify-between gap-3 lg:flex-nowrap">
-            {/* Render Card Select All Badge only when in Card View */}
-            {isCard && module.del && (
-              <CardSelectAll
-                checked={
-                  table.getIsAllPageRowsSelected()
-                    ? true
-                    : table.getIsSomePageRowsSelected()
-                      ? "indeterminate"
-                      : false
-                }
-                selectedCount={selectedRows.length}
-                totalCount={getData?.results?.length ?? 0}
-                onChange={(checked) => {
-                  table.toggleAllPageRowsSelected(checked)
-                }}
-              />
-            )}
+            {ListToolbar ? (
+              <ListToolbar name={name} isLoading={isLoading} />
+            ) : (
+              <>
+                {/* Render Card Select All Badge only when in Card View */}
+                {isCard && module.del && (
+                  <CardSelectAll
+                    checked={
+                      table.getIsAllPageRowsSelected()
+                        ? true
+                        : table.getIsSomePageRowsSelected()
+                          ? "indeterminate"
+                          : false
+                    }
+                    selectedCount={selectedRows.length}
+                    totalCount={getData?.results?.length ?? 0}
+                    onChange={(checked) => {
+                      table.toggleAllPageRowsSelected(checked)
+                    }}
+                  />
+                )}
 
-            <Filters
-              fields={fields}
-              filters={subFilters}
-              onChange={setSubFilters}
-            />
+                <Filters
+                  fields={fields}
+                  filters={subFilters}
+                  onChange={setSubFilters}
+                />
 
-            <div className="flex flex-1 shrink-0 grow items-center justify-end gap-3">
-              {isLoading ? (
-                <>
-                  <Skeleton className="h-9 w-18" />
-                  <Skeleton className="h-9 w-18" />
-                </>
-              ) : (
-                <>
-                  {getData?.results.length && !isCard ? (
-                    <DropdownMenu>
-                      <DropdownMenuTrigger
-                        render={
-                          <Button variant="outline" size="icon">
-                            <IconTableColumn />
+                <div className="flex flex-1 shrink-0 grow items-center justify-end gap-3">
+                  {isLoading ? (
+                    <>
+                      <Skeleton className="h-9 w-18" />
+                      <Skeleton className="h-9 w-18" />
+                    </>
+                  ) : (
+                    <>
+                      {getData?.results.length && !isCard ? (
+                        <DropdownMenu>
+                          <DropdownMenuTrigger
+                            render={
+                              <Button variant="outline" size="icon">
+                                <IconTableColumn />
+                              </Button>
+                            }
+                          ></DropdownMenuTrigger>
+
+                          <DropdownMenuContent
+                            align="end"
+                            className="no-scrollbar max-h-100 overflow-auto"
+                          >
+                            <DropdownMenuCheckboxItem
+                              checked={table.getIsAllColumnsVisible()}
+                              onCheckedChange={(value) =>
+                                table.toggleAllColumnsVisible(!!value)
+                              }
+                            >
+                              {t("Select all")}
+                            </DropdownMenuCheckboxItem>
+                            {table
+                              .getAllColumns()
+                              .filter((col) => col.getCanHide())
+                              .map((column) => {
+                                return (
+                                  <DropdownMenuCheckboxItem
+                                    key={column.id}
+                                    checked={column.getIsVisible()}
+                                    onCheckedChange={(value) =>
+                                      column.toggleVisibility(!!value)
+                                    }
+                                  >
+                                    <span className="line-clamp-1 truncate">
+                                      {column.columnDef.header as string}
+                                    </span>
+                                  </DropdownMenuCheckboxItem>
+                                )
+                              })}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      ) : null}
+                      {ListAction && <ListAction />}
+                      {allowForm &&
+                        ThunderSDK.isPermitted(
+                          module.create
+                        ) && (
+                          <Button onClick={() => navigate("form")}>
+                            {t("Create")}
                           </Button>
-                        }
-                      ></DropdownMenuTrigger>
+                        )}
+                      {!!Cards && (
+                        <ToggleGroup
+                          value={view}
+                          onValueChange={(view) => {
+                            setView(view)
 
-                      <DropdownMenuContent
-                        align="end"
-                        className="no-scrollbar max-h-100 overflow-auto"
-                      >
-                        <DropdownMenuCheckboxItem
-                          checked={table.getIsAllColumnsVisible()}
-                          onCheckedChange={(value) =>
-                            table.toggleAllColumnsVisible(!!value)
-                          }
+                            if (view === "table") {
+                              setFetchCount(0)
+                              setFetchController(null)
+                              setProject({})
+                              setSort({})
+                            }
+                          }}
                         >
-                          {t("Select all")}
-                        </DropdownMenuCheckboxItem>
-                        {table
-                          .getAllColumns()
-                          .filter((col) => col.getCanHide())
-                          .map((column) => {
-                            return (
-                              <DropdownMenuCheckboxItem
-                                key={column.id}
-                                checked={column.getIsVisible()}
-                                onCheckedChange={(value) =>
-                                  column.toggleVisibility(!!value)
-                                }
-                              >
-                                <span className="line-clamp-1 truncate">
-                                  {column.columnDef.header as string}
-                                </span>
-                              </DropdownMenuCheckboxItem>
-                            )
-                          })}
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  ) : null}
-                  {allowForm &&
-                    ThunderSDK.isPermitted(
-                      module.create
-                    ) && (
-                      <Button onClick={() => navigate("form")}>
-                        {t("Create")}
-                      </Button>
-                    )}
-                  {!!Cards && (
-                    <ToggleGroup
-                      value={view}
-                      onValueChange={(view) => {
-                        setView(view)
-
-                        if (view === "table") {
-                          setFetchCount(0)
-                          setFetchController(null)
-                          setProject({})
-                          setSort({})
-                        }
-                      }}
-                    >
-                      <ToggleGroupItem value="cards" aria-label="Cards view">
-                        <IconLayoutGrid className="size-4" />
-                      </ToggleGroupItem>
-                      <ToggleGroupItem value="table" aria-label="Table view">
-                        <IconTable className="size-4" />
-                      </ToggleGroupItem>
-                    </ToggleGroup>
+                          <ToggleGroupItem value="cards" aria-label="Cards view">
+                            <IconLayoutGrid className="size-4" />
+                          </ToggleGroupItem>
+                          <ToggleGroupItem value="table" aria-label="Table view">
+                            <IconTable className="size-4" />
+                          </ToggleGroupItem>
+                        </ToggleGroup>
+                      )}
+                    </>
                   )}
-                </>
-              )}
-            </div>
+                </div>
+              </>
+            )}
           </Container>
 
           {isCard ? (
