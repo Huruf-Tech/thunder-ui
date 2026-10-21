@@ -90,6 +90,8 @@ Everything in `src/overrides/` is a registry that core reads at startup:
 | `crud/lists.tsx` | a whole list page |
 | `crud/cards.tsx` | adds a card view beside the table |
 | `crud/forms.tsx` | a whole form |
+| `crud/list-actions.tsx` | adds a button beside Create on a list page |
+| `crud/list-toolbar.tsx` | a list page's whole header row |
 | `crud/views.tsx` | a detail page |
 | `icons.tsx` | the nav icon, per module or group |
 | `layouts.ts` | registers your own layouts, loaded on demand |

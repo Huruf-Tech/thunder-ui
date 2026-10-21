@@ -56,7 +56,7 @@ public/app/                # ← the generated Thunder UI app
 │   │   └── styles/        # mechanics only: keyframes, utilities, fonts
 │   │
 │   ├── overrides/         # Extension points — replace generated screens
-│   │   ├── crud/{lists,cards,forms,views}.tsx
+│   │   ├── crud/{lists,cards,forms,views,list-actions,list-toolbar}.tsx
 │   │   ├── icons.tsx
 │   │   ├── layouts.ts
 │   │   └── routes.tsx
@@ -754,6 +754,13 @@ export const forms: TFormsOverride = { posts: PostForm }
 // src/overrides/crud/views.tsx — supply a detail page (no props, like forms)
 export const views: TViewsOverride = { posts: PostDetail }
 
+// src/overrides/crud/list-actions.tsx — add a button beside Create
+export const listActions: TListActionsOverride = { posts: ExportPostsButton }
+
+// src/overrides/crud/list-toolbar.tsx — replace a list page's whole header row
+export const listToolbar: TListToolbarOverride = { posts: PostToolbar }
+// props: TListToolbarProps = { name: string; isLoading: boolean }
+
 // src/overrides/icons.tsx — nav icon per module or group
 export const icons: TIconsOverride = { posts: IconNotebook }
 
@@ -1027,6 +1034,66 @@ Notes on the example worth repeating in prose:
   reads `location.state.name`. `useBreadcrumbTitle()` does the same thing from inside a page.
 - Driving the query from your own UI is just calling `setSort`, `setFilters` or `setProject`;
   each triggers a refetch through the same cached query the table uses.
+
+### List toolbar and actions
+
+Two overrides sit on the list page's header row. They are not alternatives — they replace
+different amounts of it.
+
+#### `list-actions.tsx` — add a button
+
+```tsx
+// src/overrides/crud/list-actions.tsx
+import type { TListActionsOverride } from "@/core/types"
+
+export const listActions: TListActionsOverride = {
+  manageLeavesRequests: LeavesReportButton,
+}
+```
+
+Keys are SDK module names. The component takes **no props** — read whatever it needs from hooks.
+It renders immediately before `Create`, in both the table and the card view, and is replaced by
+a skeleton until the first page of data arrives. This is the right place for anything
+self-contained: an export, an import dialog, a report, a link to a related screen.
+
+#### `list-toolbar.tsx` — replace the whole row
+
+```tsx
+// src/overrides/crud/list-toolbar.tsx
+import type { TListToolbarOverride } from "@/core/types"
+
+export const listToolbar: TListToolbarOverride = {
+  orders: ({ isLoading }) => (
+    <div className="flex w-full items-center justify-end gap-3">
+      <Button variant="outline" disabled={isLoading}>Import CSV</Button>
+      <Button variant="outline" disabled={isLoading}>Export</Button>
+    </div>
+  ),
+}
+```
+
+Registering one for a module drops everything the default row holds: the filter bar, the
+column-visibility menu, the card select-all badge, the `Create` button, the table/cards toggle,
+**and that module's `list-actions.tsx` entry** — which lives inside the row you just replaced.
+Rebuild only the parts you want.
+
+`TListToolbarProps` is `{ name, isLoading }` and nothing else. That is a deliberate but narrow
+contract, and worth being explicit about, because it is not the one `cards.tsx` gets:
+
+| | `TCardProps` | `TListToolbarProps` |
+| --- | --- | --- |
+| Drive the query | `setFilters`, `setSort`, `setProject`, `setPage` | — |
+| Selection | `selectedIds`, `toggleSelect` | — |
+| Data | `data`, `isLoading`, `isRefetching`, `fetcher` | `isLoading` |
+
+So a replacement toolbar can hold controls that **act on their own** — navigate, call the SDK,
+open a dialog, kick off a download — but it cannot filter, sort, page or toggle columns, because
+the state those drive is never handed to it.
+
+> One trap this makes easy: dropping `<MongoFilters schema={name} />` into a replacement toolbar
+> compiles and renders a filter UI that does nothing. `MongoFilters` is fully controlled, so with
+> no `filters`/`onChange` the selections have nowhere to go. If a toolbar needs to own filtering,
+> replace the list itself through `lists.tsx` instead, where the query is yours.
 
 ### Routes: hiding, reordering and replacing
 
