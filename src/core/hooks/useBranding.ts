@@ -8,10 +8,18 @@ import { appName as packageAppName } from "@/core/lib/utils"
  * The project's branding, served by the backend at `/auth/branding`.
  *
  * Every brand surface in the UI reads from here: the app name in a layout's
- * header, the logo beside it, the favicon, and the theme tokens. Everything is
- * optional on the wire, so each getter falls back to what the boilerplate ships
- * with -- a UI generated against a backend that serves no branding looks
- * exactly as it did before.
+ * header, the logo beside it, the favicon, and the theme tokens.
+ *
+ * The payload is
+ * `{ name, theme, description?, logo?, heroImage?, heroTitle?, homepageURL?,
+ * termsURL?, privacyURL?, hidePoweredBy? }`. Only `name` (non-empty) and
+ * `theme` are guaranteed; the rest may be absent, which is why the getters
+ * below fall back rather than assuming. A backend with no branding endpoint at
+ * all leaves the app looking exactly as the boilerplate ships.
+ *
+ * `heroImage` and `heroTitle` are read off `branding` directly -- there is no
+ * local asset to fall back to and nothing in core renders a hero, so wrapping
+ * them in a getter here would buy nothing.
  *
  * Called from wherever a name or a logo is rendered, like `use(ThunderSDK.me)`
  * is. The request carries an explicit `cacheKey`, so the SDK serves every
@@ -41,9 +49,10 @@ export function useBranding() {
 
   const { data, error, isLoading } = use(request)
 
-  //! A response with no name is treated as "no branding configured" rather than
-  //! as branding that happens to be blank, so the fallbacks below apply whole
-  //! rather than leaving a header with an empty string in it.
+  //! `data` is `null` when the SDK has no branding endpoint (see above). The
+  //! `name` check is belt-and-braces on top of that: the schema requires a
+  //! non-empty name, so a real response always passes, and a malformed one
+  //! falls back whole instead of rendering a header with an empty string.
   const branding = data?.name ? data : null
 
   return {

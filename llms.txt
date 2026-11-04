@@ -1584,14 +1584,27 @@ VITE_UPLOAD_FOLDER=   # ImageKit folder; empty uses the account default
 ### Branding from the backend
 
 The backend serves the project's identity at `/auth/branding`, and the UI reads it on startup
-rather than hard-coding any of it. Everything on the wire is optional, so a backend that serves
-no branding leaves the app looking exactly as the boilerplate ships.
+rather than hard-coding any of it. A backend with no branding endpoint leaves the app looking
+exactly as the boilerplate ships.
 
 ```ts
 ThunderSDK.auth.branding()
-// -> { name, description?, logo?, homepageURL?, termsURL?, privacyURL?,
-//      theme: Record<string, string>, hidePoweredBy? }
+// -> {
+//      name: string                      // required, non-empty
+//      theme: Record<string, string>     // required
+//      description?: string
+//      logo?: string
+//      heroImage?: string
+//      heroTitle?: string
+//      homepageURL?: string
+//      termsURL?: string
+//      privacyURL?: string
+//      hidePoweredBy?: boolean
+//    }
 ```
+
+`name` and `theme` are the only two the backend guarantees — everything a UI falls back on is
+one of the optional fields.
 
 `src/core/AppWrapper.tsx` applies it once at the app root: the theme onto `:root`, the logo as
 the favicon, the name as `document.title`. Nothing else needs to do that.
@@ -1622,9 +1635,11 @@ const { appName, logo, branding, isLoading } = useBranding()
 
 - `appName` falls back to the name in `package.json`, via `appName()`.
 - `logo` is `null` when the backend sends none — fall back to your own asset, as the layouts do.
-- `branding` is the whole payload, or `null` when the backend sent nothing usable. The legal
-  links (`termsURL`, `privacyURL`, `homepageURL`) and `hidePoweredBy` are there for a footer to
-  read; nothing in core renders them yet.
+- `branding` is the whole payload, or `null` when the backend sent nothing usable. Read the
+  fields core does not use off it directly: `heroImage` and `heroTitle` for a landing or sign-in
+  screen, the legal links (`termsURL`, `privacyURL`, `homepageURL`) and `hidePoweredBy` for a
+  footer. Nothing in core renders any of them yet, and they have no local fallback, so check for
+  their absence before rendering.
 
 All four layouts, the overview page and the tenant picker already read from it. The bundled
 `logo-light.png`/`logo-dark.png` pair stays the fallback rather than being replaced, because the
