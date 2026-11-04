@@ -809,8 +809,35 @@ export default function PostDetail() {
 ```
 
 `use()` (`@/core/hooks/use`) pairs with `ThunderSDK.useCaching` and gives you
-`{ data, error, isLoading, refetch }`. A module `get` with `params: { id }` returns
-`{ results: [record] }`.
+`{ data, error, isLoading, isValidating, refetch }`. A module `get` with `params: { id }`
+returns `{ results: [record] }`.
+
+#### Cached first, then fresh
+
+Pass `use()` a `useCaching` handle rather than a plain function and it reads that handle's
+`iterate()`: the cached copy renders immediately and the fresh one replaces it once the
+background refetch lands. Navigating back to a screen shows data at once instead of a skeleton.
+
+This is why the two loading flags are different things:
+
+| Flag | Meaning | What to render |
+| --- | --- | --- |
+| `isLoading` | nothing to show yet — no cache, first fetch in flight | a skeleton |
+| `isValidating` | showing the cached copy, fresh data still coming | a subtle refresh hint, never a skeleton |
+
+The handle only yields a second time if the cache was stale **and** the fresh data actually
+differs, so an up-to-date screen does not re-render for nothing. A failed revalidation also
+yields nothing more and leaves the cached rows on screen rather than flipping to an error —
+`error` is for a request that had nothing to fall back on.
+
+A plain function requester has no cache to read, so it keeps the one-request behaviour: a single
+`isLoading` pass, `isValidating` always `false`. Both generated list pages already pass handles,
+so they get this for free.
+
+> `iterate()` arrived in a later SDK than the one this repository pins for standalone builds.
+> `use()` checks for it and falls back to `get()` when it is absent, so the boilerplate runs
+> against either; a project on an older SDK simply does not get the cached-first behaviour until
+> it regenerates with `deno task generate:sdk`.
 
 When no view is registered for a module, its detail route goes to that module's edit form.
 
