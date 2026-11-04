@@ -50,7 +50,8 @@ public/app/                # ← the generated Thunder UI app
 │   │   ├── crud/          # ListPage, FormPage, ViewPage, filters, field renderers
 │   │   ├── layouts/       # navbar | sidebar | mobile | native + registry.ts
 │   │   ├── custom/        # composite components (RefSelect, Datatable, …)
-│   │   ├── lib/           # jsonSchemaToFields, utils, features, constants
+│   │   ├── hooks/         # use, useBranding, useUnreadCount
+│   │   ├── lib/           # jsonSchemaToFields, utils, features, constants, branding
 │   │   ├── locals/        # Thunder UI's own translations
 │   │   ├── pages/         # built-in pages (overview, wallet, users, notifications)
 │   │   └── styles/        # mechanics only: keyframes, utilities, fonts
@@ -1369,8 +1370,73 @@ export const layouts: TLayoutsOverride = {
 VITE_APP_LAYOUT=compact
 ```
 
-That is the whole registration. Inside the layout, read the route tree with
-`getNavRoutes(useLayout().router.routes)`.
+That is the whole registration.
+
+#### What a layout reads
+
+Two hooks cover almost everything a shell needs. Neither takes any setup — they work the moment
+the layout is mounted by `LayoutProvider`.
+
+**The navigation.** `useLayout()` gives you the router; `getNavRoutes()` turns its route tree
+into the destinations to render, already filtered by permission and `display` and already sorted
+by `priority`:
+
+```tsx
+import { useLayout } from "@/core/layouts/layout-provider"
+import { getNavRoutes } from "@/core/lib/utils"
+
+const { router } = useLayout()
+const { routes, subRoutes } = getNavRoutes(router.routes)
+// routes:    [{ title, icon, path, button }, …]  -> top-level destinations
+// subRoutes: { [parentPath]: [ …same shape ] }   -> children of the active one
+```
+
+**The branding.** `useBranding()` gives you the name and logo the backend serves, so a custom
+layout picks up a project's identity without that project editing the layout:
+
+```tsx
+import { useBranding } from "@/core/hooks/useBranding"
+
+export default function CompactLayout({ children }: { children: React.ReactNode }) {
+  const { router } = useLayout()
+  const { routes } = getNavRoutes(router.routes)
+  const { appName, logo } = useBranding()
+
+  return (
+    <div className="flex h-dvh">
+      <aside className="flex w-56 flex-col border-e">
+        <div className="flex h-16 items-center gap-2.5 px-4">
+          {/* `logo` is null when the backend sends none — keep your own asset
+              behind it, the way the built-in layouts keep logo-light/dark. */}
+          <img src={logo || MyLogo} alt="" className="h-6 w-auto" aria-hidden />
+          <span className="truncate font-semibold">{appName}</span>
+        </div>
+
+        <nav className="flex-1 overflow-y-auto overscroll-contain p-2">
+          {routes.map((route) => (
+            <Link key={route.title} to={route.path ?? "#"} viewTransition>
+              {t(route.title)}
+            </Link>
+          ))}
+        </nav>
+      </aside>
+
+      <main className="flex-1 overflow-auto p-4">{children}</main>
+    </div>
+  )
+}
+```
+
+`appName` already falls back to the name in `package.json`, so it is never empty and needs no
+guard. `logo` is `null` with no branding, so give it your own fallback. Do **not** apply the
+branding `theme` here — `AppWrapper` has already written it onto `:root` before any layout
+mounts, and your Tailwind classes pick it up for free. See
+[Branding from the backend](#branding-from-the-backend).
+
+`route.title` is an untranslated key: run it through `t()`, as all four built-in layouts do.
+`route.button` is an optional component a project attaches through `src/overrides/routes.tsx` —
+render it next to the icon if you want badges (the unread-count dot, for instance) to work in
+your layout too.
 
 Copy `src/core/layouts/{navbar,sidebar,mobile,native}/index.tsx` as starting points. `native/` is
 the one to copy for a hybrid build; it already has the gesture, safe-area and size-class handling
@@ -1487,6 +1553,59 @@ uploader and the file-table uploader both call `handleUpload` and store the retu
 ```bash
 VITE_UPLOAD_FOLDER=   # ImageKit folder; empty uses the account default
 ```
+
+### Branding from the backend
+
+The backend serves the project's identity at `/auth/branding`, and the UI reads it on startup
+rather than hard-coding any of it. Everything on the wire is optional, so a backend that serves
+no branding leaves the app looking exactly as the boilerplate ships.
+
+```ts
+ThunderSDK.auth.branding()
+// -> { name, description?, logo?, homepageURL?, termsURL?, privacyURL?,
+//      theme: Record<string, string>, hidePoweredBy? }
+```
+
+`src/core/AppWrapper.tsx` applies it once at the app root: the theme onto `:root`, the logo as
+the favicon, the name as `document.title`. Nothing else needs to do that.
+
+`theme` is a flat map of CSS custom properties — the same tokens `src/index.css` declares:
+
+```jsonc
+{ "--primary": "oklch(0.55 0.21 264)", "--radius": "0.75rem" }
+```
+
+`applyThemeVars()` writes them as inline properties on `:root`, which sits one specificity step
+above the stylesheet. A brand overrides whichever tokens it sends and inherits the rest, so
+sending `--primary` alone restyles the app without touching anything else. Keys that are not
+custom properties are dropped rather than trusted — this is network data reaching
+`style.setProperty`.
+
+To read the name or the logo in a component, use the hook. It is called wherever a brand surface
+renders, the way `ThunderSDK.me` is, and the request carries a `cacheKey` so the SDK answers
+every caller after the first from cache:
+
+```tsx
+import { useBranding } from "@/core/hooks/useBranding"
+
+const { appName, logo, branding, isLoading } = useBranding()
+
+<img src={logo || LocalLogo} alt={appName} />
+```
+
+- `appName` falls back to the name in `package.json`, via `appName()`.
+- `logo` is `null` when the backend sends none — fall back to your own asset, as the layouts do.
+- `branding` is the whole payload, or `null` when the backend sent nothing usable. The legal
+  links (`termsURL`, `privacyURL`, `homepageURL`) and `hidePoweredBy` are there for a footer to
+  read; nothing in core renders them yet.
+
+All four layouts, the overview page and the tenant picker already read from it. The bundled
+`logo-light.png`/`logo-dark.png` pair stays the fallback rather than being replaced, because the
+backend sends one logo for both colour schemes.
+
+> An SDK generated before this endpoint existed has no `auth.branding`, and this runs at the app
+> root. The hook checks for the method and resolves to `null` instead of taking the app down, so
+> `--forceSync` onto a project whose SDK has not been regenerated degrades to the local defaults.
 
 ---
 
