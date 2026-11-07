@@ -111,10 +111,25 @@ export function resolveUrl(path?: string) {
   return new URL(baseUrl)
 }
 
+/**
+ * An absolute URL to a path inside the current tenant, basename included.
+ *
+ * For `window.location`, an external link or anything outside the router. To
+ * feed the router, pass the whole thing (`.toString()`) and never `.pathname`:
+ * React Router strips origin *and* basename from an absolute `to`, but a bare
+ * pathname still carries the basename and gets it prepended a second time.
+ * `getLocalPath` is the form that needs no such care.
+ */
 export function getLocalUrl(path?: string) {
   return resolveUrl(getLocalPath(path))
 }
 
+/**
+ * A root-relative path inside the current tenant, with no basename.
+ *
+ * This is the one to hand `<Link to>`, `<Navigate to>` and `navigate()` -- the
+ * router adds the basename itself.
+ */
 export function getLocalPath(path?: string) {
   return [
     "",

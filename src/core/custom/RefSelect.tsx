@@ -22,7 +22,10 @@ import { Spinner } from "@/components/ui/spinner"
 import { cn } from "@/lib/utils"
 
 import type { TField } from "@/core/lib/jsonSchemaToFields"
-import { valueWithType } from "@/core/crud/filters/lib/filterToMongo"
+import {
+  valueWithType,
+  type TServerValueTypes,
+} from "@/core/crud/filters/lib/filterToMongo"
 import { useDebounceCallback } from "@/core/crud/filters/hooks/use-debounce-callback"
 
 export type TRefOption = { label: string; value: unknown }
@@ -100,6 +103,41 @@ async function queryRef(
   return (results ?? []).map((record) => toOption(field, record))
 }
 
+/**
+ * The filter value type for a `refValue` lookup.
+ *
+ * `_id` is a Mongo ObjectId. Anything else names an ordinary field on the
+ * referenced module, and the local field holds a value of its own declared
+ * type — so that is the type the filter has to carry.
+ *
+ * This was hardcoded to `objectId`, which the backend rejects outright for a
+ * value that is not one (`Invalid objectId filter "10002"`). It broke every
+ * form for a field like `refValue: "employeeCode"` the moment it opened with a
+ * value already set, because resolving that value's label is the first thing
+ * the picker does.
+ *
+ * A `multi` field recurses into its item schema in `jsonSchemaToFields`, so
+ * `field.type` is the scalar type whether the field holds one value or many.
+ */
+function refValueType(field: TField): TServerValueTypes {
+  if (refValueKey(field) === "_id") return "objectId"
+
+  switch (field.type) {
+    case "number":
+    case "integer":
+      return "number"
+
+    case "boolean":
+      return "boolean"
+
+    case "date":
+      return "date"
+
+    default:
+      return "string"
+  }
+}
+
 /** Resolves labels for values already stored on the record being edited. */
 async function queryRefByValues(
   field: TField,
@@ -108,12 +146,14 @@ async function queryRefByValues(
 ) {
   if (!values.length) return []
 
+  const type = refValueType(field)
+
   const { results } = (await ThunderSDK.getModule(field.ref!).get({
     signal,
     query: {
       subFilters: {
         [refValueKey(field)]: {
-          $in: values.map((value) => valueWithType("objectId", value)),
+          $in: values.map((value) => valueWithType(type, value)),
         },
       },
       project: buildProjection(field),
