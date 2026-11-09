@@ -316,7 +316,11 @@ export function RefSelect({
     )
   }
 
-  const clear = (event: React.MouseEvent) => {
+  //! On pointer-down, before the trigger sees it: the popover opens on
+  //! pointer-down, and its layer then swallowed the click, so clearing never
+  //! happened and the list opened instead.
+  const clear = (event: React.PointerEvent) => {
+    event.preventDefault()
     event.stopPropagation()
     onValueChange(multiple ? [] : null)
   }
@@ -353,7 +357,8 @@ export function RefSelect({
               {!!selected.length && !disabled && (
                 <IconX
                   className="size-4 text-muted-foreground hover:text-foreground"
-                  onClick={clear}
+                  onPointerDown={clear}
+                  onClick={(event) => event.stopPropagation()}
                   aria-label={t("Clear")}
                 />
               )}
