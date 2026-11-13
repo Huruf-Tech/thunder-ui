@@ -25,7 +25,7 @@ import {
   IconLoader2,
 } from "@tabler/icons-react"
 import { ThunderSDK } from "thunder-sdk"
-import { toast } from "sonner"
+import { toast } from "@/core/lib/toast"
 
 interface OverdraftLimitModalProps {
   isOpen: boolean

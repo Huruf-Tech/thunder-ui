@@ -13,7 +13,7 @@ import {
   IconX,
   IconInfoCircle,
 } from "@tabler/icons-react"
-import { toast } from "sonner"
+import { toast } from "@/core/lib/toast"
 
 export function ImageUpload({
   onUpload,

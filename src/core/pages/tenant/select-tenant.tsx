@@ -46,7 +46,7 @@ import {
   SelectTrigger,
 } from "@/components/ui/select"
 import { cn } from "@/lib/utils"
-import { toast } from "sonner"
+import { toast } from "@/core/lib/toast"
 import { useLogout } from "@/core/protected"
 import { useBranding } from "@/core/hooks/useBranding"
 import { ConfirmationDialog } from "@/core/custom/ConfirmationDialog"

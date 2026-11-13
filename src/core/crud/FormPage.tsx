@@ -27,7 +27,7 @@ import type { TField } from "../lib/jsonSchemaToFields"
 import { forms } from "@/overrides/crud/forms"
 import { RenderFieldGroup } from "./form/RenderFieldGroup"
 import { Container } from "@/core/custom/Container"
-import { toast } from "sonner"
+import { toast } from "@/core/lib/toast"
 import { isAxiosError } from "axios"
 
 //! Re-exported for backwards compatibility: these moved to ./metadata so the

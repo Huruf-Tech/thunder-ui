@@ -12,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Spinner } from "@/components/ui/spinner";
 import { Field, FieldLabel, FieldError, FieldGroup } from "@/components/ui/field";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { toast } from "sonner";
+import { toast } from "@/core/lib/toast";
 import { getInitials } from "@/core/lib/utils";
 import { invalidateWallets } from "@/core/endpoints/wallet";
 import { defaultCurrency } from "@/core/lib/constants";

@@ -6,7 +6,7 @@ import type { TNav } from "../layouts/shared/sub-nav"
 
 import { converter, formatHex } from "culori"
 import axios from "axios"
-import { toast } from "sonner"
+import { toast } from "@/core/lib/toast"
 import { Capacitor } from "@capacitor/core"
 import { format, formatDistanceToNow, isSameDay, subDays } from "date-fns"
 import { ar, enUS } from "date-fns/locale"

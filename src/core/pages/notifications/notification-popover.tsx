@@ -3,7 +3,7 @@ import { useNavigate } from "react-router"
 import { cn } from "@/lib/utils"
 import { useTranslation } from "react-i18next"
 import { IconBell, IconCheck, IconInfoCircle } from "@tabler/icons-react"
-import { toast } from "sonner"
+import { toast } from "@/core/lib/toast"
 import { ThunderSDK } from "thunder-sdk"
 import { Capacitor } from "@capacitor/core"
 import {

@@ -1,7 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import React from "react";
 import { createBrowserRouter } from "react-router";
-import { Toaster } from "sonner";
+import { Toaster } from "@/core/lib/toast";
 import { useTheme } from "@/components/theme-provider";
 
 import {
@@ -92,19 +92,8 @@ export function LayoutProvider({ children, layout, router }: ILayoutProps) {
         <Layout>{children}</Layout>
       </React.Suspense>
 
-      <Toaster
-        theme={resolvedTheme}
-        position="bottom-center"
-        toastOptions={{
-          className: "!items-start !gap-3 !rounded-4xl !p-5",
-          classNames: {
-            icon: "[&>svg]:!size-7 [&>svg]:mt-2",
-            title: "!text-lg",
-            description: "!text-sm !text-muted-foreground",
-            actionButton: "!p-4 !h-6 !rounded-full capitalize",
-          },
-        }}
-      />
+      {/* Position and per-slot styling belong to the toast layer itself. */}
+      <Toaster theme={resolvedTheme} />
     </LayoutContext.Provider>
   );
 }

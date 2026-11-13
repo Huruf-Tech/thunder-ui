@@ -65,7 +65,7 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Badge } from "@/components/ui/badge"
 import { Container } from "@/core/custom/Container"
-import { toast } from "sonner"
+import { toast } from "@/core/lib/toast"
 import { cn } from "@/lib/utils"
 import { Refresher } from "@/components/refresher"
 import { useTranslation } from "react-i18next"
@@ -699,6 +699,11 @@ export function ListPage({ group, name }: IListPageProps) {
                       (result) => result.status === "rejected"
                     ).length
 
+                    //! One toast, not two. These used to fire in the same
+                    //! tick, so the success landed on top of the partial-failure
+                    //! warning and the user never learned anything had failed.
+                    //! The failure message already names how many of how many,
+                    //! which implies the rest succeeded.
                     if (failed) {
                       toast.error(
                         t("Failed to delete {{count}} of {{total}} item(s).", {
@@ -706,9 +711,7 @@ export function ListPage({ group, name }: IListPageProps) {
                           total: ids.length,
                         })
                       )
-                    }
-
-                    if (failed < ids.length) {
+                    } else {
                       toast.success(t("Deleted successfully."))
                     }
 

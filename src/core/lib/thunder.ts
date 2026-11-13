@@ -1,6 +1,6 @@
 import type { AxiosError, AxiosResponse } from "axios";
 import { ThunderSDK } from "thunder-sdk";
-import { toast } from "sonner";
+import { toast } from "@/core/lib/toast";
 
 type TErrorBody = { messages?: { message: string }[] };
 
@@ -29,7 +29,15 @@ const registerErrorInterceptor = () => {
             const messages = error.response?.data?.messages;
 
             if (messages?.length) {
-                for (const { message } of messages) toast.error(message);
+                //! One toast carrying every message, not one toast per message.
+                //! A validation response routinely holds several, and a stack of
+                //! near-identical error toasts is noise -- worse, a toast layer
+                //! that shows one at a time would surface only the last of them.
+                const [first, ...rest] = messages.map(({ message }) => message);
+
+                toast.error(first, {
+                    description: rest.length ? rest.join("\n") : undefined,
+                });
             } else if (
                 // A request aborted by an AbortController is routine here (every
                 // list page cancels in flight), so it must never raise a toast.
